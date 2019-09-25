@@ -1,0 +1,55 @@
+.gk-content {
+    margin: 1em;
+
+    label {
+        font-size: 14px;
+        line-height: 16px;
+        margin-right: 1em;
+    }
+    .info-block {
+        display: inline-block;
+        width: 33%;
+        vertical-align: top;
+        tr, th, td {
+            height: inherit;
+        }
+    }
+    h2, h3 {
+        margin-bottom: 0.5em;
+    }
+
+    .settings {
+        text-align: right;
+    }
+
+    .agent-status-block {
+        margin-top: 1em;
+    }
+
+    .account-picker-block {
+        label {
+            margin-right: 1em;
+        }
+
+        .account-picker {
+            display: inline-block;
+            width: 30em;
+        }
+    }
+
+    .loader-error {
+        color: red;
+    }
+    .loader-success {
+        color: green;
+    }
+    .loader-active, .loader-error, .loader-success {
+        font-family: monospace;
+    }
+
+    .radio {
+        margin-left: 1em;
+    }
+}
+
+@import '~react-table/react-table.css'
