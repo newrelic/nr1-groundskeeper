@@ -24,8 +24,8 @@ This project is distributed under the [Apache 2 license](LICENSE).
 Clone this repository and run the following scripts:
 
 ```bash
-git clone https://github.com/newrelic/nr1-infra-geoops.git
-cd nr1-infra-geoops
+git clone https://github.com/newrelic/nr1-groundskeeper.git
+cd nr1-groundskeeper
 nr1 nerdpack:uuid -gf
 npm install
 npm start
