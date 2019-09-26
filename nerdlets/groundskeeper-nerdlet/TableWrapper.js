@@ -16,7 +16,7 @@ import { TableChart } from 'nr1';
  */
 export default class TableWrapper extends React.PureComponent {
   static propTypes = {
-    tableData: PropTypes.object,
+    tableData: PropTypes.object.isRequired,
   };
 
   renderHTMLTable() {
