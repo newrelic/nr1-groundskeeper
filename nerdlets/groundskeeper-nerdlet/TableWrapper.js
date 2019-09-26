@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import ReactTable from 'react-table';
-import { TableChart } from 'nr1';
+//import { TableChart } from 'nr1';
 
 /**
  * const tableData = {
@@ -46,7 +46,7 @@ export default class TableWrapper extends React.PureComponent {
     );
   }
 
-  renderNRTableChart() {
+  /*renderNRTableChart() {
     const {
       tableData: { columns, data },
     } = this.props;
@@ -70,7 +70,7 @@ export default class TableWrapper extends React.PureComponent {
     ];
 
     return <TableChart data={chartData} height={400} />;
-  }
+  }*/
 
   renderReactTable() {
     const {
