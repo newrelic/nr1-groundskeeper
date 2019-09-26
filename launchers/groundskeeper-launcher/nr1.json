@@ -3,5 +3,5 @@
     "id": "groundskeeper-launcher",
     "description": "Track and report versions of your deployed New Relic agents",
     "displayName": "Agent Groundskeeper",
-    "rootNerdletId": "e7bd8d1a-7e58-4d99-9a31-eb3b4cc64c2d.groundskeeper-nerdlet"
+    "rootNerdletId": "groundskeeper-nerdlet"
 }

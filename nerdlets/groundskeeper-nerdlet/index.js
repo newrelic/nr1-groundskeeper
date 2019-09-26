@@ -412,7 +412,7 @@ export default class Groundskeeper extends React.Component {
     if (loadingInitialState) {
       return (
         <div className="gk-content">
-          <Spinner />
+          <Spinner fillContainer />
           <div>Please enjoy the emptiness while I survey your estate...</div>
         </div>
       );
