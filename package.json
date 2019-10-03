@@ -2,7 +2,7 @@
   "private": true,
   "name": "groundskeeper",
   "description": "Track the New Relic APM agents running in your entire software estate",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "bugs": {
     "email": "opensource@newrelic.com"
   },
