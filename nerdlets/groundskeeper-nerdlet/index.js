@@ -494,19 +494,21 @@ export default class Groundskeeper extends React.Component {
               <th>Version</th>
               <th>Released on</th>
             </tr>
-            {Object.keys(bestAgentVersions)
-              .sort()
-              .map(lng => (
-                <tr key={`lang-ver-${lng}`}>
-                  <td>{lng}</td>
-                  <td>{bestAgentVersions[lng][0]}</td>
-                  <td>
-                    {agentVersions[lng]
-                      .find(v => v.version === bestAgentVersions[lng][0])
-                      .date.format('MMM Do YYYY')}
-                  </td>
-                </tr>
-              ))}
+            <tbody>
+              {Object.keys(bestAgentVersions)
+                .sort()
+                .map(lng => (
+                  <tr key={`lang-ver-${lng}`}>
+                    <td>{lng}</td>
+                    <td>{bestAgentVersions[lng][0]}</td>
+                    <td>
+                      {agentVersions[lng]
+                        .find(v => v.version === bestAgentVersions[lng][0])
+                        .date.format('MMM Do YYYY')}
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
           </table>
         </div>
 
