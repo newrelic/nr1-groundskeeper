@@ -184,7 +184,10 @@ export default class Groundskeeper extends React.Component {
       if (al && al.map && al.length > 0) {
         agentVersions[language] = al
           .map(ver => {
-            return { version: ver.version, date: moment(ver.date) };
+            return {
+              version: cleanAgentVersion(ver.version),
+              date: moment(ver.date),
+            };
           })
           .sort((a, b) => {
             if (a.date > b.date) return -1;
@@ -596,4 +599,16 @@ function agentAge(a, agentVersions) {
     ? langVersions.find(v => v.version === a.agentVersions[0])
     : '';
   return agentVersion ? agentVersion.date : undefined;
+}
+
+/**
+ * Some agent releases have a `v` prefix on the version number in the New Relic docs.
+ * We use this filter to strip those out so the version string matches what's reported by the agent itself.
+ */
+function cleanAgentVersion(version) {
+  const m = (version || '').match(/(\d+.*)/);
+  if (m && m[1]) {
+    return m[1];
+  }
+  return version;
 }
