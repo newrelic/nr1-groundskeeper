@@ -184,7 +184,10 @@ export default class Groundskeeper extends React.Component {
       if (al && al.map && al.length > 0) {
         agentVersions[language] = al
           .map(ver => {
-            return { version: ver.version, date: moment(ver.date) };
+            return {
+              version: cleanAgentVersion(ver.version),
+              date: moment(ver.date),
+            };
           })
           .sort((a, b) => {
             if (a.date > b.date) return -1;
@@ -491,19 +494,21 @@ export default class Groundskeeper extends React.Component {
               <th>Version</th>
               <th>Released on</th>
             </tr>
-            {Object.keys(bestAgentVersions)
-              .sort()
-              .map(lng => (
-                <tr key={`lang-ver-${lng}`}>
-                  <td>{lng}</td>
-                  <td>{bestAgentVersions[lng][0]}</td>
-                  <td>
-                    {agentVersions[lng]
-                      .find(v => v.version === bestAgentVersions[lng][0])
-                      .date.format('MMM Do YYYY')}
-                  </td>
-                </tr>
-              ))}
+            <tbody>
+              {Object.keys(bestAgentVersions)
+                .sort()
+                .map(lng => (
+                  <tr key={`lang-ver-${lng}`}>
+                    <td>{lng}</td>
+                    <td>{bestAgentVersions[lng][0]}</td>
+                    <td>
+                      {agentVersions[lng]
+                        .find(v => v.version === bestAgentVersions[lng][0])
+                        .date.format('MMM Do YYYY')}
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
           </table>
         </div>
 
@@ -592,8 +597,43 @@ export default class Groundskeeper extends React.Component {
 
 function agentAge(a, agentVersions) {
   const langVersions = agentVersions[a.language];
+  const reportedVersion = a.agentVersions[0];
+  if (!reportedVersion) {
+    return undefined;
+  }
+
+  // sometimes agents include build numbers but the docs don't
+  // so we'll be tolerant of matching on the first 3 segments of a semver
+  const mNumberedVersion = reportedVersion.match(/(\d+\.\d+\.\d+)\.\d+$/);
+  const numberedVersion =
+    mNumberedVersion && mNumberedVersion[1] ? mNumberedVersion[1] : undefined;
+
+  // sometimes agent versions in the docs API don't include a trailing `.0`
+  // so we'll be tolerant of a match after stripping `.0` suffix from the shortest variant of the reported version
+  const mShortVersion = (numberedVersion || reportedVersion).match(/(.+)\.0$/);
+  const shortVersion =
+    mShortVersion && mShortVersion[1] ? mShortVersion[1] : undefined;
+
   const agentVersion = langVersions
-    ? langVersions.find(v => v.version === a.agentVersions[0])
+    ? langVersions.find(
+        v =>
+          v.version === reportedVersion ||
+          v.version === numberedVersion ||
+          v.version === shortVersion
+      )
     : '';
   return agentVersion ? agentVersion.date : undefined;
+}
+
+/**
+ * Some agent releases have a `v` prefix on the version number in the New Relic docs.
+ * We use this filter to strip those out so the version string matches what's reported by the agent itself.
+ * Filter also strips build numbers from semver strings because our docs use them inconsistently.
+ */
+function cleanAgentVersion(version) {
+  const m = (version || '').match(/(\d+\.\d+\.\d+)/);
+  if (m && m[1]) {
+    return m[1];
+  }
+  return version;
 }
