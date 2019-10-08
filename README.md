@@ -1,6 +1,6 @@
 # NR1 Agent Groundskeeper
 
-![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/newrelic/nr1-groundskeeper?include_prereleases&sort=semver) ![AppVeyor](https://img.shields.io/appveyor/ci/newrelic/nr1-groundskeeper) [![Snyk](https://snyk.io/test/github/newrelic/nr1-groundskeeper/badge.svg)](https://snyk.io/test/github/newrelic/nr1-groundskeeper)
+![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/newrelic/nr1-groundskeeper?include_prereleases&sort=semver) [![Snyk](https://snyk.io/test/github/newrelic/nr1-groundskeeper/badge.svg)](https://snyk.io/test/github/newrelic/nr1-groundskeeper)
 
 ## Usage
 
