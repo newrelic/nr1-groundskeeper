@@ -2,13 +2,13 @@
   "private": true,
   "name": "groundskeeper",
   "description": "Track the New Relic APM agents running in your entire software estate",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "bugs": {
     "email": "opensource@newrelic.com"
   },
   "scripts": {
     "start": "nr1 nerdpack:serve",
-    "test": "exit 0",
+    "test": "jest",
     "eslint-check": "eslint nerdlets/",
     "eslint-fix": "eslint nerdlets/ --fix"
   },
@@ -30,11 +30,15 @@
   "devDependencies": {
     "@semantic-release/changelog": "^3.0.5",
     "@semantic-release/git": "^7.0.18",
+    "@babel/preset-env": "^7.7.1",
+    "@babel/preset-react": "^7.7.0",
     "babel-eslint": "^10.0.3",
+    "babel-jest": "^24.9.0",
     "eslint": "^6.4.0",
     "eslint-config-prettier": "^6.3.0",
     "eslint-plugin-prettier": "^3.1.1",
     "eslint-plugin-react": "^7.14.3",
+    "jest": "^24.9.0",
     "prettier": "^1.18.2"
   }
 }
