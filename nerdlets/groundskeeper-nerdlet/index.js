@@ -2,19 +2,17 @@ import './styles.scss';
 
 import React from 'react';
 
+import { NerdGraphQuery, Spinner, Tabs, TabsItem } from 'nr1';
+
+import TableWrapper from './components/TableWrapper';
+import AgentVersion from './components/AgentVersion';
+
 import {
-  NerdGraphQuery,
-  Link,
-  RadioGroup,
-  Radio,
-  Spinner,
-  Tabs,
-  TabsItem,
-  navigation,
-} from 'nr1';
-
-import TableWrapper from './TableWrapper';
-
+  linkedAppId,
+  agentAge,
+  cleanAgentVersion,
+  agentVersionInList,
+} from './helpers';
 import { ACCOUNT_NG_QUERY, ENTITY_NG_QUERY } from './queries';
 
 const moment = require('moment');
@@ -47,7 +45,7 @@ export default class Groundskeeper extends React.Component {
     presentationData: {},
     accounts: {},
     agentVersions: {},
-    bestAgentVersions: {},
+    freshAgentVersions: {},
     scanIsRunning: true,
 
     filterKey: undefined,
@@ -90,7 +88,7 @@ export default class Groundskeeper extends React.Component {
         : { agentSLO: AGENT_SLO.MOST_RECENT };
 
     this.setState(newState, () => {
-      this.recomputeBestAgentVersions(this.state.agentVersions);
+      this.recomputeFreshAgentVersions(this.state.agentVersions);
     });
   };
 
@@ -200,7 +198,7 @@ export default class Groundskeeper extends React.Component {
     });
 
     this.setState({ agentVersions, presentationData: {} }, () => {
-      this.recomputeBestAgentVersions(agentVersions);
+      this.recomputeFreshAgentVersions(agentVersions);
     });
   };
 
@@ -260,25 +258,25 @@ export default class Groundskeeper extends React.Component {
     }
   };
 
-  recomputeBestAgentVersions = agentVersions => {
+  recomputeFreshAgentVersions = agentVersions => {
     const { agentSLO } = this.state;
-    const bestCutoff = agentSLO ? moment().subtract(agentSLO, 'days') : null;
-    const bestAgentVersions = {};
+    const freshCutoff = agentSLO ? moment().subtract(agentSLO, 'days') : null;
+    const freshAgentVersions = {};
 
     Object.keys(agentVersions).forEach(language => {
       const al = agentVersions[language];
 
       if (al && al.map && al.length > 0) {
-        bestAgentVersions[language] = al
+        freshAgentVersions[language] = al
           .filter((ver, index) => {
             if (index === 0) return true;
-            return bestCutoff && bestCutoff.isSameOrBefore(ver.date);
+            return freshCutoff && freshCutoff.isSameOrBefore(ver.date);
           })
           .map(ver => ver.version);
       }
     });
 
-    this.setState({ bestAgentVersions }, () => {
+    this.setState({ freshAgentVersions }, () => {
       this.recomputePresentation(this.state.agentData);
     });
   };
@@ -292,7 +290,7 @@ export default class Groundskeeper extends React.Component {
     const {
       accounts,
       agentVersions,
-      bestAgentVersions,
+      freshAgentVersions,
       filterKey,
       filterValue,
     } = this.state;
@@ -304,8 +302,8 @@ export default class Groundskeeper extends React.Component {
     };
 
     agentData.forEach(info => {
-      const bestVersions = bestAgentVersions[info.language];
-      if (!bestVersions || bestVersions.length < 1) {
+      const freshVersions = freshAgentVersions[info.language];
+      if (!freshVersions || freshVersions.length < 1) {
         return;
       }
       if (filterKey && filterValue) {
@@ -315,7 +313,7 @@ export default class Groundskeeper extends React.Component {
 
       if (info.agentVersions.length > 1) {
         analysis.multipleVersions.push(info);
-      } else if (bestVersions.indexOf(info.agentVersions[0]) >= 0) {
+      } else if (agentVersionInList(info.agentVersions[0], freshVersions)) {
         analysis.current.push(info);
       } else {
         analysis.old.push(info);
@@ -327,7 +325,7 @@ export default class Groundskeeper extends React.Component {
       data: analysis.current.map(info => {
         return [
           accounts[info.accountId] || info.accountId,
-          this.linkedAppId(info.accountId, info.appId),
+          linkedAppId(info.accountId, info.appId),
           info.appName,
           info.language,
           info.agentVersions.join(', '),
@@ -362,7 +360,7 @@ export default class Groundskeeper extends React.Component {
           return [
             ageText,
             accounts[info.accountId] || info.accountId,
-            this.linkedAppId(info.accountId, info.appId),
+            linkedAppId(info.accountId, info.appId),
             info.appName,
             info.language,
             info.agentVersions.join(', '),
@@ -374,7 +372,7 @@ export default class Groundskeeper extends React.Component {
       data: analysis.multipleVersions.map(info => {
         return [
           accounts[info.accountId] || info.accountId,
-          this.linkedAppId(info.accountId, info.appId),
+          linkedAppId(info.accountId, info.appId),
           info.appName,
           info.language,
           info.agentVersions.join(', '),
@@ -383,15 +381,6 @@ export default class Groundskeeper extends React.Component {
     };
 
     return analysis;
-  };
-
-  linkedAppId = (accountId, appId) => {
-    let entityGuid = btoa(`${accountId}|APM|APPLICATION|${appId}`);
-    while (entityGuid.endsWith('=')) {
-      entityGuid = entityGuid.slice(0, -1);
-    }
-    const location = navigation.getOpenStackedEntityLocation(entityGuid);
-    return <Link to={location}>{appId}</Link>;
   };
 
   render() {
@@ -404,7 +393,7 @@ export default class Groundskeeper extends React.Component {
         agentSLO,
         presentationData,
         agentVersions,
-        bestAgentVersions,
+        freshAgentVersions,
         loadingInitialState,
         loadError,
         scanIsRunning,
@@ -546,31 +535,10 @@ export default class Groundskeeper extends React.Component {
               </Tabs>
             </div>
 
-            <div className="agent-versions">
-              <h3>Latest APM agent versions</h3>
-              <table>
-                <tr>
-                  <th>Language</th>
-                  <th>Version</th>
-                  <th>Released on</th>
-                </tr>
-                <tbody>
-                  {Object.keys(bestAgentVersions)
-                    .sort()
-                    .map(lng => (
-                      <tr key={`lang-ver-${lng}`}>
-                        <td>{lng}</td>
-                        <td>{bestAgentVersions[lng][0]}</td>
-                        <td>
-                          {agentVersions[lng]
-                            .find(v => v.version === bestAgentVersions[lng][0])
-                            .date.format('MMM Do YYYY')}
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
+            <AgentVersion
+              agentVersions={agentVersions}
+              freshAgentVersions={freshAgentVersions}
+            />
           </div>
         ) : (
           <Spinner />
@@ -580,45 +548,3 @@ export default class Groundskeeper extends React.Component {
   }
 }
 
-function agentAge(a, agentVersions) {
-  const langVersions = agentVersions[a.language];
-  const reportedVersion = a.agentVersions[0];
-  if (!reportedVersion) {
-    return undefined;
-  }
-
-  // sometimes agents include build numbers but the docs don't
-  // so we'll be tolerant of matching on the first 3 segments of a semver
-  const mNumberedVersion = reportedVersion.match(/(\d+\.\d+\.\d+)\.\d+$/);
-  const numberedVersion =
-    mNumberedVersion && mNumberedVersion[1] ? mNumberedVersion[1] : undefined;
-
-  // sometimes agent versions in the docs API don't include a trailing `.0`
-  // so we'll be tolerant of a match after stripping `.0` suffix from the shortest variant of the reported version
-  const mShortVersion = (numberedVersion || reportedVersion).match(/(.+)\.0$/);
-  const shortVersion =
-    mShortVersion && mShortVersion[1] ? mShortVersion[1] : undefined;
-
-  const agentVersion = langVersions
-    ? langVersions.find(
-        v =>
-          v.version === reportedVersion ||
-          v.version === numberedVersion ||
-          v.version === shortVersion
-      )
-    : '';
-  return agentVersion ? agentVersion.date : undefined;
-}
-
-/**
- * Some agent releases have a `v` prefix on the version number in the New Relic docs.
- * We use this filter to strip those out so the version string matches what's reported by the agent itself.
- * Filter also strips build numbers from semver strings because our docs use them inconsistently.
- */
-function cleanAgentVersion(version) {
-  const m = (version || '').match(/(\d+\.\d+\.\d+)/);
-  if (m && m[1]) {
-    return m[1];
-  }
-  return version;
-}
