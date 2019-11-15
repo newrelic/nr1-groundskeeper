@@ -28,6 +28,8 @@
     "not dead"
   ],
   "devDependencies": {
+    "@semantic-release/changelog": "^3.0.5",
+    "@semantic-release/git": "^7.0.18",
     "@babel/preset-env": "^7.7.1",
     "@babel/preset-react": "^7.7.0",
     "babel-eslint": "^10.0.3",
