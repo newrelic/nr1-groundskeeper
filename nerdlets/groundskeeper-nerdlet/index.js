@@ -428,76 +428,6 @@ export default class Groundskeeper extends React.Component {
 
     return (
       <div className="gk-content">
-        <div className="info-block">
-          <h3>My Upgrade SLO is</h3>
-          <select value={agentSLO} onChange={updateAgentSLO}>
-            {Object.values(AGENT_SLO).map(slo => (
-              <option value={slo} key={`slo-opt-${slo}`}>
-                {AGENT_SLO_LABELS[slo]}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="info-block">
-          <h3>
-            {scanner} Loaded {agentData.length} applications
-          </h3>
-          <div>
-            <label>Filter applications by tag</label>
-            <select value={filterKey} onChange={setFilterKey}>
-              <option value="">--</option>
-              {Object.keys(tags)
-                .sort()
-                .map(key => (
-                  <option key={`filter-tag-${key}`} value={key}>
-                    {key}
-                  </option>
-                ))}
-            </select>
-          </div>
-          {filterKey ? (
-            <div>
-              <label>to value</label>
-              <select value={filterValue} onChange={setFilterValue}>
-                <option value="">--</option>
-                {tags[filterKey].sort().map(val => (
-                  <option key={`filter-val-${val}`} value={val}>
-                    {val}
-                  </option>
-                ))}
-              </select>
-            </div>
-          ) : (
-            undefined
-          )}
-        </div>
-
-        <div className="info-block">
-          <h3>Latest APM agent versions</h3>
-          <table>
-            <tr>
-              <th>Language</th>
-              <th>Version</th>
-              <th>Released on</th>
-            </tr>
-            <tbody>
-              {Object.keys(bestAgentVersions)
-                .sort()
-                .map(lng => (
-                  <tr key={`lang-ver-${lng}`}>
-                    <td>{lng}</td>
-                    <td>{bestAgentVersions[lng][0]}</td>
-                    <td>
-                      {agentVersions[lng]
-                        .find(v => v.version === bestAgentVersions[lng][0])
-                        .date.format('MMM Do YYYY')}
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
-        </div>
 
         {loadError ? (
           <h3>
@@ -509,10 +439,53 @@ export default class Groundskeeper extends React.Component {
         )}
 
         {agentData.length ? (
-          <div>
-            <h2>New Relic agent status</h2>
+          <div className="report">
+            <div className="agent-table">
+              <div className="filter-bar">
+                <div className="filter-block">
+                  <label>My Upgrade SLO is</label>
+                  <select value={agentSLO} onChange={updateAgentSLO}>
+                    {Object.values(AGENT_SLO).map(slo => (
+                      <option value={slo} key={`slo-opt-${slo}`}>
+                        {AGENT_SLO_LABELS[slo]}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="filter-block">
+                  <label>Filter applications by tag</label>
+                  <select value={filterKey} onChange={setFilterKey}>
+                    <option value="">--</option>
+                    {Object.keys(tags)
+                      .sort()
+                      .map(key => (
+                        <option key={`filter-tag-${key}`} value={key}>
+                          {key}
+                        </option>
+                      ))}
+                  </select>
+                  {filterKey ? (
+                    <div style={{ display: 'inline' }}>
+                      <label>to value</label>
+                      <select value={filterValue} onChange={setFilterValue}>
+                        <option value="">--</option>
+                        {tags[filterKey].sort().map(val => (
+                          <option key={`filter-val-${val}`} value={val}>
+                            {val}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  ) : (
+                    undefined
+                  )}
+                </div>
+                <div className="filter-block">
+                  {scanner}
+                  <label>Loaded {agentData.length} applications</label>
+                </div>
+              </div>
 
-            <div className="agent-status-block">
               <Tabs defaultValue="tab-2">
                 <TabsItem
                   value="tab-1"
@@ -521,8 +494,8 @@ export default class Groundskeeper extends React.Component {
                   {presentationData.currentTable.data.length > 0 ? (
                     <div>
                       <p>
-                        {presentationData.currentTable.data.length}
-                        apps are up to date with {upToDateLabel}
+                        {presentationData.currentTable.data.length} apps are up
+                        to date with {upToDateLabel}
                       </p>
                       <TableWrapper tableData={presentationData.currentTable} />
                     </div>
@@ -538,8 +511,8 @@ export default class Groundskeeper extends React.Component {
                   {presentationData.multiversionTable.data.length > 0 ? (
                     <div>
                       <p>
-                        {presentationData.multiversionTable.data.length}
-                        apps are running multiple agent versions
+                        {presentationData.multiversionTable.data.length} apps
+                        are running multiple agent versions
                       </p>
                       <TableWrapper
                         tableData={presentationData.multiversionTable}
@@ -557,8 +530,8 @@ export default class Groundskeeper extends React.Component {
                   {presentationData.outdatedTable.data.length > 0 ? (
                     <div>
                       <p>
-                        {presentationData.outdatedTable.data.length}
-                        apps are running outdated agents
+                        {presentationData.outdatedTable.data.length} apps are
+                        running outdated agents
                       </p>
                       <TableWrapper
                         tableData={presentationData.outdatedTable}
@@ -566,12 +539,37 @@ export default class Groundskeeper extends React.Component {
                     </div>
                   ) : (
                     <p>
-                      All apps are up to date (or running multiple agent
-                      versions)
+                      All apps are up to date (or running multiple agent versions)
                     </p>
                   )}
                 </TabsItem>
               </Tabs>
+            </div>
+
+            <div className="agent-versions">
+              <h3>Latest APM agent versions</h3>
+              <table>
+                <tr>
+                  <th>Language</th>
+                  <th>Version</th>
+                  <th>Released on</th>
+                </tr>
+                <tbody>
+                  {Object.keys(bestAgentVersions)
+                    .sort()
+                    .map(lng => (
+                      <tr key={`lang-ver-${lng}`}>
+                        <td>{lng}</td>
+                        <td>{bestAgentVersions[lng][0]}</td>
+                        <td>
+                          {agentVersions[lng]
+                            .find(v => v.version === bestAgentVersions[lng][0])
+                            .date.format('MMM Do YYYY')}
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
             </div>
           </div>
         ) : (

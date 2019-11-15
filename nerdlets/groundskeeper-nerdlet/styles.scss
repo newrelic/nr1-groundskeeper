@@ -6,14 +6,34 @@
         line-height: 16px;
         margin-right: 1em;
     }
-    .info-block {
-        display: inline-block;
-        width: 33%;
-        vertical-align: top;
-        tr, th, td {
-            height: inherit;
+    .filter-bar {
+        border-bottom: 1px solid #edeeee;
+        height: 32px;
+        vertical-align: middle;
+
+        .filter-block {
+            display: inline-block;
+            height: 32px;
+            vertical-align: middle;
+            border-right: 1px solid #edeeee;
+            margin: 0 0.5em;
+            padding: 0 0.5em;
+
+            label {
+                height: 100%;
+                line-height: 100%;
+                vertical-align: baseline;
+            }
+            select {
+                vertical-align: baseline;
+            }
+
+            &:last-of-type {
+                border: none;
+            }
         }
     }
+
     h2, h3 {
         margin-bottom: 0.5em;
     }
@@ -22,18 +42,17 @@
         text-align: right;
     }
 
-    .agent-status-block {
-        margin-top: 1em;
-    }
+    .report {
+        display: flex;
 
-    .account-picker-block {
-        label {
-            margin-right: 1em;
+        .agent-table {
+            margin: 1em 0 0 1em;
+            width: 100%;
         }
 
-        .account-picker {
-            display: inline-block;
-            width: 30em;
+        .agent-versions {
+            margin-left: auto;
+            order: 2;
         }
     }
 
@@ -45,10 +64,6 @@
     }
     .loader-active, .loader-error, .loader-success {
         font-family: monospace;
-    }
-
-    .radio {
-        margin-left: 1em;
     }
 }
 
