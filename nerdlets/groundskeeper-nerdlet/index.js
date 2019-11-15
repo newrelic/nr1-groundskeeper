@@ -24,6 +24,7 @@ const AGENT_SLO = {
   TWO_WEEKS: 14,
   ONE_MONTH: 30,
   SIX_MONTHS: 182,
+  ONE_YEAR: 365,
 };
 
 const AGENT_SLO_LABELS = {
@@ -31,6 +32,7 @@ const AGENT_SLO_LABELS = {
   14: 'agents < 2 weeks old',
   30: 'agents < 1 month old',
   182: 'agents < 6 months old',
+  365: 'agents < 1 year old (Support cutoff)',
 };
 
 export default class Groundskeeper extends React.Component {
@@ -76,8 +78,8 @@ export default class Groundskeeper extends React.Component {
     });
   };
 
-  updateAgentSLO = (event, value) => {
-    const newSlo = parseInt(value);
+  updateAgentSLO = event => {
+    const newSlo = parseInt(event.target.value);
     if (newSlo === this.state.agentSLO) {
       return;
     }
@@ -428,28 +430,13 @@ export default class Groundskeeper extends React.Component {
       <div className="gk-content">
         <div className="info-block">
           <h3>My Upgrade SLO is</h3>
-          <RadioGroup value={`${agentSLO}`} onChange={updateAgentSLO}>
-            <Radio
-              className="radio"
-              value={`${AGENT_SLO.MOST_RECENT}`}
-              label={AGENT_SLO_LABELS[AGENT_SLO.MOST_RECENT]}
-            />
-            <Radio
-              className="radio"
-              value={`${AGENT_SLO.TWO_WEEKS}`}
-              label={AGENT_SLO_LABELS[AGENT_SLO.TWO_WEEKS]}
-            />
-            <Radio
-              className="radio"
-              value={`${AGENT_SLO.ONE_MONTH}`}
-              label={AGENT_SLO_LABELS[AGENT_SLO.ONE_MONTH]}
-            />
-            <Radio
-              className="radio"
-              value={`${AGENT_SLO.SIX_MONTHS}`}
-              label={AGENT_SLO_LABELS[AGENT_SLO.SIX_MONTHS]}
-            />
-          </RadioGroup>
+          <select value={agentSLO} onChange={updateAgentSLO}>
+            {Object.values(AGENT_SLO).map(slo => (
+              <option value={slo} key={`slo-opt-${slo}`}>
+                {AGENT_SLO_LABELS[slo]}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="info-block">
