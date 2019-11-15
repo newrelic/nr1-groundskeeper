@@ -417,7 +417,6 @@ export default class Groundskeeper extends React.Component {
 
     return (
       <div className="gk-content">
-
         {loadError ? (
           <h3>
             An error occurred while loading data. Please check your browser
@@ -528,7 +527,8 @@ export default class Groundskeeper extends React.Component {
                     </div>
                   ) : (
                     <p>
-                      All apps are up to date (or running multiple agent versions)
+                      All apps are up to date (or running multiple agent
+                      versions)
                     </p>
                   )}
                 </TabsItem>
@@ -547,4 +547,3 @@ export default class Groundskeeper extends React.Component {
     );
   }
 }
-
