@@ -1,11 +1,11 @@
 @import './nrds.scss';
+@import '~react-table/react-table.css';
 
 .gk-content {
 
     label {
         font-size: 14px;
         line-height: 16px;
-        margin-right: 1em;
     }
     .filter-bar {
         border-bottom: 1px solid #edeeee;
@@ -68,4 +68,30 @@
     }
 }
 
-@import '~react-table/react-table.css'
+.toolbar-container {
+    box-sizing: border-box;
+    border-top: 1px solid #d5d7d7;
+    border-bottom: 1px solid #e3e4e4;
+    box-shadow: inset 0 2px 0 rgba(0, 0, 0, 0.02);
+    background: #edeeee;
+    padding: 0 16px;
+}
+  
+.toolbar-section1 .toolbar-item:first-child {
+    padding-left: 0;
+}
+
+.toolbar-item {
+    display: flex;
+    justify-content: center;
+    padding: 8px 16px;
+    align-items: center;
+
+    &.has-separator {
+        border-right: 1px dotted #d5d7d7;
+    }
+
+    &:not(.has-separator) {
+        padding-right: 0;
+    }
+}
