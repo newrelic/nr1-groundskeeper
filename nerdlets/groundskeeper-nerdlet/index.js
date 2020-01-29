@@ -464,11 +464,18 @@ export default class Groundskeeper extends React.Component {
                       ))}
                     </Dropdown>
                   </StackItem>
-                  <StackItem className="toolbar-item has-separator">
+                  <StackItem
+                    className={`toolbar-item ${
+                      filterKey ? '' : 'has-separator'
+                    }`}
+                  >
                     <Dropdown
                       label="Filter applications by tag"
                       title={filterKey === undefined ? '--' : filterKey}
                     >
+                      <DropdownItem onClick={() => setFilterKey('')}>
+                        --
+                      </DropdownItem>
                       {Object.keys(tags)
                         .sort()
                         .map(key => (
@@ -500,7 +507,13 @@ export default class Groundskeeper extends React.Component {
                       </Dropdown>
                     </StackItem>
                   )}
-                  <StackItem className="toolbar-item"></StackItem>
+                  <StackItem className="toolbar-item">
+                    <Dropdown label="Filter by state" title>
+                      <DropdownItem>Up to date</DropdownItem>
+                      <DropdownItem>Multiple versions</DropdownItem>
+                      <DropdownItem>Out of date</DropdownItem>
+                    </Dropdown>
+                  </StackItem>
                 </Stack>
               </StackItem>
               <StackItem className="toolbar-section2">
@@ -511,30 +524,14 @@ export default class Groundskeeper extends React.Component {
                   horizontalType={Stack.HORIZONTAL_TYPE.RIGHT}
                 >
                   <StackItem>
-                    <Button type={Button.TYPE.PRIMARY}>Primary button</Button>
+                    {scanner}
+                    <small>Loaded {agentData.length} applications</small>
                   </StackItem>
                 </Stack>
               </StackItem>
             </Stack>
 
             <div className="filter-bar">
-              <div className="filter-block">
-                {filterKey ? (
-                  <div style={{ display: 'inline' }}>
-                    <label>to value</label>
-                    <select value={filterValue} onChange={setFilterValue}>
-                      <option value="">--</option>
-                      {tags[filterKey].sort().map(val => (
-                        <option key={`filter-val-${val}`} value={val}>
-                          {val}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                ) : (
-                  undefined
-                )}
-              </div>
               <div className="filter-block">
                 {scanner}
                 <label>Loaded {agentData.length} applications</label>
