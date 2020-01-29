@@ -1,4 +1,5 @@
 import './styles.scss';
+import { startCase } from 'lodash';
 
 import React from 'react';
 
@@ -44,6 +45,13 @@ const AGENT_SLO_LABELS = {
 };
 
 export default class Groundskeeper extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.setTableState = this.setTableState.bind(this);
+    this.getTableStateCount = this.getTableStateCount.bind(this);
+  }
+
   state = {
     loadingInitialState: true,
     loadError: false,
@@ -57,6 +65,7 @@ export default class Groundskeeper extends React.Component {
     agentVersions: {},
     freshAgentVersions: {},
     scanIsRunning: true,
+    tableState: 'outOfDate',
 
     filterKey: undefined,
     filterValue: undefined,
@@ -98,6 +107,76 @@ export default class Groundskeeper extends React.Component {
       this.recomputeFreshAgentVersions(this.state.agentVersions);
     });
   };
+
+  setTableState(tableState) {
+    this.setState({
+      tableState: tableState,
+    });
+  }
+
+  getTableStateCount(tableState) {
+    if (tableState === 'upToDate') {
+      return this.state.presentationData.currentTable.data.length;
+    } else if (tableState === 'multipleVersions') {
+      return this.state.presentationData.multiversionTable.data.length;
+    } else if (tableState === 'outOfDate') {
+      return this.state.presentationData.outdatedTable.data.length;
+    }
+  }
+
+  renderTableState() {
+    const { presentationData, tableState } = this.state;
+
+    if (tableState === 'upToDate') {
+      return (
+        <div className="table-state-container">
+          {presentationData.currentTable.data.length > 0 ? (
+            <div>
+              <p>
+                {presentationData.currentTable.data.length} apps are up to date
+                with {upToDateLabel}
+              </p>
+              <TableWrapper tableData={presentationData.currentTable} />
+            </div>
+          ) : (
+            <p>No apps are running a recent agent version :(</p>
+          )}
+        </div>
+      );
+    } else if (tableState === 'multipleVersions') {
+      return (
+        <div className="table-state-container">
+          {presentationData.multiversionTable.data.length > 0 ? (
+            <div>
+              <p>
+                {presentationData.multiversionTable.data.length} apps are
+                running multiple agent versions
+              </p>
+              <TableWrapper tableData={presentationData.multiversionTable} />
+            </div>
+          ) : (
+            <p>All apps are running a single agent version</p>
+          )}
+        </div>
+      );
+    } else if (tableState === 'outOfDate') {
+      return (
+        <div className="table-state-container">
+          {presentationData.outdatedTable.data.length > 0 ? (
+            <div>
+              <p>
+                {presentationData.outdatedTable.data.length} apps are running
+                outdated agents
+              </p>
+              <TableWrapper tableData={presentationData.outdatedTable} />
+            </div>
+          ) : (
+            <p>All apps are up to date (or running multiple agent versions)</p>
+          )}
+        </div>
+      );
+    }
+  }
 
   loadInitialData = () => {
     const that = this;
@@ -395,6 +474,8 @@ export default class Groundskeeper extends React.Component {
       updateAgentSLO,
       setFilterKey,
       setFilterValue,
+      setTableState,
+      getTableStateCount,
       state: {
         agentData,
         agentSLO,
@@ -407,6 +488,7 @@ export default class Groundskeeper extends React.Component {
         tags,
         filterKey,
         filterValue,
+        tableState,
       },
     } = this;
 
@@ -508,10 +590,25 @@ export default class Groundskeeper extends React.Component {
                     </StackItem>
                   )}
                   <StackItem className="toolbar-item">
-                    <Dropdown label="Filter by state" title>
-                      <DropdownItem>Up to date</DropdownItem>
-                      <DropdownItem>Multiple versions</DropdownItem>
-                      <DropdownItem>Out of date</DropdownItem>
+                    <Dropdown
+                      label="Filter by state"
+                      title={`${startCase(tableState)} (${getTableStateCount(
+                        tableState
+                      )})`}
+                    >
+                      <DropdownItem onClick={() => setTableState('upToDate')}>
+                        Up to date ({presentationData.currentTable.data.length})
+                      </DropdownItem>
+                      <DropdownItem
+                        onClick={() => setTableState('multipleVersions')}
+                      >
+                        Multiple versions (
+                        {presentationData.multiversionTable.data.length})
+                      </DropdownItem>
+                      <DropdownItem onClick={() => setTableState('outOfDate')}>
+                        Out of date (
+                        {presentationData.outdatedTable.data.length})
+                      </DropdownItem>
                     </Dropdown>
                   </StackItem>
                 </Stack>
@@ -531,76 +628,8 @@ export default class Groundskeeper extends React.Component {
               </StackItem>
             </Stack>
 
-            <div className="filter-bar">
-              <div className="filter-block">
-                {scanner}
-                <label>Loaded {agentData.length} applications</label>
-              </div>
-            </div>
             <div className="report">
-              <div className="agent-table">
-                <Tabs defaultValue="tab-2">
-                  <TabsItem
-                    value="tab-1"
-                    label={`Up to date (${presentationData.currentTable.data.length})`}
-                  >
-                    {presentationData.currentTable.data.length > 0 ? (
-                      <div>
-                        <p>
-                          {presentationData.currentTable.data.length} apps are
-                          up to date with {upToDateLabel}
-                        </p>
-                        <TableWrapper
-                          tableData={presentationData.currentTable}
-                        />
-                      </div>
-                    ) : (
-                      <p>No apps are running a recent agent version :(</p>
-                    )}
-                  </TabsItem>
-
-                  <TabsItem
-                    value="tab-3"
-                    label={`Multiple versions (${presentationData.multiversionTable.data.length})`}
-                  >
-                    {presentationData.multiversionTable.data.length > 0 ? (
-                      <div>
-                        <p>
-                          {presentationData.multiversionTable.data.length} apps
-                          are running multiple agent versions
-                        </p>
-                        <TableWrapper
-                          tableData={presentationData.multiversionTable}
-                        />
-                      </div>
-                    ) : (
-                      <p>All apps are running a single agent version</p>
-                    )}
-                  </TabsItem>
-
-                  <TabsItem
-                    value="tab-2"
-                    label={`Out of date (${presentationData.outdatedTable.data.length})`}
-                  >
-                    {presentationData.outdatedTable.data.length > 0 ? (
-                      <div>
-                        <p>
-                          {presentationData.outdatedTable.data.length} apps are
-                          running outdated agents
-                        </p>
-                        <TableWrapper
-                          tableData={presentationData.outdatedTable}
-                        />
-                      </div>
-                    ) : (
-                      <p>
-                        All apps are up to date (or running multiple agent
-                        versions)
-                      </p>
-                    )}
-                  </TabsItem>
-                </Tabs>
-              </div>
+              <div className="agent-table">{this.renderTableState()}</div>
 
               <AgentVersion
                 agentVersions={agentVersions}
