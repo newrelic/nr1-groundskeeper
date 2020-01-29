@@ -2,7 +2,17 @@ import './styles.scss';
 
 import React from 'react';
 
-import { NerdGraphQuery, Spinner, Tabs, TabsItem } from 'nr1';
+import {
+  NerdGraphQuery,
+  Spinner,
+  Tabs,
+  TabsItem,
+  Stack,
+  StackItem,
+  Dropdown,
+  DropdownItem,
+  Button,
+} from 'nr1';
 
 import TableWrapper from './components/TableWrapper';
 import AgentVersion from './components/AgentVersion';
@@ -76,15 +86,15 @@ export default class Groundskeeper extends React.Component {
     });
   };
 
-  updateAgentSLO = event => {
-    const newSlo = parseInt(event.target.value);
-    if (newSlo === this.state.agentSLO) {
+  updateAgentSLO = slo => {
+    debugger;
+    if (slo === this.state.agentSLO) {
       return;
     }
 
     const newState =
-      Object.values(AGENT_SLO).indexOf(newSlo) >= 0
-        ? { agentSLO: newSlo }
+      Object.values(AGENT_SLO).indexOf(slo) >= 0
+        ? { agentSLO: slo }
         : { agentSLO: AGENT_SLO.MOST_RECENT };
 
     this.setState(newState, () => {
@@ -427,119 +437,168 @@ export default class Groundskeeper extends React.Component {
         )}
 
         {agentData.length ? (
-          <div className="report">
-            <div className="agent-table">
-              <div className="filter-bar">
-                <div className="filter-block">
-                  <label>My Upgrade SLO is</label>
-                  <select value={agentSLO} onChange={updateAgentSLO}>
-                    {Object.values(AGENT_SLO).map(slo => (
-                      <option value={slo} key={`slo-opt-${slo}`}>
-                        {AGENT_SLO_LABELS[slo]}
+          <>
+            <Stack
+              className="toolbar-container"
+              fullWidth
+              gapType={Stack.GAP_TYPE.NONE}
+              horizontalType={Stack.HORIZONTAL_TYPE.FILL_EVENLY}
+              verticalType={Stack.VERTICAL_TYPE.FILL}
+            >
+              <StackItem className="toolbar-section1">
+                <Stack
+                  gapType={Stack.GAP_TYPE.NONE}
+                  fullWidth
+                  verticalType={Stack.VERTICAL_TYPE.FILL}
+                >
+                  <StackItem className="toolbar-item has-separator">
+                    <Dropdown
+                      label="My Upgrade SLO is"
+                      title={AGENT_SLO_LABELS[this.state.agentSLO]}
+                    >
+                      {Object.values(AGENT_SLO).map(slo => (
+                        <DropdownItem
+                          value={slo}
+                          key={`slo-opt-${slo}`}
+                          onClick={() => updateAgentSLO(slo)}
+                        >
+                          {AGENT_SLO_LABELS[slo]}
+                        </DropdownItem>
+                      ))}
+                    </Dropdown>
+                  </StackItem>
+                  <StackItem className="toolbar-item"></StackItem>
+                </Stack>
+              </StackItem>
+              <StackItem className="toolbar-section2">
+                <Stack
+                  fullWidth
+                  fullHeight
+                  verticalType={Stack.VERTICAL_TYPE.CENTER}
+                  horizontalType={Stack.HORIZONTAL_TYPE.RIGHT}
+                >
+                  <StackItem>
+                    <Button type={Button.TYPE.PRIMARY}>Primary button</Button>
+                  </StackItem>
+                </Stack>
+              </StackItem>
+            </Stack>
+
+            <div className="filter-bar">
+              <div className="filter-block">
+                <label>My Upgrade SLO is</label>
+                <select value={agentSLO} onChange={updateAgentSLO}>
+                  {Object.values(AGENT_SLO).map(slo => (
+                    <option value={slo} key={`slo-opt-${slo}`}>
+                      {AGENT_SLO_LABELS[slo]}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="filter-block">
+                <label>Filter applications by tag</label>
+                <select value={filterKey} onChange={setFilterKey}>
+                  <option value="">--</option>
+                  {Object.keys(tags)
+                    .sort()
+                    .map(key => (
+                      <option key={`filter-tag-${key}`} value={key}>
+                        {key}
                       </option>
                     ))}
-                  </select>
-                </div>
-                <div className="filter-block">
-                  <label>Filter applications by tag</label>
-                  <select value={filterKey} onChange={setFilterKey}>
-                    <option value="">--</option>
-                    {Object.keys(tags)
-                      .sort()
-                      .map(key => (
-                        <option key={`filter-tag-${key}`} value={key}>
-                          {key}
+                </select>
+                {filterKey ? (
+                  <div style={{ display: 'inline' }}>
+                    <label>to value</label>
+                    <select value={filterValue} onChange={setFilterValue}>
+                      <option value="">--</option>
+                      {tags[filterKey].sort().map(val => (
+                        <option key={`filter-val-${val}`} value={val}>
+                          {val}
                         </option>
                       ))}
-                  </select>
-                  {filterKey ? (
-                    <div style={{ display: 'inline' }}>
-                      <label>to value</label>
-                      <select value={filterValue} onChange={setFilterValue}>
-                        <option value="">--</option>
-                        {tags[filterKey].sort().map(val => (
-                          <option key={`filter-val-${val}`} value={val}>
-                            {val}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  ) : (
-                    undefined
-                  )}
-                </div>
-                <div className="filter-block">
-                  {scanner}
-                  <label>Loaded {agentData.length} applications</label>
-                </div>
+                    </select>
+                  </div>
+                ) : (
+                  undefined
+                )}
+              </div>
+              <div className="filter-block">
+                {scanner}
+                <label>Loaded {agentData.length} applications</label>
+              </div>
+            </div>
+            <div className="report">
+              <div className="agent-table">
+                <Tabs defaultValue="tab-2">
+                  <TabsItem
+                    value="tab-1"
+                    label={`Up to date (${presentationData.currentTable.data.length})`}
+                  >
+                    {presentationData.currentTable.data.length > 0 ? (
+                      <div>
+                        <p>
+                          {presentationData.currentTable.data.length} apps are
+                          up to date with {upToDateLabel}
+                        </p>
+                        <TableWrapper
+                          tableData={presentationData.currentTable}
+                        />
+                      </div>
+                    ) : (
+                      <p>No apps are running a recent agent version :(</p>
+                    )}
+                  </TabsItem>
+
+                  <TabsItem
+                    value="tab-3"
+                    label={`Multiple versions (${presentationData.multiversionTable.data.length})`}
+                  >
+                    {presentationData.multiversionTable.data.length > 0 ? (
+                      <div>
+                        <p>
+                          {presentationData.multiversionTable.data.length} apps
+                          are running multiple agent versions
+                        </p>
+                        <TableWrapper
+                          tableData={presentationData.multiversionTable}
+                        />
+                      </div>
+                    ) : (
+                      <p>All apps are running a single agent version</p>
+                    )}
+                  </TabsItem>
+
+                  <TabsItem
+                    value="tab-2"
+                    label={`Out of date (${presentationData.outdatedTable.data.length})`}
+                  >
+                    {presentationData.outdatedTable.data.length > 0 ? (
+                      <div>
+                        <p>
+                          {presentationData.outdatedTable.data.length} apps are
+                          running outdated agents
+                        </p>
+                        <TableWrapper
+                          tableData={presentationData.outdatedTable}
+                        />
+                      </div>
+                    ) : (
+                      <p>
+                        All apps are up to date (or running multiple agent
+                        versions)
+                      </p>
+                    )}
+                  </TabsItem>
+                </Tabs>
               </div>
 
-              <Tabs defaultValue="tab-2">
-                <TabsItem
-                  value="tab-1"
-                  label={`Up to date (${presentationData.currentTable.data.length})`}
-                >
-                  {presentationData.currentTable.data.length > 0 ? (
-                    <div>
-                      <p>
-                        {presentationData.currentTable.data.length} apps are up
-                        to date with {upToDateLabel}
-                      </p>
-                      <TableWrapper tableData={presentationData.currentTable} />
-                    </div>
-                  ) : (
-                    <p>No apps are running a recent agent version :(</p>
-                  )}
-                </TabsItem>
-
-                <TabsItem
-                  value="tab-3"
-                  label={`Multiple versions (${presentationData.multiversionTable.data.length})`}
-                >
-                  {presentationData.multiversionTable.data.length > 0 ? (
-                    <div>
-                      <p>
-                        {presentationData.multiversionTable.data.length} apps
-                        are running multiple agent versions
-                      </p>
-                      <TableWrapper
-                        tableData={presentationData.multiversionTable}
-                      />
-                    </div>
-                  ) : (
-                    <p>All apps are running a single agent version</p>
-                  )}
-                </TabsItem>
-
-                <TabsItem
-                  value="tab-2"
-                  label={`Out of date (${presentationData.outdatedTable.data.length})`}
-                >
-                  {presentationData.outdatedTable.data.length > 0 ? (
-                    <div>
-                      <p>
-                        {presentationData.outdatedTable.data.length} apps are
-                        running outdated agents
-                      </p>
-                      <TableWrapper
-                        tableData={presentationData.outdatedTable}
-                      />
-                    </div>
-                  ) : (
-                    <p>
-                      All apps are up to date (or running multiple agent
-                      versions)
-                    </p>
-                  )}
-                </TabsItem>
-              </Tabs>
+              <AgentVersion
+                agentVersions={agentVersions}
+                freshAgentVersions={freshAgentVersions}
+              />
             </div>
-
-            <AgentVersion
-              agentVersions={agentVersions}
-              freshAgentVersions={freshAgentVersions}
-            />
-          </div>
+          </>
         ) : (
           <Spinner />
         )}
