@@ -69,8 +69,7 @@ export default class Groundskeeper extends React.Component {
   loaders = undefined;
   initialEntityDataSet = false;
 
-  setFilterKey = event => {
-    const key = event.target.value;
+  setFilterKey = key => {
     this.setState(
       { filterKey: key || undefined, filterValue: undefined },
       () => {
@@ -79,15 +78,13 @@ export default class Groundskeeper extends React.Component {
     );
   };
 
-  setFilterValue = event => {
-    const val = event.target.value;
+  setFilterValue = val => {
     this.setState({ filterValue: val || undefined }, () => {
       this.recomputePresentation(this.state.agentData);
     });
   };
 
   updateAgentSLO = slo => {
-    debugger;
     if (slo === this.state.agentSLO) {
       return;
     }
@@ -467,6 +464,42 @@ export default class Groundskeeper extends React.Component {
                       ))}
                     </Dropdown>
                   </StackItem>
+                  <StackItem className="toolbar-item has-separator">
+                    <Dropdown
+                      label="Filter applications by tag"
+                      title={filterKey === undefined ? '--' : filterKey}
+                    >
+                      {Object.keys(tags)
+                        .sort()
+                        .map(key => (
+                          <DropdownItem
+                            key={`filter-tag-${key}`}
+                            value={key}
+                            onClick={() => setFilterKey(key)}
+                          >
+                            {key}
+                          </DropdownItem>
+                        ))}
+                    </Dropdown>
+                  </StackItem>
+                  {filterKey && (
+                    <StackItem className="toolbar-item has-separator">
+                      <Dropdown
+                        label="to value"
+                        title={filterValue !== undefined ? filterValue : '--'}
+                      >
+                        {tags[filterKey].sort().map(val => (
+                          <DropdownItem
+                            key={`filter-val-${val}`}
+                            value={val}
+                            onClick={() => setFilterValue(val)}
+                          >
+                            {val}
+                          </DropdownItem>
+                        ))}
+                      </Dropdown>
+                    </StackItem>
+                  )}
                   <StackItem className="toolbar-item"></StackItem>
                 </Stack>
               </StackItem>
@@ -486,27 +519,6 @@ export default class Groundskeeper extends React.Component {
 
             <div className="filter-bar">
               <div className="filter-block">
-                <label>My Upgrade SLO is</label>
-                <select value={agentSLO} onChange={updateAgentSLO}>
-                  {Object.values(AGENT_SLO).map(slo => (
-                    <option value={slo} key={`slo-opt-${slo}`}>
-                      {AGENT_SLO_LABELS[slo]}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="filter-block">
-                <label>Filter applications by tag</label>
-                <select value={filterKey} onChange={setFilterKey}>
-                  <option value="">--</option>
-                  {Object.keys(tags)
-                    .sort()
-                    .map(key => (
-                      <option key={`filter-tag-${key}`} value={key}>
-                        {key}
-                      </option>
-                    ))}
-                </select>
                 {filterKey ? (
                   <div style={{ display: 'inline' }}>
                     <label>to value</label>
