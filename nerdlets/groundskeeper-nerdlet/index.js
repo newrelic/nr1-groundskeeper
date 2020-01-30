@@ -1,5 +1,6 @@
 import './styles.scss';
 import { startCase } from 'lodash';
+import BootstrapTable from 'react-bootstrap-table-next';
 
 import React from 'react';
 
@@ -136,7 +137,11 @@ export default class Groundskeeper extends React.Component {
                 {presentationData.currentTable.data.length} apps are up to date
                 with {upToDateLabel}
               </p>
-              <TableWrapper tableData={presentationData.currentTable} />
+              <BootstrapTable
+                keyField="key"
+                data={presentationData.currentTable.data}
+                columns={presentationData.currentTable.columns}
+              />
             </div>
           ) : (
             <p>No apps are running a recent agent version :(</p>
@@ -152,7 +157,11 @@ export default class Groundskeeper extends React.Component {
                 {presentationData.multiversionTable.data.length} apps are
                 running multiple agent versions
               </p>
-              <TableWrapper tableData={presentationData.multiversionTable} />
+              <BootstrapTable
+                keyField="key"
+                data={presentationData.multiversionTable.data}
+                columns={presentationData.multiversionTable.columns}
+              />
             </div>
           ) : (
             <p>All apps are running a single agent version</p>
@@ -168,7 +177,11 @@ export default class Groundskeeper extends React.Component {
                 {presentationData.outdatedTable.data.length} apps are running
                 outdated agents
               </p>
-              <TableWrapper tableData={presentationData.outdatedTable} />
+              <BootstrapTable
+                keyField="key"
+                data={presentationData.outdatedTable.data}
+                columns={presentationData.outdatedTable.columns}
+              />
             </div>
           ) : (
             <p>All apps are up to date (or running multiple agent versions)</p>
@@ -429,8 +442,9 @@ export default class Groundskeeper extends React.Component {
           text: 'Agent Version',
         },
       ],
-      data: analysis.current.map(info => {
+      data: analysis.current.map((info, index) => {
         return {
+          key: index,
           account: accounts[info.accountId] || info.accountId,
           appId: info.appId,
           appName: info.appName,
@@ -479,10 +493,11 @@ export default class Groundskeeper extends React.Component {
           if (d > 0) return 1;
           return 0;
         })
-        .map(info => {
+        .map((info, index) => {
           const age = agentAge(info, agentVersions);
           const ageText = age ? `${now.diff(age, 'weeks')} weeks old` : '?';
           return {
+            key: index,
             agentAge: ageText,
             account: accounts[info.accountId] || info.accountId,
             appId: linkedAppId(info.accountId, info.appId),
@@ -515,8 +530,9 @@ export default class Groundskeeper extends React.Component {
           text: 'Agent Versions',
         },
       ],
-      data: analysis.multipleVersions.map(info => {
+      data: analysis.multipleVersions.map((info, index) => {
         return {
+          key: index,
           account: accounts[info.accountId] || info.accountId,
           appId: linkedAppId(info.accountId, info.appId),
           appName: info.appName,
