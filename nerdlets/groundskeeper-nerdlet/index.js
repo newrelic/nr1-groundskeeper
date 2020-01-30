@@ -407,26 +407,65 @@ export default class Groundskeeper extends React.Component {
     });
 
     analysis.currentTable = {
-      columns: ['Account', 'AppId', 'App name', 'Language', 'Agent Version'],
+      columns: [
+        {
+          dataField: 'account',
+          text: 'Account',
+        },
+        {
+          dataField: 'appId',
+          text: 'AppId',
+        },
+        {
+          dataField: 'appName',
+          text: 'App name',
+        },
+        {
+          dataField: 'language',
+          text: 'Language',
+        },
+        {
+          dataField: 'agentVersion',
+          text: 'Agent Version',
+        },
+      ],
       data: analysis.current.map(info => {
-        return [
-          accounts[info.accountId] || info.accountId,
-          linkedAppId(info.accountId, info.appId),
-          info.appName,
-          info.language,
-          info.agentVersions.join(', '),
-        ];
+        return {
+          account: accounts[info.accountId] || info.accountId,
+          appId: info.appId,
+          appName: info.appName,
+          language: info.language,
+          agentVersion: info.agentVersions.join(', '),
+        };
       }),
     };
     const now = moment();
     analysis.outdatedTable = {
       columns: [
-        'Agent age',
-        'Account',
-        'AppId',
-        'App name',
-        'Language',
-        'Agent Version',
+        {
+          dataField: 'agentAge',
+          text: 'Agent age',
+        },
+        {
+          dataField: 'account',
+          text: 'Account',
+        },
+        {
+          dataField: 'appId',
+          text: 'AppId',
+        },
+        {
+          dataField: 'appName',
+          text: 'App name',
+        },
+        {
+          dataField: 'language',
+          text: 'Language',
+        },
+        {
+          dataField: 'agentVersion',
+          text: 'Agent Version',
+        },
       ],
       data: analysis.old
         .sort((a, b) => {
@@ -443,26 +482,47 @@ export default class Groundskeeper extends React.Component {
         .map(info => {
           const age = agentAge(info, agentVersions);
           const ageText = age ? `${now.diff(age, 'weeks')} weeks old` : '?';
-          return [
-            ageText,
-            accounts[info.accountId] || info.accountId,
-            linkedAppId(info.accountId, info.appId),
-            info.appName,
-            info.language,
-            info.agentVersions.join(', '),
-          ];
+          return {
+            agentAge: ageText,
+            account: accounts[info.accountId] || info.accountId,
+            appId: linkedAppId(info.accountId, info.appId),
+            appName: info.appName,
+            language: info.language,
+            agentVersion: info.agentVersions.join(', '),
+          };
         }),
     };
     analysis.multiversionTable = {
-      columns: ['Account', 'AppId', 'App name', 'Language', 'Agent Versions'],
+      columns: [
+        {
+          dataField: 'account',
+          text: 'Account',
+        },
+        {
+          dataField: 'appId',
+          text: 'AppId',
+        },
+        {
+          dataField: 'appName',
+          text: 'App name',
+        },
+        {
+          dataField: 'language',
+          text: 'Language',
+        },
+        {
+          dataField: 'agentVersions',
+          text: 'Agent Versions',
+        },
+      ],
       data: analysis.multipleVersions.map(info => {
-        return [
-          accounts[info.accountId] || info.accountId,
-          linkedAppId(info.accountId, info.appId),
-          info.appName,
-          info.language,
-          info.agentVersions.join(', '),
-        ];
+        return {
+          account: accounts[info.accountId] || info.accountId,
+          appId: linkedAppId(info.accountId, info.appId),
+          appName: info.appName,
+          language: info.language,
+          agentVersions: info.agentVersions.join(', '),
+        };
       }),
     };
 
