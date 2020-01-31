@@ -8,13 +8,12 @@ import React from 'react';
 import {
   NerdGraphQuery,
   Spinner,
-  Tabs,
-  TabsItem,
   Stack,
   StackItem,
   Dropdown,
   DropdownItem,
-  Button,
+  Grid,
+  GridItem,
 } from 'nr1';
 
 import TableWrapper from './components/TableWrapper';
@@ -730,14 +729,15 @@ export default class Groundskeeper extends React.Component {
               </StackItem>
             </Stack>
 
-            <div className="report">
-              <div className="agent-table">{this.renderTableState()}</div>
-
-              <AgentVersion
-                agentVersions={agentVersions}
-                freshAgentVersions={freshAgentVersions}
-              />
-            </div>
+            <Grid>
+              <GridItem columnSpan={9}>{this.renderTableState()}</GridItem>
+              <GridItem columnSpan={3}>
+                <AgentVersion
+                  agentVersions={agentVersions}
+                  freshAgentVersions={freshAgentVersions}
+                />
+              </GridItem>
+            </Grid>
           </>
         ) : (
           <Spinner />
