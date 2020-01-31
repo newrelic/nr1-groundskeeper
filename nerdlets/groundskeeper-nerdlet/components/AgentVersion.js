@@ -14,14 +14,17 @@ export default class AgentVersion extends React.PureComponent {
       {
         dataField: 'language',
         text: 'Language',
+        sort: true,
       },
       {
         dataField: 'version',
         text: 'Version',
+        sort: true,
       },
       {
         dataField: 'releasedOn',
         text: 'Released On',
+        sort: true,
       },
     ];
 

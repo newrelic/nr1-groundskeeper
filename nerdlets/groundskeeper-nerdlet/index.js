@@ -134,10 +134,6 @@ export default class Groundskeeper extends React.Component {
         <div className="table-state-container">
           {presentationData.currentTable.data.length > 0 ? (
             <div>
-              <p>
-                {presentationData.currentTable.data.length} apps are up to date
-                with {upToDateLabel}
-              </p>
               <ToolkitProvider
                 keyField="key"
                 data={presentationData.currentTable.data}
@@ -162,10 +158,6 @@ export default class Groundskeeper extends React.Component {
         <div className="table-state-container">
           {presentationData.multiversionTable.data.length > 0 ? (
             <div>
-              <p>
-                {presentationData.multiversionTable.data.length} apps are
-                running multiple agent versions
-              </p>
               <ToolkitProvider
                 keyField="key"
                 data={presentationData.multiversionTable.data}
@@ -190,10 +182,6 @@ export default class Groundskeeper extends React.Component {
         <div className="table-state-container">
           {presentationData.outdatedTable.data.length > 0 ? (
             <div>
-              <p>
-                {presentationData.outdatedTable.data.length} apps are running
-                outdated agents
-              </p>
               <ToolkitProvider
                 keyField="key"
                 data={presentationData.outdatedTable.data}
@@ -449,22 +437,27 @@ export default class Groundskeeper extends React.Component {
         {
           dataField: 'account',
           text: 'Account',
+          sort: true,
         },
         {
           dataField: 'appId',
           text: 'AppId',
+          sort: true,
         },
         {
           dataField: 'appName',
           text: 'App name',
+          sort: true,
         },
         {
           dataField: 'language',
           text: 'Language',
+          sort: true,
         },
         {
           dataField: 'agentVersion',
           text: 'Agent Version',
+          sort: true,
         },
       ],
       data: analysis.current.map((info, index) => {
@@ -484,26 +477,32 @@ export default class Groundskeeper extends React.Component {
         {
           dataField: 'agentAge',
           text: 'Agent age',
+          sort: true,
         },
         {
           dataField: 'account',
           text: 'Account',
+          sort: true,
         },
         {
           dataField: 'appId',
           text: 'AppId',
+          sort: true,
         },
         {
           dataField: 'appName',
           text: 'App name',
+          sort: true,
         },
         {
           dataField: 'language',
           text: 'Language',
+          sort: true,
         },
         {
           dataField: 'agentVersion',
           text: 'Agent Version',
+          sort: true,
         },
       ],
       data: analysis.old
@@ -537,22 +536,27 @@ export default class Groundskeeper extends React.Component {
         {
           dataField: 'account',
           text: 'Account',
+          sort: true,
         },
         {
           dataField: 'appId',
           text: 'AppId',
+          sort: true,
         },
         {
           dataField: 'appName',
           text: 'App name',
+          sort: true,
         },
         {
           dataField: 'language',
           text: 'Language',
+          sort: true,
         },
         {
           dataField: 'agentVersions',
           text: 'Agent Versions',
+          sort: true,
         },
       ],
       data: analysis.multipleVersions.map((info, index) => {
@@ -728,8 +732,31 @@ export default class Groundskeeper extends React.Component {
                 </Stack>
               </StackItem>
             </Stack>
-
-            <Grid>
+            <p
+              className={`${
+                tableState !== 'outOfDate' ? 'hidden' : ''
+              } table-state-count`}
+            >
+              {presentationData.outdatedTable.data.length} apps are running
+              outdated agents
+            </p>
+            <p
+              className={`${
+                tableState !== 'multipleVersions' ? 'hidden' : ''
+              } table-state-count`}
+            >
+              {presentationData.multiversionTable.data.length} apps are running
+              multiple agent versions
+            </p>
+            <p
+              className={`${
+                tableState !== 'upToDate' ? 'hidden' : ''
+              } table-state-count`}
+            >
+              {presentationData.currentTable.data.length} apps are up to date
+              with {upToDateLabel}
+            </p>
+            <Grid spacingType={[Grid.SPACING_TYPE.LARGE]}>
               <GridItem columnSpan={9}>{this.renderTableState()}</GridItem>
               <GridItem columnSpan={3}>
                 <AgentVersion

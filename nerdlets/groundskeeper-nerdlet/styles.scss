@@ -6,6 +6,7 @@
         font-size: 14px;
         line-height: 16px;
     }
+
     .filter-bar {
         border-bottom: 1px solid #edeeee;
         height: 32px;
@@ -24,6 +25,7 @@
                 line-height: 100%;
                 vertical-align: baseline;
             }
+
             select {
                 vertical-align: baseline;
             }
@@ -34,7 +36,8 @@
         }
     }
 
-    h2, h3 {
+    h2,
+    h3 {
         margin-bottom: 0.5em;
     }
 
@@ -59,10 +62,14 @@
     .loader-error {
         color: red;
     }
+
     .loader-success {
         color: green;
     }
-    .loader-active, .loader-error, .loader-success {
+
+    .loader-active,
+    .loader-error,
+    .loader-success {
         font-family: monospace;
     }
 }
@@ -76,7 +83,7 @@
     background: #edeeee;
     padding: 0 16px;
 }
-  
+
 .toolbar-section1 .toolbar-item:first-child {
     padding-left: 0;
 }
@@ -97,36 +104,37 @@
 }
 
 .react-bootstrap-table .table {
-    width:100%; 
+    width: 100%;
     border-radius: 0 0 2px 2px;
+    overflow: hidden;
     box-shadow: 0px 1px 0px rgba(0, 75, 82, 0.11), 0px 3px 0px rgba(0, 49, 54, 0.04), 0px 1px 3px rgba(0, 134, 148, 0.03), 0px 8px 7px rgba(70, 107, 111, 0.05);
-  }
+}
 
-tr:nth-child(2n) > td:not(.u-unstyledTd) {
+tr:nth-child(2n)>td:not(.u-unstyledTd) {
     background-color: #fff;
 }
 
 td:not(.u-unstyledTd) {
-    cursor:default;
-    font-weight:400;
+    cursor: default;
+    font-weight: 400;
     font-size: 13px;
     color: #2a3434;
 }
 
 th:not(.u-unstyledTh) {
-    background-color:#fff;
-    font-size:12px;
-    font-weight:400;
-    text-transform:uppercase;
+    background-color: #fff;
+    font-size: 12px;
+    font-weight: 400;
+    text-transform: uppercase;
     letter-spacing: .5px;
     color: #464e4e;
 }
 
 tr:nth-child(2n)>td:not(.u-unstyledTd) {
-    background-color:#ffffff;
+    background-color: #ffffff;
 }
 
-tr > td:not(.u-unstyleTd) {
+tr>td:not(.u-unstyleTd) {
     height: 42px;
     box-shadow: inset 0 1px 0 #F4F5F5;
 }
@@ -135,22 +143,86 @@ tr > td:not(.u-unstyleTd) {
     display: block;
     background-color: #fff;
     border-radius: 2px 2px 0 0;
-    height: 42px;
     padding: 0;
     box-shadow: inset 0 -1px 0 #F4F5F5;
-    background-image:  url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAdCAYAAAC9pNwMAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAMZSURBVHgBvVfNTlpBFD4zFySamOILtPgE1T5A/XkC2hdQ61JIRetWwG1TUYkLN4VuXTQ+gdDuG2HropJubSJJCQYv955+Z4SUUnovV0q/hMzMvTPnm5lzz3cOijyQy+cXHaK4VmqBmGOkVBRtHW2NiSqa+UMqmSzTA6D+RugqlcbLRfID85Vqt5dTqVSNAkD3P9g/Pk6zUiVDitMxc9ZhXlK2PbOVSChpZYx3m/jVcPpZDoe/5rCOAkD1k8JY5v4gnN1OJjNei3OFArmNRkbhdmQJ2mxqYyNLQYhB+hpsB3JKXN0Srq4yjIHT01OqXV/Ph5jPMXwE329tJxIHfusMcS6Xi+G6rqTvMr94k0yeUQAUcPLvjcaSpZSQ38Adz/x8bnzshEKZzi6KQUkFa2trZE1OlnFbhxjOuOHwrt8ajdNGES4rZmTbQ/lnEFLr66wcx6zHAeJi12u+xmkXpQPflIOGRC/wYdFEOFwXOxhGXcuKe83X2N2c6TF/ohHRikRIMVdlH9hJjHyIY50t12lERFotRKEhJq31Y6+5vwTEdUcmDgINn9SkAx/N0Yi4m5oSQ0+k77ruN/IhNkIB2XlKI2Ki2RTfLtybUxdec7XVbpfR1kWb/ULAC6VSie5sO9ZNLBARz49VI4Tq+KKNaCDw06JCD8GXy0vlWJZJFCJExq4XsZnYbkvg32DBpkif6G8QnJycwMF38Y4QMYRoz2+NIRbhYNc1k6G3H0X0c0OeXDbZbDbnYei9jBFOe8MI0W9p8V0+301x8nVmQxMTWbq95enpaVpdXTXqBMNULBaNPsvmuNnM4GG6Q+qbSgcS95DvmneS6IkOMalKjlOhSKROrVaULGuOtX6OmNk05VAPqVz7D1y7X7IZXPpImgyFzjuyp7wMiDYjlWZ3UHsdHR2RDc8prffxvIC8/CoQcRdvUXtZRCskMd5X7KH9jELwbKen2JOQqlQqs91Ne5F7Ej8EA8hL2rZf9ofXPyceRI5HFxCU5V7ysRAPQz42Yj/ysRJ7kY+d+A9ylMDyz+O/EHfJq9VqDEITlZr9J1WCrT+pCM/qAAAAAElFTkSuQmCC');
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAdCAYAAAC9pNwMAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAMZSURBVHgBvVfNTlpBFD4zFySamOILtPgE1T5A/XkC2hdQ61JIRetWwG1TUYkLN4VuXTQ+gdDuG2HropJubSJJCQYv955+Z4SUUnovV0q/hMzMvTPnm5lzz3cOijyQy+cXHaK4VmqBmGOkVBRtHW2NiSqa+UMqmSzTA6D+RugqlcbLRfID85Vqt5dTqVSNAkD3P9g/Pk6zUiVDitMxc9ZhXlK2PbOVSChpZYx3m/jVcPpZDoe/5rCOAkD1k8JY5v4gnN1OJjNei3OFArmNRkbhdmQJ2mxqYyNLQYhB+hpsB3JKXN0Srq4yjIHT01OqXV/Ph5jPMXwE329tJxIHfusMcS6Xi+G6rqTvMr94k0yeUQAUcPLvjcaSpZSQ38Adz/x8bnzshEKZzi6KQUkFa2trZE1OlnFbhxjOuOHwrt8ajdNGES4rZmTbQ/lnEFLr66wcx6zHAeJi12u+xmkXpQPflIOGRC/wYdFEOFwXOxhGXcuKe83X2N2c6TF/ohHRikRIMVdlH9hJjHyIY50t12lERFotRKEhJq31Y6+5vwTEdUcmDgINn9SkAx/N0Yi4m5oSQ0+k77ruN/IhNkIB2XlKI2Ki2RTfLtybUxdec7XVbpfR1kWb/ULAC6VSie5sO9ZNLBARz49VI4Tq+KKNaCDw06JCD8GXy0vlWJZJFCJExq4XsZnYbkvg32DBpkif6G8QnJycwMF38Y4QMYRoz2+NIRbhYNc1k6G3H0X0c0OeXDbZbDbnYei9jBFOe8MI0W9p8V0+301x8nVmQxMTWbq95enpaVpdXTXqBMNULBaNPsvmuNnM4GG6Q+qbSgcS95DvmneS6IkOMalKjlOhSKROrVaULGuOtX6OmNk05VAPqVz7D1y7X7IZXPpImgyFzjuyp7wMiDYjlWZ3UHsdHR2RDc8prffxvIC8/CoQcRdvUXtZRCskMd5X7KH9jELwbKen2JOQqlQqs91Ne5F7Ej8EA8hL2rZf9ofXPyceRI5HFxCU5V7ysRAPQz42Yj/ysRJ7kY+d+A9ylMDyz+O/EHfJq9VqDEITlZr9J1WCrT+pCM/qAAAAAElFTkSuQmCC');
     background-repeat: no-repeat;
-    background-position: 16px 14px;
+    background-position: 16px 18px;
     background-size: 14px 14px;
 
     input#search-bar-0:not(.u-unstyledInput).form-control {
-        height: 42px;
-        padding: 8px 16px 8px 40px;
+        padding: 17px 16px 16px 40px;
         box-sizing: border-box;
         box-shadow: none;
     }
 }
-   
+
 .search-label .sr-only {
     display: none;
+}
+
+.react-bootstrap-table-sort-order {
+    position: relative;
+}
+
+.sortable {
+    .caret {
+        display: inline-block;
+        position: relative;
+        left: 6px;
+        top: -2px;
+        color: #8e9494;
+
+        width: 0;
+        height: 0;
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+
+        border-bottom: 4px solid #464e4e;
+        visibility: hidden;
+    }
+
+    &:hover {
+        background-color: #fafbfb;
+        cursor: pointer;
+    }
+}
+
+.react-bootstrap-table-sort-order {
+    display: inline-block;
+    width: 16px;
+}
+
+.react-bootstrap-table-sort-order .caret {
+    visibility: visible;
+}
+
+.react-bootstrap-table-sort-order.dropup .caret {
+    border-bottom: none;
+    border-top: 4px solid #464e4e;
+}
+
+.agent-versions h3 {
+    background-color: #fff;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    /*! height: 42px; */
+    /*! line-height: 42px; */
+    padding: 12px 0;
+    font-weight: 600;
+    border-bottom: 1px solid #f4f5f5;
+    color: #2a3434;
+    text-align: center;
+}
+
+.hidden {
+    display: none;
+}
+
+.table-state-count {
+    text-align: center;
+    color: #8e9494;
+    margin-top: 7px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
