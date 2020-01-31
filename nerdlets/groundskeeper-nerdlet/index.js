@@ -1,6 +1,7 @@
 import './styles.scss';
 import { startCase } from 'lodash';
 import BootstrapTable from 'react-bootstrap-table-next';
+import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 
 import React from 'react';
 
@@ -127,6 +128,7 @@ export default class Groundskeeper extends React.Component {
 
   renderTableState() {
     const { presentationData, tableState } = this.state;
+    const { SearchBar } = Search;
 
     if (tableState === 'upToDate') {
       return (
@@ -137,11 +139,19 @@ export default class Groundskeeper extends React.Component {
                 {presentationData.currentTable.data.length} apps are up to date
                 with {upToDateLabel}
               </p>
-              <BootstrapTable
+              <ToolkitProvider
                 keyField="key"
                 data={presentationData.currentTable.data}
                 columns={presentationData.currentTable.columns}
-              />
+                search
+              >
+                {props => (
+                  <div>
+                    <SearchBar {...props.searchProps} />
+                    <BootstrapTable {...props.baseProps} />
+                  </div>
+                )}
+              </ToolkitProvider>
             </div>
           ) : (
             <p>No apps are running a recent agent version :(</p>
@@ -157,11 +167,19 @@ export default class Groundskeeper extends React.Component {
                 {presentationData.multiversionTable.data.length} apps are
                 running multiple agent versions
               </p>
-              <BootstrapTable
+              <ToolkitProvider
                 keyField="key"
                 data={presentationData.multiversionTable.data}
                 columns={presentationData.multiversionTable.columns}
-              />
+                search
+              >
+                {props => (
+                  <div>
+                    <SearchBar {...props.searchProps} />
+                    <BootstrapTable {...props.baseProps} />
+                  </div>
+                )}
+              </ToolkitProvider>
             </div>
           ) : (
             <p>All apps are running a single agent version</p>
@@ -177,11 +195,19 @@ export default class Groundskeeper extends React.Component {
                 {presentationData.outdatedTable.data.length} apps are running
                 outdated agents
               </p>
-              <BootstrapTable
+              <ToolkitProvider
                 keyField="key"
                 data={presentationData.outdatedTable.data}
                 columns={presentationData.outdatedTable.columns}
-              />
+                search
+              >
+                {props => (
+                  <div>
+                    <SearchBar {...props.searchProps} />
+                    <BootstrapTable {...props.baseProps} />
+                  </div>
+                )}
+              </ToolkitProvider>
             </div>
           ) : (
             <p>All apps are up to date (or running multiple agent versions)</p>
