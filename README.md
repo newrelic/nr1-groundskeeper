@@ -1,12 +1,14 @@
-# NR1 Agent Groundskeeper
+# Agent Groundskeeper
 
 ![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/newrelic/nr1-groundskeeper?include_prereleases&sort=semver) [![Snyk](https://snyk.io/test/github/newrelic/nr1-groundskeeper/badge.svg)](https://snyk.io/test/github/newrelic/nr1-groundskeeper)
 
 ## Usage
 
-Agent Groundskeeper gives you a live view of what versions of New Relic APM agents are running across your entire software estate.
+Agent Groundskeeper allows you to see the latest agent versions, compared to the versions currently running based on your upgrade SLO.
 
-See which services are up to date (with various upgrade SLO time windows), which are out of date, and which have instances deployed w/ different versions. Quickly and easily zoom in on your estate by filtering on NR1 tags, and search by account, language, and app name.
+Quickly and easily zoom in on your environment by filtering on tags and searching by account, language and application.
+
+This application will help you keep up to date with the latest agent versions and benefit from new capabilities being released.
 
 ![Screenshot #1](screenshots/screenshot_01.png)
 
@@ -14,10 +16,9 @@ See which services are up to date (with various upgrade SLO time windows), which
 
 This project is distributed under the [Apache 2 license](LICENSE).
 
-## What do you need to make this work?
+## Dependencies
 
-1. [New Relic APM Agent(s) installed](https://newrelic.com/products/apm) and the related access to [New Relic One](https://newrelic.com/platform).
-2. (Recommended) Add customer-defined `labels` to your APM applications to make use of NR1 tag filtering. See our documentation [here](https://docs.newrelic.com/docs/apm/new-relic-apm/guides/new-relic-apm-best-practices-guide#labels).
+Requires [`New Relic APM`](https://newrelic.com/products/application-monitoring).
 
 ## Getting started
 
@@ -53,19 +54,15 @@ nr1 nerdpack:subscribe [-c [DEV|BETA|STABLE]] [--profile=your_profile_name]
 
 Visit [https://one.newrelic.com](https://one.newrelic.com), navigate to the Nerdpack, and :sparkles:
 
-## Support
+## Community Support
 
-New Relic has open-sourced this project. This project is provided AS-IS WITHOUT WARRANTY OR SUPPORT, although you can report issues and contribute to the project here on GitHub.
-
-_Please do not report issues with this software to New Relic Global Technical Support._
-
-### Community
-
-New Relic hosts and moderates an online forum where customers can interact with New Relic employees as well as other customers to get help and share best practices. Like all official New Relic open source projects, there's a related Community topic in the New Relic Explorer's Hub. You can find this project's topic/threads here:
+New Relic hosts and moderates an online forum where you can interact with New Relic employees as well as other customers to get help and share best practices. Like all New Relic open source community projects, there's a related topic in the New Relic Explorers Hub. You can find this project's topic/threads here:
 
 [https://discuss.newrelic.com/t/groundskeeper-nerdpack/84168](https://discuss.newrelic.com/t/groundskeeper-nerdpack/84168)
 
-### Issues / Enhancement Requests
+Please do not report issues with Agent Groundskeeper to New Relic Global Technical Support. Instead, visit the [`Explorers Hub`](https://discuss.newrelic.com/c/build-on-new-relic) for troubleshooting and best-practices.
+
+## Issues / Enhancement Requests
 
 Issues and enhancement requests can be submitted in the [Issues tab of this repository](../../issues). Please search for and review the existing open issues before submitting a new issue.
 
