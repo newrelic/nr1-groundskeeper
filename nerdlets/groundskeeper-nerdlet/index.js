@@ -251,9 +251,7 @@ export default class Groundskeeper extends React.Component {
         this.recomputePresentation(agentData);
       }
     } else if (error) {
-      /* eslint-disable no-console */
-      console.log(`Error fetching entity status`, error);
-      /* eslint-enable no-console */
+      console.log(`Error fetching entity status`, error); // eslint-disable-line no-console
       this.setState({ loadError: true });
     }
   };
@@ -299,6 +297,7 @@ export default class Groundskeeper extends React.Component {
       current: [],
       old: [],
       multipleVersions: [],
+      noVersions: [],
     };
 
     agentData.forEach(info => {
@@ -311,7 +310,14 @@ export default class Groundskeeper extends React.Component {
         if (!tag || tag.values.indexOf(filterValue) < 0) return;
       }
 
-      if (info.agentVersions.length > 1) {
+      const originalVersions = info.agentVersions || [];
+      info.agentVersions = originalVersions.filter(
+        v => typeof v === 'string' && v.length > 0
+      );
+      if (info.agentVersions.length < 1) {
+        console.log(`No valid versions found for ${info.appName} `, originalVersions) // eslint-disable-line prettier/prettier, no-console
+        analysis.noVersions.push(info);
+      } else if (info.agentVersions.length > 1) {
         analysis.multipleVersions.push(info);
       } else if (agentVersionInList(info.agentVersions[0], freshVersions)) {
         analysis.current.push(info);
@@ -320,6 +326,17 @@ export default class Groundskeeper extends React.Component {
       }
     });
 
+    analysis.noVersionsTable = {
+      columns: ['Account', 'AppId', 'App name', 'Language'],
+      data: analysis.current.map(info => {
+        return [
+          accounts[info.accountId] || info.accountId,
+          linkedAppId(info.accountId, info.appId),
+          info.appName,
+          info.language,
+        ];
+      }),
+    };
     analysis.currentTable = {
       columns: ['Account', 'AppId', 'App name', 'Language', 'Agent Version'],
       data: analysis.current.map(info => {
@@ -530,6 +547,25 @@ export default class Groundskeeper extends React.Component {
                       All apps are up to date (or running multiple agent
                       versions)
                     </p>
+                  )}
+                </TabsItem>
+
+                <TabsItem
+                  value="tab-4"
+                  label={`No version reported (${presentationData.noVersionsTable.data.length})`}
+                >
+                  {presentationData.noVersionsTable.data.length > 0 ? (
+                    <div>
+                      <p>
+                        {presentationData.noVersionsTable.data.length} apps are
+                        not reporting agent version data (they may be inactive)
+                      </p>
+                      <TableWrapper
+                        tableData={presentationData.noVersionsTable}
+                      />
+                    </div>
+                  ) : (
+                    <p>All apps are reporting agent version data</p>
                   )}
                 </TabsItem>
               </Tabs>
