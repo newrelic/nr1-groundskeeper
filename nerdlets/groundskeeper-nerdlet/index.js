@@ -122,7 +122,7 @@ export default class Groundskeeper extends React.Component {
       return this.state.presentationData.multiversionTable.data.length;
     } else if (tableState === 'outOfDate') {
       return this.state.presentationData.outdatedTable.data.length;
-    } else if (tableState === 'noReportedAgent') {
+    } else if (tableState === 'noVersionReported') {
       return this.state.presentationData.noVersionsTable.data.length;
     }
   }
@@ -200,6 +200,30 @@ export default class Groundskeeper extends React.Component {
             </div>
           ) : (
             <p>All apps are up to date (or running multiple agent versions)</p>
+          )}
+        </div>
+      );
+    } else if (tableState === 'noVersionReported') {
+      return (
+        <div className="table-state-container">
+          {presentationData.noVersionsTable.data.length > 0 ? (
+            <div>
+              <ToolkitProvider
+                keyField="key"
+                data={presentationData.noVersionsTable.data}
+                columns={presentationData.noVersionsTable.columns}
+                search
+              >
+                {props => (
+                  <div>
+                    <SearchBar {...props.searchProps} />
+                    <BootstrapTable {...props.baseProps} />
+                  </div>
+                )}
+              </ToolkitProvider>
+            </div>
+          ) : (
+            <p>All apps are reporting agent version data</p>
           )}
         </div>
       );
@@ -441,16 +465,39 @@ export default class Groundskeeper extends React.Component {
     });
 
     analysis.noVersionsTable = {
-      columns: ['Account', 'AppId', 'App name', 'Language'],
-      data: analysis.current.map(info => {
-        return [
-          accounts[info.accountId] || info.accountId,
-          linkedAppId(info.accountId, info.appId),
-          info.appName,
-          info.language,
-        ];
+      columns: [
+        {
+          dataField: 'account',
+          text: 'Account',
+          sort: true,
+        },
+        {
+          dataField: 'appId',
+          text: 'AppId',
+          sort: true,
+        },
+        {
+          dataField: 'appName',
+          text: 'App name',
+          sort: true,
+        },
+        {
+          dataField: 'language',
+          text: 'Language',
+          sort: true,
+        },
+      ],
+      data: analysis.current.map((info, index) => {
+        return {
+          key: index,
+          account: accounts[info.accountId] || info.accountId,
+          appId: linkedAppId(info.accountId, info.appId),
+          appName: info.appName,
+          language: info.language,
+        };
       }),
     };
+
     analysis.currentTable = {
       columns: [
         {
@@ -734,7 +781,7 @@ export default class Groundskeeper extends React.Component {
                         {presentationData.outdatedTable.data.length})
                       </DropdownItem>
                       <DropdownItem
-                        onClick={() => setTableState('noReportedAgent')}
+                        onClick={() => setTableState('noVersionReported')}
                       >
                         No version reported (
                         {presentationData.noVersionsTable.data.length})
@@ -783,7 +830,7 @@ export default class Groundskeeper extends React.Component {
             </p>
             <p
               className={`${
-                tableState !== 'noReportedAgent' ? 'hidden' : ''
+                tableState !== 'noVersionReported' ? 'hidden' : ''
               } table-state-count`}
             >
               {presentationData.noVersionsTable.data.length} apps are not
