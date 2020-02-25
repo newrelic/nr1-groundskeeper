@@ -122,6 +122,8 @@ export default class Groundskeeper extends React.Component {
       return this.state.presentationData.multiversionTable.data.length;
     } else if (tableState === 'outOfDate') {
       return this.state.presentationData.outdatedTable.data.length;
+    } else if (tableState === 'noReportedAgent') {
+      return this.state.presentationData.noVersionsTable.data.length;
     }
   }
 
@@ -363,9 +365,7 @@ export default class Groundskeeper extends React.Component {
         this.recomputePresentation(agentData);
       }
     } else if (error) {
-      /* eslint-disable no-console */
-      console.log(`Error fetching entity status`, error);
-      /* eslint-enable no-console */
+      console.log(`Error fetching entity status`, error); // eslint-disable-line no-console
       this.setState({ loadError: true });
     }
   };
@@ -411,6 +411,7 @@ export default class Groundskeeper extends React.Component {
       current: [],
       old: [],
       multipleVersions: [],
+      noVersions: [],
     };
 
     agentData.forEach(info => {
@@ -423,7 +424,14 @@ export default class Groundskeeper extends React.Component {
         if (!tag || tag.values.indexOf(filterValue) < 0) return;
       }
 
-      if (info.agentVersions.length > 1) {
+      const originalVersions = info.agentVersions || [];
+      info.agentVersions = originalVersions.filter(
+        v => typeof v === 'string' && v.length > 0
+      );
+      if (info.agentVersions.length < 1) {
+        console.log(`No valid versions found for ${info.appName} `, originalVersions) // eslint-disable-line prettier/prettier, no-console
+        analysis.noVersions.push(info);
+      } else if (info.agentVersions.length > 1) {
         analysis.multipleVersions.push(info);
       } else if (agentVersionInList(info.agentVersions[0], freshVersions)) {
         analysis.current.push(info);
@@ -432,6 +440,17 @@ export default class Groundskeeper extends React.Component {
       }
     });
 
+    analysis.noVersionsTable = {
+      columns: ['Account', 'AppId', 'App name', 'Language'],
+      data: analysis.current.map(info => {
+        return [
+          accounts[info.accountId] || info.accountId,
+          linkedAppId(info.accountId, info.appId),
+          info.appName,
+          info.language,
+        ];
+      }),
+    };
     analysis.currentTable = {
       columns: [
         {
@@ -714,6 +733,12 @@ export default class Groundskeeper extends React.Component {
                         Out of date (
                         {presentationData.outdatedTable.data.length})
                       </DropdownItem>
+                      <DropdownItem
+                        onClick={() => setTableState('noReportedAgent')}
+                      >
+                        No version reported (
+                        {presentationData.noVersionsTable.data.length})
+                      </DropdownItem>
                     </Dropdown>
                   </StackItem>
                 </Stack>
@@ -755,6 +780,14 @@ export default class Groundskeeper extends React.Component {
             >
               {presentationData.currentTable.data.length} apps are up to date
               with {upToDateLabel}
+            </p>
+            <p
+              className={`${
+                tableState !== 'noReportedAgent' ? 'hidden' : ''
+              } table-state-count`}
+            >
+              {presentationData.noVersionsTable.data.length} apps are not
+              reporting agent version data (they may be inactive)
             </p>
             <Grid spacingType={[Grid.SPACING_TYPE.LARGE]}>
               <GridItem columnSpan={9}>{this.renderTableState()}</GridItem>
