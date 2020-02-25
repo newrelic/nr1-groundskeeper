@@ -1,10 +1,21 @@
 import './styles.scss';
+import { startCase } from 'lodash';
+import BootstrapTable from 'react-bootstrap-table-next';
+import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 
 import React from 'react';
 
-import { NerdGraphQuery, Spinner, Tabs, TabsItem } from 'nr1';
+import {
+  NerdGraphQuery,
+  Spinner,
+  Stack,
+  StackItem,
+  Dropdown,
+  DropdownItem,
+  Grid,
+  GridItem,
+} from 'nr1';
 
-import TableWrapper from './components/TableWrapper';
 import AgentVersion from './components/AgentVersion';
 
 import {
@@ -34,6 +45,13 @@ const AGENT_SLO_LABELS = {
 };
 
 export default class Groundskeeper extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.setTableState = this.setTableState.bind(this);
+    this.getTableStateCount = this.getTableStateCount.bind(this);
+  }
+
   state = {
     loadingInitialState: true,
     loadError: false,
@@ -47,6 +65,7 @@ export default class Groundskeeper extends React.Component {
     agentVersions: {},
     freshAgentVersions: {},
     scanIsRunning: true,
+    tableState: 'outOfDate',
 
     filterKey: undefined,
     filterValue: undefined,
@@ -59,8 +78,7 @@ export default class Groundskeeper extends React.Component {
   loaders = undefined;
   initialEntityDataSet = false;
 
-  setFilterKey = event => {
-    const key = event.target.value;
+  setFilterKey = key => {
     this.setState(
       { filterKey: key || undefined, filterValue: undefined },
       () => {
@@ -69,28 +87,151 @@ export default class Groundskeeper extends React.Component {
     );
   };
 
-  setFilterValue = event => {
-    const val = event.target.value;
+  setFilterValue = val => {
     this.setState({ filterValue: val || undefined }, () => {
       this.recomputePresentation(this.state.agentData);
     });
   };
 
-  updateAgentSLO = event => {
-    const newSlo = parseInt(event.target.value);
-    if (newSlo === this.state.agentSLO) {
+  updateAgentSLO = slo => {
+    if (slo === this.state.agentSLO) {
       return;
     }
 
     const newState =
-      Object.values(AGENT_SLO).indexOf(newSlo) >= 0
-        ? { agentSLO: newSlo }
+      Object.values(AGENT_SLO).indexOf(slo) >= 0
+        ? { agentSLO: slo }
         : { agentSLO: AGENT_SLO.MOST_RECENT };
 
     this.setState(newState, () => {
       this.recomputeFreshAgentVersions(this.state.agentVersions);
     });
   };
+
+  setTableState(tableState) {
+    this.setState({
+      tableState: tableState,
+    });
+  }
+
+  getTableStateCount(tableState) {
+    if (tableState === 'upToDate') {
+      return this.state.presentationData.currentTable.data.length;
+    } else if (tableState === 'multipleVersions') {
+      return this.state.presentationData.multiversionTable.data.length;
+    } else if (tableState === 'outOfDate') {
+      return this.state.presentationData.outdatedTable.data.length;
+    } else if (tableState === 'noVersionReported') {
+      return this.state.presentationData.noVersionsTable.data.length;
+    }
+  }
+
+  renderTableState() {
+    const { presentationData, tableState } = this.state;
+    const { SearchBar } = Search;
+
+    if (tableState === 'upToDate') {
+      return (
+        <div className="table-state-container">
+          {presentationData.currentTable.data.length > 0 ? (
+            <>
+              <ToolkitProvider
+                wrapperClasses="table-responsive"
+                keyField="key"
+                data={presentationData.currentTable.data}
+                columns={presentationData.currentTable.columns}
+                search
+              >
+                {props => (
+                  <>
+                    <SearchBar {...props.searchProps} />
+                    <BootstrapTable {...props.baseProps} />
+                  </>
+                )}
+              </ToolkitProvider>
+            </>
+          ) : (
+            <p>No apps are running a recent agent version :(</p>
+          )}
+        </div>
+      );
+    } else if (tableState === 'multipleVersions') {
+      return (
+        <div className="table-state-container">
+          {presentationData.multiversionTable.data.length > 0 ? (
+            <>
+              <ToolkitProvider
+                wrapperClasses="table-responsive"
+                keyField="key"
+                data={presentationData.multiversionTable.data}
+                columns={presentationData.multiversionTable.columns}
+                search
+              >
+                {props => (
+                  <>
+                    <SearchBar {...props.searchProps} />
+                    <BootstrapTable {...props.baseProps} />
+                  </>
+                )}
+              </ToolkitProvider>
+            </>
+          ) : (
+            <p>All apps are running a single agent version</p>
+          )}
+        </div>
+      );
+    } else if (tableState === 'outOfDate') {
+      return (
+        <div className="table-state-container">
+          {presentationData.outdatedTable.data.length > 0 ? (
+            <>
+              <ToolkitProvider
+                wrapperClasses="table-responsive"
+                keyField="key"
+                data={presentationData.outdatedTable.data}
+                columns={presentationData.outdatedTable.columns}
+                search
+              >
+                {props => (
+                  <>
+                    <SearchBar {...props.searchProps} />
+                    <BootstrapTable {...props.baseProps} />
+                  </>
+                )}
+              </ToolkitProvider>
+            </>
+          ) : (
+            <p>All apps are up to date (or running multiple agent versions)</p>
+          )}
+        </div>
+      );
+    } else if (tableState === 'noVersionReported') {
+      return (
+        <div className="table-state-container">
+          {presentationData.noVersionsTable.data.length > 0 ? (
+            <>
+              <ToolkitProvider
+                wrapperClasses="table-responsive"
+                keyField="key"
+                data={presentationData.noVersionsTable.data}
+                columns={presentationData.noVersionsTable.columns}
+                search
+              >
+                {props => (
+                  <>
+                    <SearchBar {...props.searchProps} />
+                    <BootstrapTable {...props.baseProps} />
+                  </>
+                )}
+              </ToolkitProvider>
+            </>
+          ) : (
+            <p>All apps are reporting agent version data</p>
+          )}
+        </div>
+      );
+    }
+  }
 
   loadInitialData = () => {
     const that = this;
@@ -327,37 +468,111 @@ export default class Groundskeeper extends React.Component {
     });
 
     analysis.noVersionsTable = {
-      columns: ['Account', 'AppId', 'App name', 'Language'],
-      data: analysis.current.map(info => {
-        return [
-          accounts[info.accountId] || info.accountId,
-          linkedAppId(info.accountId, info.appId),
-          info.appName,
-          info.language,
-        ];
+      columns: [
+        {
+          dataField: 'account',
+          text: 'Account',
+          sort: true,
+        },
+        {
+          dataField: 'appId',
+          text: 'AppId',
+          sort: true,
+        },
+        {
+          dataField: 'appName',
+          text: 'App name',
+          sort: true,
+        },
+        {
+          dataField: 'language',
+          text: 'Language',
+          sort: true,
+        },
+      ],
+      data: analysis.current.map((info, index) => {
+        return {
+          key: index,
+          account: accounts[info.accountId] || info.accountId,
+          appId: linkedAppId(info.accountId, info.appId),
+          appName: info.appName,
+          language: info.language,
+        };
       }),
     };
+
     analysis.currentTable = {
-      columns: ['Account', 'AppId', 'App name', 'Language', 'Agent Version'],
-      data: analysis.current.map(info => {
-        return [
-          accounts[info.accountId] || info.accountId,
-          linkedAppId(info.accountId, info.appId),
-          info.appName,
-          info.language,
-          info.agentVersions.join(', '),
-        ];
+      columns: [
+        {
+          dataField: 'account',
+          text: 'Account',
+          sort: true,
+        },
+        {
+          dataField: 'appId',
+          text: 'AppId',
+          sort: true,
+        },
+        {
+          dataField: 'appName',
+          text: 'App name',
+          sort: true,
+        },
+        {
+          dataField: 'language',
+          text: 'Language',
+          sort: true,
+        },
+        {
+          dataField: 'agentVersion',
+          text: 'Agent Version',
+          sort: true,
+        },
+      ],
+      data: analysis.current.map((info, index) => {
+        return {
+          key: index,
+          account: accounts[info.accountId] || info.accountId,
+          appId: info.appId,
+          appName: info.appName,
+          language: info.language,
+          agentVersion: info.agentVersions.join(', '),
+        };
       }),
     };
     const now = moment();
     analysis.outdatedTable = {
       columns: [
-        'Agent age',
-        'Account',
-        'AppId',
-        'App name',
-        'Language',
-        'Agent Version',
+        {
+          dataField: 'agentAge',
+          text: 'Agent age',
+          sort: true,
+        },
+        {
+          dataField: 'account',
+          text: 'Account',
+          sort: true,
+        },
+        {
+          dataField: 'appId',
+          text: 'AppId',
+          sort: true,
+        },
+        {
+          dataField: 'appName',
+          text: 'App name',
+          sort: true,
+        },
+        {
+          dataField: 'language',
+          text: 'Language',
+          sort: true,
+        },
+        {
+          dataField: 'agentVersion',
+          text: 'Agent Version',
+          sort: true,
+        },
       ],
       data: analysis.old
         .sort((a, b) => {
@@ -371,29 +586,57 @@ export default class Groundskeeper extends React.Component {
           if (d > 0) return 1;
           return 0;
         })
-        .map(info => {
+        .map((info, index) => {
           const age = agentAge(info, agentVersions);
           const ageText = age ? `${now.diff(age, 'weeks')} weeks old` : '?';
-          return [
-            ageText,
-            accounts[info.accountId] || info.accountId,
-            linkedAppId(info.accountId, info.appId),
-            info.appName,
-            info.language,
-            info.agentVersions.join(', '),
-          ];
+          return {
+            key: index,
+            agentAge: ageText,
+            account: accounts[info.accountId] || info.accountId,
+            appId: linkedAppId(info.accountId, info.appId),
+            appName: info.appName,
+            language: info.language,
+            agentVersion: info.agentVersions.join(', '),
+          };
         }),
     };
     analysis.multiversionTable = {
-      columns: ['Account', 'AppId', 'App name', 'Language', 'Agent Versions'],
-      data: analysis.multipleVersions.map(info => {
-        return [
-          accounts[info.accountId] || info.accountId,
-          linkedAppId(info.accountId, info.appId),
-          info.appName,
-          info.language,
-          info.agentVersions.join(', '),
-        ];
+      columns: [
+        {
+          dataField: 'account',
+          text: 'Account',
+          sort: true,
+        },
+        {
+          dataField: 'appId',
+          text: 'AppId',
+          sort: true,
+        },
+        {
+          dataField: 'appName',
+          text: 'App name',
+          sort: true,
+        },
+        {
+          dataField: 'language',
+          text: 'Language',
+          sort: true,
+        },
+        {
+          dataField: 'agentVersions',
+          text: 'Agent Versions',
+          sort: true,
+        },
+      ],
+      data: analysis.multipleVersions.map((info, index) => {
+        return {
+          key: index,
+          account: accounts[info.accountId] || info.accountId,
+          appId: linkedAppId(info.accountId, info.appId),
+          appName: info.appName,
+          language: info.language,
+          agentVersions: info.agentVersions.join(', '),
+        };
       }),
     };
 
@@ -405,6 +648,8 @@ export default class Groundskeeper extends React.Component {
       updateAgentSLO,
       setFilterKey,
       setFilterValue,
+      setTableState,
+      getTableStateCount,
       state: {
         agentData,
         agentSLO,
@@ -417,6 +662,7 @@ export default class Groundskeeper extends React.Component {
         tags,
         filterKey,
         filterValue,
+        tableState,
       },
     } = this;
 
@@ -444,138 +690,167 @@ export default class Groundskeeper extends React.Component {
         )}
 
         {agentData.length ? (
-          <div className="report">
-            <div className="agent-table">
-              <div className="filter-bar">
-                <div className="filter-block">
-                  <label>My Upgrade SLO is</label>
-                  <select value={agentSLO} onChange={updateAgentSLO}>
-                    {Object.values(AGENT_SLO).map(slo => (
-                      <option value={slo} key={`slo-opt-${slo}`}>
-                        {AGENT_SLO_LABELS[slo]}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="filter-block">
-                  <label>Filter applications by tag</label>
-                  <select value={filterKey} onChange={setFilterKey}>
-                    <option value="">--</option>
-                    {Object.keys(tags)
-                      .sort()
-                      .map(key => (
-                        <option key={`filter-tag-${key}`} value={key}>
-                          {key}
-                        </option>
+          <>
+            <Stack
+              className="toolbar-container"
+              fullWidth
+              gapType={Stack.GAP_TYPE.NONE}
+              horizontalType={Stack.HORIZONTAL_TYPE.FILL_EVENLY}
+              verticalType={Stack.VERTICAL_TYPE.FILL}
+            >
+              <StackItem className="toolbar-section1">
+                <Stack
+                  gapType={Stack.GAP_TYPE.NONE}
+                  fullWidth
+                  verticalType={Stack.VERTICAL_TYPE.FILL}
+                >
+                  <StackItem className="toolbar-item has-separator">
+                    <Dropdown
+                      label="My Upgrade SLO is"
+                      title={AGENT_SLO_LABELS[this.state.agentSLO]}
+                    >
+                      {Object.values(AGENT_SLO).map(slo => (
+                        <DropdownItem
+                          value={slo}
+                          key={`slo-opt-${slo}`}
+                          onClick={() => updateAgentSLO(slo)}
+                        >
+                          {AGENT_SLO_LABELS[slo]}
+                        </DropdownItem>
                       ))}
-                  </select>
-                  {filterKey ? (
-                    <div style={{ display: 'inline' }}>
-                      <label>to value</label>
-                      <select value={filterValue} onChange={setFilterValue}>
-                        <option value="">--</option>
-                        {tags[filterKey].sort().map(val => (
-                          <option key={`filter-val-${val}`} value={val}>
-                            {val}
-                          </option>
+                    </Dropdown>
+                  </StackItem>
+                  <StackItem
+                    className={`toolbar-item ${
+                      filterKey ? '' : 'has-separator'
+                    }`}
+                  >
+                    <Dropdown
+                      label="Filter applications by tag"
+                      title={filterKey === undefined ? '--' : filterKey}
+                    >
+                      <DropdownItem onClick={() => setFilterKey('')}>
+                        --
+                      </DropdownItem>
+                      {Object.keys(tags)
+                        .sort()
+                        .map(key => (
+                          <DropdownItem
+                            key={`filter-tag-${key}`}
+                            value={key}
+                            onClick={() => setFilterKey(key)}
+                          >
+                            {key}
+                          </DropdownItem>
                         ))}
-                      </select>
-                    </div>
-                  ) : (
-                    undefined
+                    </Dropdown>
+                  </StackItem>
+                  {filterKey && (
+                    <StackItem className="toolbar-item has-separator">
+                      <Dropdown
+                        label="to value"
+                        title={filterValue !== undefined ? filterValue : '--'}
+                      >
+                        {tags[filterKey].sort().map(val => (
+                          <DropdownItem
+                            key={`filter-val-${val}`}
+                            value={val}
+                            onClick={() => setFilterValue(val)}
+                          >
+                            {val}
+                          </DropdownItem>
+                        ))}
+                      </Dropdown>
+                    </StackItem>
                   )}
-                </div>
-                <div className="filter-block">
-                  {scanner}
-                  <label>Loaded {agentData.length} applications</label>
-                </div>
-              </div>
-
-              <Tabs defaultValue="tab-2">
-                <TabsItem
-                  value="tab-1"
-                  label={`Up to date (${presentationData.currentTable.data.length})`}
+                  <StackItem className="toolbar-item">
+                    <Dropdown
+                      label="Filter by state"
+                      title={`${startCase(tableState)} (${getTableStateCount(
+                        tableState
+                      )})`}
+                    >
+                      <DropdownItem onClick={() => setTableState('upToDate')}>
+                        Up to date ({presentationData.currentTable.data.length})
+                      </DropdownItem>
+                      <DropdownItem
+                        onClick={() => setTableState('multipleVersions')}
+                      >
+                        Multiple versions (
+                        {presentationData.multiversionTable.data.length})
+                      </DropdownItem>
+                      <DropdownItem onClick={() => setTableState('outOfDate')}>
+                        Out of date (
+                        {presentationData.outdatedTable.data.length})
+                      </DropdownItem>
+                      <DropdownItem
+                        onClick={() => setTableState('noVersionReported')}
+                      >
+                        No version reported (
+                        {presentationData.noVersionsTable.data.length})
+                      </DropdownItem>
+                    </Dropdown>
+                  </StackItem>
+                </Stack>
+              </StackItem>
+              <StackItem className="toolbar-section2">
+                <Stack
+                  fullWidth
+                  fullHeight
+                  verticalType={Stack.VERTICAL_TYPE.CENTER}
+                  horizontalType={Stack.HORIZONTAL_TYPE.RIGHT}
                 >
-                  {presentationData.currentTable.data.length > 0 ? (
-                    <div>
-                      <p>
-                        {presentationData.currentTable.data.length} apps are up
-                        to date with {upToDateLabel}
-                      </p>
-                      <TableWrapper tableData={presentationData.currentTable} />
-                    </div>
-                  ) : (
-                    <p>No apps are running a recent agent version :(</p>
-                  )}
-                </TabsItem>
-
-                <TabsItem
-                  value="tab-3"
-                  label={`Multiple versions (${presentationData.multiversionTable.data.length})`}
-                >
-                  {presentationData.multiversionTable.data.length > 0 ? (
-                    <div>
-                      <p>
-                        {presentationData.multiversionTable.data.length} apps
-                        are running multiple agent versions
-                      </p>
-                      <TableWrapper
-                        tableData={presentationData.multiversionTable}
-                      />
-                    </div>
-                  ) : (
-                    <p>All apps are running a single agent version</p>
-                  )}
-                </TabsItem>
-
-                <TabsItem
-                  value="tab-2"
-                  label={`Out of date (${presentationData.outdatedTable.data.length})`}
-                >
-                  {presentationData.outdatedTable.data.length > 0 ? (
-                    <div>
-                      <p>
-                        {presentationData.outdatedTable.data.length} apps are
-                        running outdated agents
-                      </p>
-                      <TableWrapper
-                        tableData={presentationData.outdatedTable}
-                      />
-                    </div>
-                  ) : (
-                    <p>
-                      All apps are up to date (or running multiple agent
-                      versions)
-                    </p>
-                  )}
-                </TabsItem>
-
-                <TabsItem
-                  value="tab-4"
-                  label={`No version reported (${presentationData.noVersionsTable.data.length})`}
-                >
-                  {presentationData.noVersionsTable.data.length > 0 ? (
-                    <div>
-                      <p>
-                        {presentationData.noVersionsTable.data.length} apps are
-                        not reporting agent version data (they may be inactive)
-                      </p>
-                      <TableWrapper
-                        tableData={presentationData.noVersionsTable}
-                      />
-                    </div>
-                  ) : (
-                    <p>All apps are reporting agent version data</p>
-                  )}
-                </TabsItem>
-              </Tabs>
-            </div>
-
-            <AgentVersion
-              agentVersions={agentVersions}
-              freshAgentVersions={freshAgentVersions}
-            />
-          </div>
+                  <StackItem>
+                    {scanner}
+                    <small>Loaded {agentData.length} applications</small>
+                  </StackItem>
+                </Stack>
+              </StackItem>
+            </Stack>
+            <p
+              className={`${
+                tableState !== 'outOfDate' ? 'hidden' : ''
+              } table-state-count`}
+            >
+              {presentationData.outdatedTable.data.length} apps are running
+              outdated agents
+            </p>
+            <p
+              className={`${
+                tableState !== 'multipleVersions' ? 'hidden' : ''
+              } table-state-count`}
+            >
+              {presentationData.multiversionTable.data.length} apps are running
+              multiple agent versions
+            </p>
+            <p
+              className={`${
+                tableState !== 'upToDate' ? 'hidden' : ''
+              } table-state-count`}
+            >
+              {presentationData.currentTable.data.length} apps are up to date
+              with {upToDateLabel}
+            </p>
+            <p
+              className={`${
+                tableState !== 'noVersionReported' ? 'hidden' : ''
+              } table-state-count`}
+            >
+              {presentationData.noVersionsTable.data.length} apps are not
+              reporting agent version data (they may be inactive)
+            </p>
+            <Grid spacingType={[Grid.SPACING_TYPE.LARGE]}>
+              <GridItem columnSpan={9} className="primary-table-grid-item">
+                {this.renderTableState()}
+              </GridItem>
+              <GridItem columnSpan={3} className="secondary-table-grid-item">
+                <AgentVersion
+                  agentVersions={agentVersions}
+                  freshAgentVersions={freshAgentVersions}
+                />
+              </GridItem>
+            </Grid>
+          </>
         ) : (
           <Spinner />
         )}
