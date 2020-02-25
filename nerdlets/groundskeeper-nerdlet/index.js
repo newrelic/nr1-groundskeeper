@@ -16,7 +16,6 @@ import {
   GridItem,
 } from 'nr1';
 
-import TableWrapper from './components/TableWrapper';
 import AgentVersion from './components/AgentVersion';
 
 import {
