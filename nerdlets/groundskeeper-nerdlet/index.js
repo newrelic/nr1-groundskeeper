@@ -134,21 +134,22 @@ export default class Groundskeeper extends React.Component {
       return (
         <div className="table-state-container">
           {presentationData.currentTable.data.length > 0 ? (
-            <div>
+            <>
               <ToolkitProvider
+                wrapperClasses="table-responsive"
                 keyField="key"
                 data={presentationData.currentTable.data}
                 columns={presentationData.currentTable.columns}
                 search
               >
                 {props => (
-                  <div>
+                  <>
                     <SearchBar {...props.searchProps} />
                     <BootstrapTable {...props.baseProps} />
-                  </div>
+                  </>
                 )}
               </ToolkitProvider>
-            </div>
+            </>
           ) : (
             <p>No apps are running a recent agent version :(</p>
           )}
@@ -158,21 +159,22 @@ export default class Groundskeeper extends React.Component {
       return (
         <div className="table-state-container">
           {presentationData.multiversionTable.data.length > 0 ? (
-            <div>
+            <>
               <ToolkitProvider
+                wrapperClasses="table-responsive"
                 keyField="key"
                 data={presentationData.multiversionTable.data}
                 columns={presentationData.multiversionTable.columns}
                 search
               >
                 {props => (
-                  <div>
+                  <>
                     <SearchBar {...props.searchProps} />
                     <BootstrapTable {...props.baseProps} />
-                  </div>
+                  </>
                 )}
               </ToolkitProvider>
-            </div>
+            </>
           ) : (
             <p>All apps are running a single agent version</p>
           )}
@@ -182,21 +184,22 @@ export default class Groundskeeper extends React.Component {
       return (
         <div className="table-state-container">
           {presentationData.outdatedTable.data.length > 0 ? (
-            <div>
+            <>
               <ToolkitProvider
+                wrapperClasses="table-responsive"
                 keyField="key"
                 data={presentationData.outdatedTable.data}
                 columns={presentationData.outdatedTable.columns}
                 search
               >
                 {props => (
-                  <div>
+                  <>
                     <SearchBar {...props.searchProps} />
                     <BootstrapTable {...props.baseProps} />
-                  </div>
+                  </>
                 )}
               </ToolkitProvider>
-            </div>
+            </>
           ) : (
             <p>All apps are up to date (or running multiple agent versions)</p>
           )}
@@ -206,21 +209,22 @@ export default class Groundskeeper extends React.Component {
       return (
         <div className="table-state-container">
           {presentationData.noVersionsTable.data.length > 0 ? (
-            <div>
+            <>
               <ToolkitProvider
+                wrapperClasses="table-responsive"
                 keyField="key"
                 data={presentationData.noVersionsTable.data}
                 columns={presentationData.noVersionsTable.columns}
                 search
               >
                 {props => (
-                  <div>
+                  <>
                     <SearchBar {...props.searchProps} />
                     <BootstrapTable {...props.baseProps} />
-                  </div>
+                  </>
                 )}
               </ToolkitProvider>
-            </div>
+            </>
           ) : (
             <p>All apps are reporting agent version data</p>
           )}
@@ -836,8 +840,10 @@ export default class Groundskeeper extends React.Component {
               reporting agent version data (they may be inactive)
             </p>
             <Grid spacingType={[Grid.SPACING_TYPE.LARGE]}>
-              <GridItem columnSpan={9}>{this.renderTableState()}</GridItem>
-              <GridItem columnSpan={3}>
+              <GridItem columnSpan={9} className="primary-table-grid-item">
+                {this.renderTableState()}
+              </GridItem>
+              <GridItem columnSpan={3} className="secondary-table-grid-item">
                 <AgentVersion
                   agentVersions={agentVersions}
                   freshAgentVersions={freshAgentVersions}

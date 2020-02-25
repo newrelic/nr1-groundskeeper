@@ -102,6 +102,11 @@
     }
 }
 
+.react-bootstrap-table {
+    overflow: scroll;
+    overflow-y: auto;
+}
+
 .react-bootstrap-table .table {
     width: 100%;
     border-radius: 0 0 2px 2px;
@@ -224,4 +229,9 @@ tr>td:not(.u-unstyleTd) {
     margin-top: 7px;
     text-transform: uppercase;
     letter-spacing: 1px;
+}
+
+.primary-table-grid-item,
+.secondary-table-grid-item {
+    width: 100%;
 }
