@@ -544,9 +544,10 @@ export default class Groundskeeper extends React.Component {
     analysis.outdatedTable = {
       columns: [
         {
-          dataField: 'agentAge',
+          dataField: 'agentAge[1]',
           text: 'Agent age',
           sort: true,
+          formatter: (cell, row) => `${cell} weeks old`,
         },
         {
           dataField: 'account',
@@ -588,10 +589,10 @@ export default class Groundskeeper extends React.Component {
         })
         .map((info, index) => {
           const age = agentAge(info, agentVersions);
-          const ageText = age ? `${now.diff(age, 'weeks')} weeks old` : '?';
+          const ageInWeeks = age ? now.diff(age, 'weeks') : -1;
           return {
             key: index,
-            agentAge: ageText,
+            agentAge: [age, ageInWeeks],
             account: accounts[info.accountId] || info.accountId,
             appId: linkedAppId(info.accountId, info.appId),
             appName: info.appName,
