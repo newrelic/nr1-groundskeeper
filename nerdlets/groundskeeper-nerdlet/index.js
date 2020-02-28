@@ -490,7 +490,7 @@ export default class Groundskeeper extends React.Component {
           sort: true,
         },
       ],
-      data: analysis.current.map((info, index) => {
+      data: analysis.noVersions.map((info, index) => {
         return {
           key: index,
           account: accounts[info.accountId] || info.accountId,
