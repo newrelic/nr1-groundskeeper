@@ -1,4 +1,5 @@
 import { Link, navigation } from 'nr1';
+import moment from 'moment';
 
 function linkedAppId(accountId, appId) {
   let entityGuid = btoa(`${accountId}|APM|APPLICATION|${appId}`);
@@ -81,4 +82,65 @@ function cleanAgentVersion(version) {
   return version;
 }
 
-export { linkedAppId, agentAge, cleanAgentVersion, agentVersionInList };
+const defaultAgentSloOption = 2;
+
+const agentSloOptions = [
+  {
+    label: 'the latest agent',
+    filterFunc: versions => {
+      return [versions[0]];
+    },
+  },
+  {
+    label: 'the last 3 agent releases',
+    filterFunc: versions => {
+      return versions.slice(0, 3);
+    },
+  },
+
+  {
+    label: 'agents < 2 weeks old',
+    filterFunc: versions => {
+      const fresh = moment().subtract(14, 'days');
+      return versions.filter(
+        (ver, index) => index === 0 || fresh.isSameOrBefore(ver.date)
+      );
+    },
+  },
+  {
+    label: 'agents < 1 month old',
+    filterFunc: versions => {
+      const fresh = moment().subtract(1, 'month');
+      return versions.filter(
+        (ver, index) => index === 0 || fresh.isSameOrBefore(ver.date)
+      );
+    },
+  },
+  {
+    label: 'agents < 6 months old',
+    filterFunc: versions => {
+      const fresh = moment().subtract(6, 'months');
+      return versions.filter(
+        (ver, index) => index === 0 || fresh.isSameOrBefore(ver.date)
+      );
+    },
+  },
+  {
+    label: 'agents < 1 year old (Support cutoff)',
+    filterFunc: versions => {
+      const fresh = moment().subtract(12, 'months');
+      return versions.filter(
+        (ver, index) => index === 0 || fresh.isSameOrBefore(ver.date)
+      );
+    },
+  },
+];
+
+export {
+  linkedAppId,
+  agentAge,
+  cleanAgentVersion,
+  agentVersionInList,
+  agentSloOptions,
+  defaultAgentSloOption,
+};

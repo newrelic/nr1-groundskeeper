@@ -2,6 +2,7 @@ import './styles.scss';
 import { startCase } from 'lodash';
 import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
+import moment from 'moment';
 
 import React from 'react';
 
@@ -23,26 +24,11 @@ import {
   agentAge,
   cleanAgentVersion,
   agentVersionInList,
+  agentSloOptions,
+  defaultAgentSloOption,
 } from './helpers';
+
 import { ACCOUNT_NG_QUERY, ENTITY_NG_QUERY } from './queries';
-
-const moment = require('moment');
-
-const AGENT_SLO = {
-  MOST_RECENT: 0,
-  TWO_WEEKS: 14,
-  ONE_MONTH: 30,
-  SIX_MONTHS: 182,
-  ONE_YEAR: 365,
-};
-
-const AGENT_SLO_LABELS = {
-  0: 'the latest agents',
-  14: 'agents < 2 weeks old',
-  30: 'agents < 1 month old',
-  182: 'agents < 6 months old',
-  365: 'agents < 1 year old (Support cutoff)',
-};
 
 export default class Groundskeeper extends React.Component {
   constructor(props) {
@@ -56,7 +42,7 @@ export default class Groundskeeper extends React.Component {
     loadingInitialState: true,
     loadError: false,
 
-    agentSLO: AGENT_SLO.TWO_WEEKS,
+    agentSLO: defaultAgentSloOption,
 
     agentData: [],
     tags: {},
@@ -99,9 +85,9 @@ export default class Groundskeeper extends React.Component {
     }
 
     const newState =
-      Object.values(AGENT_SLO).indexOf(slo) >= 0
+      slo >= 0 && slo < agentSloOptions.length
         ? { agentSLO: slo }
-        : { agentSLO: AGENT_SLO.MOST_RECENT };
+        : { agentSLO: defaultAgentSloOption };
 
     this.setState(newState, () => {
       this.recomputeFreshAgentVersions(this.state.agentVersions);
@@ -399,19 +385,14 @@ export default class Groundskeeper extends React.Component {
 
   recomputeFreshAgentVersions = agentVersions => {
     const { agentSLO } = this.state;
-    const freshCutoff = agentSLO ? moment().subtract(agentSLO, 'days') : null;
+    const { filterFunc } = agentSloOptions[agentSLO];
     const freshAgentVersions = {};
 
     Object.keys(agentVersions).forEach(language => {
       const al = agentVersions[language];
 
       if (al && al.map && al.length > 0) {
-        freshAgentVersions[language] = al
-          .filter((ver, index) => {
-            if (index === 0) return true;
-            return freshCutoff && freshCutoff.isSameOrBefore(ver.date);
-          })
-          .map(ver => ver.version);
+        freshAgentVersions[language] = filterFunc(al).map(ver => ver.version);
       }
     });
 
@@ -675,7 +656,7 @@ export default class Groundskeeper extends React.Component {
       );
     }
 
-    const upToDateLabel = AGENT_SLO_LABELS[agentSLO];
+    const upToDateLabel = agentSloOptions[agentSLO].label;
     const scanner = scanIsRunning ? <Spinner inline /> : undefined;
 
     return (
@@ -707,15 +688,15 @@ export default class Groundskeeper extends React.Component {
                   <StackItem className="toolbar-item has-separator">
                     <Dropdown
                       label="My Upgrade SLO is"
-                      title={AGENT_SLO_LABELS[this.state.agentSLO]}
+                      title={agentSloOptions[this.state.agentSLO].label}
                     >
-                      {Object.values(AGENT_SLO).map(slo => (
+                      {agentSloOptions.map((slo, index) => (
                         <DropdownItem
-                          value={slo}
-                          key={`slo-opt-${slo}`}
-                          onClick={() => updateAgentSLO(slo)}
+                          value={slo.label}
+                          key={`slo-opt-${index}`}
+                          onClick={() => updateAgentSLO(index)}
                         >
-                          {AGENT_SLO_LABELS[slo]}
+                          {slo.label}
                         </DropdownItem>
                       ))}
                     </Dropdown>
