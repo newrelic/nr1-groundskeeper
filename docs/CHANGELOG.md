@@ -1,3 +1,17 @@
+# [0.5.0](https://github.com/newrelic/nr1-groundskeeper/compare/v0.4.0...v0.5.0) (2020-03-02)
+
+
+### Bug Fixes
+
+* sort agent age column numerically ([ade05c9](https://github.com/newrelic/nr1-groundskeeper/commit/ade05c96cf3548d9294f832cfcf2f7d5bee83f09)), closes [#15](https://github.com/newrelic/nr1-groundskeeper/issues/15)
+* use the correct dataset for populating the 'no version reported' table ([c64e8cb](https://github.com/newrelic/nr1-groundskeeper/commit/c64e8cbdd6e51fa16b4fdc96be3d7dd2e1fcee42))
+
+
+### Features
+
+* add 'last 3 releases' to SLO options and refactor SLO code to be more flexible ([fcbd71e](https://github.com/newrelic/nr1-groundskeeper/commit/fcbd71e5828b4367c2987a9fe4fd1e24534d8413))
+* Specify whether or not agent age is known ([bf470fe](https://github.com/newrelic/nr1-groundskeeper/commit/bf470fe920d26c77e5214247ec453aa28f4bacc2)), closes [newrelic/nr1-groundskeeper#15](https://github.com/newrelic/nr1-groundskeeper/issues/15)
+
 # [0.4.0](https://github.com/newrelic/nr1-groundskeeper/compare/v0.3.1...v0.4.0) (2020-02-25)
 
 
