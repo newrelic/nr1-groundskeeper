@@ -547,7 +547,9 @@ export default class Groundskeeper extends React.Component {
           dataField: 'agentAge[1]',
           text: 'Agent age',
           sort: true,
-          formatter: (cell, row) => `${cell} weeks old`,
+          formatter: (cell, row) => {
+            return cell >= 0 ? `${cell} weeks old` : 'Unknown';
+          },
         },
         {
           dataField: 'account',
