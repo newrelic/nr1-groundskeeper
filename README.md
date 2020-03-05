@@ -36,7 +36,7 @@ Next, clone this repository and run the following scripts:
 ```bash
 nr1 nerdpack:clone -r https://github.com/newrelic/nr1-groundskeeper.git
 cd nr1-groundskeeper
-npm start
+nr1 nerdpack:serve
 ```
 
 Visit [https://one.newrelic.com/?nerdpacks=local](https://one.newrelic.com/?nerdpacks=local), navigate to the Nerdpack, and :sparkles:
