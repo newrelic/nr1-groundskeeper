@@ -1,6 +1,6 @@
 {
   "schemaType": "NERDPACK",
   "id": "e7bd8d1a-7e58-4d99-9a31-eb3b4cc64c2d",
-  "displayName": "groundskeeper",
+  "displayName": "Groundskeeper",
   "description": "Generate a live view of all the APM agents across your Services."
 }
