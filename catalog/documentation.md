@@ -12,11 +12,11 @@ Quickly and easily zoom in on your environment by filtering on tags and searchin
 
 This application will help you keep up to date with the latest agent versions and benefit from new capabilities being released.
 
-![Screenshot #1](catalog/screenshots/nr1-groundskeeper-1.png)
+![Screenshot #1](https://github.com/newrelic/nr1-groundskeeper/blob/master/catalog/screenshots/nr1-groundskeeper-1.png)
 
 ## Open Source License
 
-This project is distributed under the [Apache 2 license](LICENSE).
+This project is distributed under the [Apache 2 license](https://github.com/newrelic/nr1-groundskeeper/blob/master/LICENSE).
 
 ## Dependencies
 
@@ -69,10 +69,10 @@ Please do not report issues with Agent Groundskeeper to New Relic Global Technic
 
 ## Issues / Enhancement Requests
 
-Issues and enhancement requests can be submitted in the [Issues tab of this repository](../../issues). Please search for and review the existing open issues before submitting a new issue.
+Issues and enhancement requests can be submitted in the [Issues tab of this repository](https://github.com/newrelic/nr1-groundskeeper/issues). Please search for and review the existing open issues before submitting a new issue.
 
 ## Contributing
 
-Contributions are welcome (and if you submit a Enhancement Request, expect to be invited to contribute it yourself :grin:). Please review our [Contributors Guide](CONTRIBUTING.md).
+Contributions are welcome (and if you submit a Enhancement Request, expect to be invited to contribute it yourself :grin:). Please review our [Contributors Guide](https://github.com/newrelic/nr1-groundskeeper/blob/master/CONTRIBUTING.md).
 
 Keep in mind that when you submit your pull request, you'll need to sign the CLA via the click-through using CLA-Assistant. If you'd like to execute our corporate CLA, or if you have any questions, please drop us an email at opensource@newrelic.com.

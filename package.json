@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "groundskeeper",
-  "description": "Track the New Relic APM agents running in your entire software estate",
+  "description": "Generate a live view of all the APM agents across your Services.",
   "version": "0.5.0",
   "bugs": {
     "email": "opensource@newrelic.com"
@@ -11,9 +11,6 @@
     "test": "jest",
     "eslint-check": "eslint nerdlets/",
     "eslint-fix": "eslint nerdlets/ --fix"
-  },
-  "nr1": {
-    "uuid": "e7bd8d1a-7e58-4d99-9a31-eb3b4cc64c2d"
   },
   "dependencies": {
     "moment": "^2.24.0",
