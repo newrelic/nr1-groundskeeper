@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "Fri Nov 15 2019 16:34:15 GMT+0000 (Coordinated Universal Time)",
+  "lastUpdated": "Fri Mar 06 2020 15:04:45 GMT+0000 (Coordinated Universal Time)",
   "projectName": "NR1 Agent Groundskeeper",
   "projectUrl": "https://ngithub.com/newlrelic/nr1-groundskeeper",
   "includeDev": true,
@@ -29,15 +29,39 @@
       "licenseUrl": "https://github.com/facebook/prop-types/blob/v15.7.2/LICENSE",
       "licenseTextSource": "file"
     },
-    "react-dom@16.9.0": {
+    "react-bootstrap-table-next@3.3.3": {
+      "name": "react-bootstrap-table-next",
+      "version": "3.3.3",
+      "range": "^3.3.3",
+      "licenses": "MIT",
+      "repoUrl": "https://github.com/react-bootstrap-table/react-bootstrap-table2",
+      "versionedRepoUrl": "https://github.com/react-bootstrap-table/react-bootstrap-table2/tree/v3.3.3",
+      "licenseFile": "node_modules/react-bootstrap-table-next/README.md",
+      "licenseUrl": "https://github.com/react-bootstrap-table/react-bootstrap-table2/blob/v3.3.3/README.md",
+      "licenseTextSource": "spdx",
+      "publisher": "AllenFang"
+    },
+    "react-bootstrap-table2-toolkit@2.1.1": {
+      "name": "react-bootstrap-table2-toolkit",
+      "version": "2.1.1",
+      "range": "^2.1.1",
+      "licenses": "MIT",
+      "repoUrl": "https://github.com/react-bootstrap-table/react-bootstrap-table2",
+      "versionedRepoUrl": "https://github.com/react-bootstrap-table/react-bootstrap-table2/tree/v2.1.1",
+      "licenseFile": "node_modules/react-bootstrap-table2-toolkit/README.md",
+      "licenseUrl": "https://github.com/react-bootstrap-table/react-bootstrap-table2/blob/v2.1.1/README.md",
+      "licenseTextSource": "spdx",
+      "publisher": "AllenFang"
+    },
+    "react-dom@16.12.0": {
       "name": "react-dom",
-      "version": "16.9.0",
+      "version": "16.12.0",
       "range": "^16.6.3",
       "licenses": "MIT",
       "repoUrl": "https://github.com/facebook/react",
-      "versionedRepoUrl": "https://github.com/facebook/react/tree/v16.9.0",
+      "versionedRepoUrl": "https://github.com/facebook/react/tree/v16.12.0",
       "licenseFile": "node_modules/react-dom/LICENSE",
-      "licenseUrl": "https://github.com/facebook/react/blob/v16.9.0/LICENSE",
+      "licenseUrl": "https://github.com/facebook/react/blob/v16.12.0/LICENSE",
       "licenseTextSource": "file"
     },
     "react-table@6.10.3": {
@@ -51,19 +75,45 @@
       "licenseUrl": "https://github.com/react-tools/react-table/blob/v6.10.3/LICENSE",
       "licenseTextSource": "file"
     },
-    "react@16.9.0": {
+    "react@16.12.0": {
       "name": "react",
-      "version": "16.9.0",
+      "version": "16.12.0",
       "range": "^16.6.3",
       "licenses": "MIT",
       "repoUrl": "https://github.com/facebook/react",
-      "versionedRepoUrl": "https://github.com/facebook/react/tree/v16.9.0",
+      "versionedRepoUrl": "https://github.com/facebook/react/tree/v16.12.0",
       "licenseFile": "node_modules/react/LICENSE",
-      "licenseUrl": "https://github.com/facebook/react/blob/v16.9.0/LICENSE",
+      "licenseUrl": "https://github.com/facebook/react/blob/v16.12.0/LICENSE",
       "licenseTextSource": "file"
     }
   },
   "devDependencies": {
+    "@babel/preset-env@7.7.1": {
+      "name": "@babel/preset-env",
+      "version": "7.7.1",
+      "range": "^7.7.1",
+      "licenses": "MIT",
+      "repoUrl": "https://github.com/babel/babel/tree/master/packages/babel-preset-env",
+      "versionedRepoUrl": "https://github.com/babel/babel/tree/master/packages/babel-preset-env/tree/v7.7.1",
+      "licenseFile": "node_modules/@babel/preset-env/LICENSE",
+      "licenseUrl": "https://github.com/babel/babel/tree/master/packages/babel-preset-env/blob/v7.7.1/LICENSE",
+      "licenseTextSource": "file",
+      "publisher": "Henry Zhu",
+      "email": "hi@henryzoo.com"
+    },
+    "@babel/preset-react@7.7.0": {
+      "name": "@babel/preset-react",
+      "version": "7.7.0",
+      "range": "^7.7.0",
+      "licenses": "MIT",
+      "repoUrl": "https://github.com/babel/babel/tree/master/packages/babel-preset-react",
+      "versionedRepoUrl": "https://github.com/babel/babel/tree/master/packages/babel-preset-react/tree/v7.7.0",
+      "licenseFile": "node_modules/@babel/preset-react/LICENSE",
+      "licenseUrl": "https://github.com/babel/babel/tree/master/packages/babel-preset-react/blob/v7.7.0/LICENSE",
+      "licenseTextSource": "file",
+      "publisher": "Sebastian McKenzie",
+      "email": "sebmck@gmail.com"
+    },
     "@semantic-release/changelog@3.0.5": {
       "name": "@semantic-release/changelog",
       "version": "3.0.5",
@@ -103,15 +153,26 @@
       "publisher": "Sebastian McKenzie",
       "email": "sebmck@gmail.com"
     },
-    "eslint-config-prettier@6.3.0": {
+    "babel-jest@24.9.0": {
+      "name": "babel-jest",
+      "version": "24.9.0",
+      "range": "^24.9.0",
+      "licenses": "MIT",
+      "repoUrl": "https://github.com/facebook/jest",
+      "versionedRepoUrl": "https://github.com/facebook/jest/tree/v24.9.0",
+      "licenseFile": "node_modules/babel-jest/README.md",
+      "licenseUrl": "https://github.com/facebook/jest/blob/v24.9.0/README.md",
+      "licenseTextSource": "spdx"
+    },
+    "eslint-config-prettier@6.5.0": {
       "name": "eslint-config-prettier",
-      "version": "6.3.0",
+      "version": "6.5.0",
       "range": "^6.3.0",
       "licenses": "MIT",
       "repoUrl": "https://github.com/prettier/eslint-config-prettier",
-      "versionedRepoUrl": "https://github.com/prettier/eslint-config-prettier/tree/v6.3.0",
+      "versionedRepoUrl": "https://github.com/prettier/eslint-config-prettier/tree/v6.5.0",
       "licenseFile": "node_modules/eslint-config-prettier/LICENSE",
-      "licenseUrl": "https://github.com/prettier/eslint-config-prettier/blob/v6.3.0/LICENSE",
+      "licenseUrl": "https://github.com/prettier/eslint-config-prettier/blob/v6.5.0/LICENSE",
       "licenseTextSource": "file",
       "publisher": "Simon Lydell"
     },
@@ -127,41 +188,52 @@
       "licenseTextSource": "file",
       "publisher": "Teddy Katz"
     },
-    "eslint-plugin-react@7.14.3": {
+    "eslint-plugin-react@7.16.0": {
       "name": "eslint-plugin-react",
-      "version": "7.14.3",
+      "version": "7.16.0",
       "range": "^7.14.3",
       "licenses": "MIT",
       "repoUrl": "https://github.com/yannickcr/eslint-plugin-react",
-      "versionedRepoUrl": "https://github.com/yannickcr/eslint-plugin-react/tree/v7.14.3",
+      "versionedRepoUrl": "https://github.com/yannickcr/eslint-plugin-react/tree/v7.16.0",
       "licenseFile": "node_modules/eslint-plugin-react/LICENSE",
-      "licenseUrl": "https://github.com/yannickcr/eslint-plugin-react/blob/v7.14.3/LICENSE",
+      "licenseUrl": "https://github.com/yannickcr/eslint-plugin-react/blob/v7.16.0/LICENSE",
       "licenseTextSource": "file",
       "publisher": "Yannick Croissant",
       "email": "yannick.croissant+npm@gmail.com"
     },
-    "eslint@6.4.0": {
+    "eslint@6.6.0": {
       "name": "eslint",
-      "version": "6.4.0",
+      "version": "6.6.0",
       "range": "^6.4.0",
       "licenses": "MIT",
       "repoUrl": "https://github.com/eslint/eslint",
-      "versionedRepoUrl": "https://github.com/eslint/eslint/tree/v6.4.0",
+      "versionedRepoUrl": "https://github.com/eslint/eslint/tree/v6.6.0",
       "licenseFile": "node_modules/eslint/LICENSE",
-      "licenseUrl": "https://github.com/eslint/eslint/blob/v6.4.0/LICENSE",
+      "licenseUrl": "https://github.com/eslint/eslint/blob/v6.6.0/LICENSE",
       "licenseTextSource": "file",
       "publisher": "Nicholas C. Zakas",
       "email": "nicholas+npm@nczconsulting.com"
     },
-    "prettier@1.18.2": {
+    "jest@24.9.0": {
+      "name": "jest",
+      "version": "24.9.0",
+      "range": "^24.9.0",
+      "licenses": "MIT",
+      "repoUrl": "https://github.com/facebook/jest",
+      "versionedRepoUrl": "https://github.com/facebook/jest/tree/v24.9.0",
+      "licenseFile": "node_modules/jest/README.md",
+      "licenseUrl": "https://github.com/facebook/jest/blob/v24.9.0/README.md",
+      "licenseTextSource": "spdx"
+    },
+    "prettier@1.19.1": {
       "name": "prettier",
-      "version": "1.18.2",
+      "version": "1.19.1",
       "range": "^1.18.2",
       "licenses": "MIT",
       "repoUrl": "https://github.com/prettier/prettier",
-      "versionedRepoUrl": "https://github.com/prettier/prettier/tree/v1.18.2",
+      "versionedRepoUrl": "https://github.com/prettier/prettier/tree/v1.19.1",
       "licenseFile": "node_modules/prettier/LICENSE",
-      "licenseUrl": "https://github.com/prettier/prettier/blob/v1.18.2/LICENSE",
+      "licenseUrl": "https://github.com/prettier/prettier/blob/v1.19.1/LICENSE",
       "licenseTextSource": "file",
       "publisher": "James Long"
     }

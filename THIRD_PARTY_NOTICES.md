@@ -16,19 +16,25 @@ code, the source code can be found at [https://ngithub.com/newlrelic/nr1-grounds
 
 * [moment](#moment)
 * [prop-types](#prop-types)
+* [react-bootstrap-table-next](#react-bootstrap-table-next)
+* [react-bootstrap-table2-toolkit](#react-bootstrap-table2-toolkit)
 * [react-dom](#react-dom)
 * [react-table](#react-table)
 * [react](#react)
 
 **[devDependencies](#devDependencies)**
 
+* [@babel/preset-env](#babelpreset-env)
+* [@babel/preset-react](#babelpreset-react)
 * [@semantic-release/changelog](#semantic-releasechangelog)
 * [@semantic-release/git](#semantic-releasegit)
 * [babel-eslint](#babel-eslint)
+* [babel-jest](#babel-jest)
 * [eslint-config-prettier](#eslint-config-prettier)
 * [eslint-plugin-prettier](#eslint-plugin-prettier)
 * [eslint-plugin-react](#eslint-plugin-react)
 * [eslint](#eslint)
+* [jest](#jest)
 * [prettier](#prettier)
 
 
@@ -93,9 +99,37 @@ SOFTWARE.
 
 ```
 
+### react-bootstrap-table-next
+
+This product includes source derived from [react-bootstrap-table-next](https://github.com/react-bootstrap-table/react-bootstrap-table2) ([v3.3.3](https://github.com/react-bootstrap-table/react-bootstrap-table2/tree/v3.3.3)), distributed under the [MIT License](https://github.com/react-bootstrap-table/react-bootstrap-table2/blob/v3.3.3/README.md):
+
+```
+MIT License Copyright (c) <year> <copyright holders>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice (including the next paragraph) shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
+
+### react-bootstrap-table2-toolkit
+
+This product includes source derived from [react-bootstrap-table2-toolkit](https://github.com/react-bootstrap-table/react-bootstrap-table2) ([v2.1.1](https://github.com/react-bootstrap-table/react-bootstrap-table2/tree/v2.1.1)), distributed under the [MIT License](https://github.com/react-bootstrap-table/react-bootstrap-table2/blob/v2.1.1/README.md):
+
+```
+MIT License Copyright (c) <year> <copyright holders>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice (including the next paragraph) shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
+
 ### react-dom
 
-This product includes source derived from [react-dom](https://github.com/facebook/react) ([v16.9.0](https://github.com/facebook/react/tree/v16.9.0)), distributed under the [MIT License](https://github.com/facebook/react/blob/v16.9.0/LICENSE):
+This product includes source derived from [react-dom](https://github.com/facebook/react) ([v16.12.0](https://github.com/facebook/react/tree/v16.12.0)), distributed under the [MIT License](https://github.com/facebook/react/blob/v16.12.0/LICENSE):
 
 ```
 MIT License
@@ -153,7 +187,7 @@ SOFTWARE.
 
 ### react
 
-This product includes source derived from [react](https://github.com/facebook/react) ([v16.9.0](https://github.com/facebook/react/tree/v16.9.0)), distributed under the [MIT License](https://github.com/facebook/react/blob/v16.9.0/LICENSE):
+This product includes source derived from [react](https://github.com/facebook/react) ([v16.12.0](https://github.com/facebook/react/tree/v16.12.0)), distributed under the [MIT License](https://github.com/facebook/react/blob/v16.12.0/LICENSE):
 
 ```
 MIT License
@@ -182,6 +216,66 @@ SOFTWARE.
 
 
 ## devDependencies
+
+### @babel/preset-env
+
+This product includes source derived from [@babel/preset-env](https://github.com/babel/babel/tree/master/packages/babel-preset-env) ([v7.7.1](https://github.com/babel/babel/tree/master/packages/babel-preset-env/tree/v7.7.1)), distributed under the [MIT License](https://github.com/babel/babel/tree/master/packages/babel-preset-env/blob/v7.7.1/LICENSE):
+
+```
+MIT License
+
+Copyright (c) 2014-present Sebastian McKenzie and other contributors
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+```
+
+### @babel/preset-react
+
+This product includes source derived from [@babel/preset-react](https://github.com/babel/babel/tree/master/packages/babel-preset-react) ([v7.7.0](https://github.com/babel/babel/tree/master/packages/babel-preset-react/tree/v7.7.0)), distributed under the [MIT License](https://github.com/babel/babel/tree/master/packages/babel-preset-react/blob/v7.7.0/LICENSE):
+
+```
+MIT License
+
+Copyright (c) 2014-present Sebastian McKenzie and other contributors
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+```
 
 ### @semantic-release/changelog
 
@@ -271,9 +365,23 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ```
 
+### babel-jest
+
+This product includes source derived from [babel-jest](https://github.com/facebook/jest) ([v24.9.0](https://github.com/facebook/jest/tree/v24.9.0)), distributed under the [MIT License](https://github.com/facebook/jest/blob/v24.9.0/README.md):
+
+```
+MIT License Copyright (c) <year> <copyright holders>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice (including the next paragraph) shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
+
 ### eslint-config-prettier
 
-This product includes source derived from [eslint-config-prettier](https://github.com/prettier/eslint-config-prettier) ([v6.3.0](https://github.com/prettier/eslint-config-prettier/tree/v6.3.0)), distributed under the [MIT License](https://github.com/prettier/eslint-config-prettier/blob/v6.3.0/LICENSE):
+This product includes source derived from [eslint-config-prettier](https://github.com/prettier/eslint-config-prettier) ([v6.5.0](https://github.com/prettier/eslint-config-prettier/tree/v6.5.0)), distributed under the [MIT License](https://github.com/prettier/eslint-config-prettier/blob/v6.5.0/LICENSE):
 
 ```
 The MIT License (MIT)
@@ -334,7 +442,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 ### eslint-plugin-react
 
-This product includes source derived from [eslint-plugin-react](https://github.com/yannickcr/eslint-plugin-react) ([v7.14.3](https://github.com/yannickcr/eslint-plugin-react/tree/v7.14.3)), distributed under the [MIT License](https://github.com/yannickcr/eslint-plugin-react/blob/v7.14.3/LICENSE):
+This product includes source derived from [eslint-plugin-react](https://github.com/yannickcr/eslint-plugin-react) ([v7.16.0](https://github.com/yannickcr/eslint-plugin-react/tree/v7.16.0)), distributed under the [MIT License](https://github.com/yannickcr/eslint-plugin-react/blob/v7.16.0/LICENSE):
 
 ```
 The MIT License (MIT)
@@ -364,7 +472,7 @@ SOFTWARE.
 
 ### eslint
 
-This product includes source derived from [eslint](https://github.com/eslint/eslint) ([v6.4.0](https://github.com/eslint/eslint/tree/v6.4.0)), distributed under the [MIT License](https://github.com/eslint/eslint/blob/v6.4.0/LICENSE):
+This product includes source derived from [eslint](https://github.com/eslint/eslint) ([v6.6.0](https://github.com/eslint/eslint/tree/v6.6.0)), distributed under the [MIT License](https://github.com/eslint/eslint/blob/v6.6.0/LICENSE):
 
 ```
 Copyright JS Foundation and other contributors, https://js.foundation
@@ -389,9 +497,23 @@ THE SOFTWARE.
 
 ```
 
+### jest
+
+This product includes source derived from [jest](https://github.com/facebook/jest) ([v24.9.0](https://github.com/facebook/jest/tree/v24.9.0)), distributed under the [MIT License](https://github.com/facebook/jest/blob/v24.9.0/README.md):
+
+```
+MIT License Copyright (c) <year> <copyright holders>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice (including the next paragraph) shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
+
 ### prettier
 
-This product includes source derived from [prettier](https://github.com/prettier/prettier) ([v1.18.2](https://github.com/prettier/prettier/tree/v1.18.2)), distributed under the [MIT License](https://github.com/prettier/prettier/blob/v1.18.2/LICENSE):
+This product includes source derived from [prettier](https://github.com/prettier/prettier) ([v1.19.1](https://github.com/prettier/prettier/tree/v1.19.1)), distributed under the [MIT License](https://github.com/prettier/prettier/blob/v1.19.1/LICENSE):
 
 ```
 Copyright © James Long and contributors
