@@ -1,5 +1,5 @@
 {
-  "tagline": "Generate a live view of all the APM agents across your Services.",
+  "tagline": "APM agent hygeine reporting",
   "repository": "https://github.com/newrelic/nr1-groundskeeper.git",
   "details": "Agent Groundskeeper allows you to see the latest agent versions, compared to the versions currently running based on your upgrade SLO.\n\nQuickly and easily zoom in on your environment by filtering on tags and searching by account, language and application.\n\nThis application will help you keep up to date with the latest agent versions and benefit from new capabilities being released.",
   "support": {

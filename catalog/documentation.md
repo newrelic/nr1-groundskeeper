@@ -1,9 +1,3 @@
-[![New Relic One Catalog Project header](https://github.com/newrelic/open-source-office/raw/master/examples/categories/images/New_Relic_One_Catalog_Project.png)](https://github.com/newrelic/open-source-office/blob/master/examples/categories/index.md#nr1-catalog)
-
-# Agent Groundskeeper
-
-![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/newrelic/nr1-groundskeeper?include_prereleases&sort=semver) [![Snyk](https://snyk.io/test/github/newrelic/nr1-groundskeeper/badge.svg)](https://snyk.io/test/github/newrelic/nr1-groundskeeper)
-
 ## Usage
 
 Agent Groundskeeper allows you to see the latest agent versions, compared to the versions currently running based on your upgrade SLO.
@@ -11,8 +5,6 @@ Agent Groundskeeper allows you to see the latest agent versions, compared to the
 Quickly and easily zoom in on your environment by filtering on tags and searching by account, language and application.
 
 This application will help you keep up to date with the latest agent versions and benefit from new capabilities being released.
-
-![Screenshot #1](https://github.com/newrelic/nr1-groundskeeper/blob/master/catalog/screenshots/nr1-groundskeeper-1.png)
 
 ## Open Source License
 
