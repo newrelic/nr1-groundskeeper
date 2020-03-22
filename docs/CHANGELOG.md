@@ -1,3 +1,10 @@
+# [0.7.0](https://github.com/newrelic/nr1-groundskeeper/compare/v0.6.0...v0.7.0) (2020-03-22)
+
+
+### Features
+
+* add SLA Report view based on applcation tags (delivers [#25](https://github.com/newrelic/nr1-groundskeeper/issues/25)) ([edeab41](https://github.com/newrelic/nr1-groundskeeper/commit/edeab4143588be91ef216feb36bcc57178c6927a))
+
 # [0.6.0](https://github.com/newrelic/nr1-groundskeeper/compare/v0.5.0...v0.6.0) (2020-03-06)
 
 
