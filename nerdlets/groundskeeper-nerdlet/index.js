@@ -18,6 +18,7 @@ import {
 } from 'nr1';
 
 import AgentVersion from './components/AgentVersion';
+import SLAReport from './components/SLAReport';
 
 import {
   linkedAppId,
@@ -55,6 +56,8 @@ export default class Groundskeeper extends React.Component {
 
     filterKey: undefined,
     filterValue: undefined,
+
+    slaReportKey: undefined,
   };
 
   componentDidMount() {
@@ -77,6 +80,10 @@ export default class Groundskeeper extends React.Component {
     this.setState({ filterValue: val || undefined }, () => {
       this.recomputePresentation(this.state.agentData);
     });
+  };
+
+  setSLAReportKey = val => {
+    this.setState({ slaReportKey: val || undefined });
   };
 
   updateAgentSLO = slo => {
@@ -632,6 +639,7 @@ export default class Groundskeeper extends React.Component {
       updateAgentSLO,
       setFilterKey,
       setFilterValue,
+      setSLAReportKey,
       setTableState,
       getTableStateCount,
       state: {
@@ -647,6 +655,7 @@ export default class Groundskeeper extends React.Component {
         filterKey,
         filterValue,
         tableState,
+        slaReportKey,
       },
     } = this;
 
@@ -661,6 +670,22 @@ export default class Groundskeeper extends React.Component {
 
     const upToDateLabel = agentSloOptions[agentSLO].label;
     const scanner = scanIsRunning ? <Spinner inline /> : undefined;
+
+    const tableBannerText = slaReportKey
+      ? `SLA Report by ${slaReportKey}`
+      : tableState === 'outOfDate'
+      ? `${presentationData.outdatedTable.data.length} apps are running
+              outdated agents`
+      : tableState === 'multipleVersions'
+      ? `${presentationData.multiversionTable.data.length} apps are running
+              multiple agent versions`
+      : tableState === 'upToDate'
+      ? `${presentationData.currentTable.data.length} apps are up to date
+              with ${upToDateLabel}`
+      : tableState === 'noVersionReported'
+      ? `${presentationData.noVersionsTable.data.length} apps are not
+              reporting agent version data (they may be inactive)`
+      : undefined;
 
     return (
       <div className="gk-content">
@@ -775,6 +800,27 @@ export default class Groundskeeper extends React.Component {
                       </DropdownItem>
                     </Dropdown>
                   </StackItem>
+                  <StackItem className="toolbar-item has-separator">
+                    <Dropdown
+                      label="Show SLA Report by"
+                      title={slaReportKey === undefined ? '--' : slaReportKey}
+                    >
+                      <DropdownItem onClick={() => setSLAReportKey('')}>
+                        --
+                      </DropdownItem>
+                      {Object.keys(tags)
+                        .sort()
+                        .map(key => (
+                          <DropdownItem
+                            key={`filter-tag-${key}`}
+                            value={key}
+                            onClick={() => setSLAReportKey(key)}
+                          >
+                            {key}
+                          </DropdownItem>
+                        ))}
+                    </Dropdown>
+                  </StackItem>
                 </Stack>
               </StackItem>
               <StackItem className="toolbar-section2">
@@ -791,41 +837,22 @@ export default class Groundskeeper extends React.Component {
                 </Stack>
               </StackItem>
             </Stack>
-            <p
-              className={`${
-                tableState !== 'outOfDate' ? 'hidden' : ''
-              } table-state-count`}
-            >
-              {presentationData.outdatedTable.data.length} apps are running
-              outdated agents
-            </p>
-            <p
-              className={`${
-                tableState !== 'multipleVersions' ? 'hidden' : ''
-              } table-state-count`}
-            >
-              {presentationData.multiversionTable.data.length} apps are running
-              multiple agent versions
-            </p>
-            <p
-              className={`${
-                tableState !== 'upToDate' ? 'hidden' : ''
-              } table-state-count`}
-            >
-              {presentationData.currentTable.data.length} apps are up to date
-              with {upToDateLabel}
-            </p>
-            <p
-              className={`${
-                tableState !== 'noVersionReported' ? 'hidden' : ''
-              } table-state-count`}
-            >
-              {presentationData.noVersionsTable.data.length} apps are not
-              reporting agent version data (they may be inactive)
-            </p>
+            {tableBannerText ? (
+              <p className={`table-state-count`}>{tableBannerText}</p>
+            ) : (
+              undefined
+            )}
             <Grid spacingType={[Grid.SPACING_TYPE.LARGE]}>
               <GridItem columnSpan={9} className="primary-table-grid-item">
-                {this.renderTableState()}
+                {slaReportKey ? (
+                  <SLAReport
+                    slaReportKey={slaReportKey}
+                    agentData={agentData}
+                    freshAgentVersions={freshAgentVersions}
+                  />
+                ) : (
+                  this.renderTableState()
+                )}
               </GridItem>
               <GridItem columnSpan={3} className="secondary-table-grid-item">
                 <AgentVersion
