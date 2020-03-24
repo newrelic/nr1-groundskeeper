@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import BootstrapTable from 'react-bootstrap-table-next';
+import { format } from 'date-fns';
 
 export default class AgentVersion extends React.PureComponent {
   static propTypes = {
@@ -34,9 +35,11 @@ export default class AgentVersion extends React.PureComponent {
         id: index,
         language: lng,
         version: freshAgentVersions[lng][0],
-        releasedOn: agentVersions[lng]
-          .find(v => v.version === freshAgentVersions[lng][0])
-          .date.format('MMM Do YYYY'),
+        releasedOn: format(
+          agentVersions[lng].find(v => v.version === freshAgentVersions[lng][0])
+            .date,
+          'MMM do yyyy'
+        ),
       }));
 
     return (
