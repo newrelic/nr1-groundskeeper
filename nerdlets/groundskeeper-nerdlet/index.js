@@ -322,7 +322,6 @@ export default class Groundskeeper extends React.Component {
       if (al && al.map && al.length > 0) {
         agentVersions[language] = al
           .map(ver => {
-            const blessed = parseISO(ver.date);
             return {
               version: cleanAgentVersion(ver.version),
               date: parseISO(ver.date),
