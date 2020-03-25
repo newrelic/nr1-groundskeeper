@@ -1,5 +1,5 @@
 import { Link, navigation } from 'nr1';
-import moment from 'moment';
+import { subWeeks, subMonths, isSameDay, isBefore } from 'date-fns';
 
 function linkedAppId(accountId, appId) {
   let entityGuid = btoa(`${accountId}|APM|APPLICATION|${appId}`);
@@ -101,36 +101,40 @@ const agentSloOptions = [
   {
     label: 'agents < 2 weeks old',
     filterFunc: versions => {
-      const fresh = moment().subtract(14, 'days');
+      const fresh = subWeeks(new Date(), 2);
       return versions.filter(
-        (ver, index) => index === 0 || fresh.isSameOrBefore(ver.date)
+        (ver, index) =>
+          index === 0 || isSameDay(fresh, ver.date) || isBefore(fresh, ver.date)
       );
     },
   },
   {
     label: 'agents < 1 month old',
     filterFunc: versions => {
-      const fresh = moment().subtract(1, 'month');
+      const fresh = subMonths(new Date(), 1);
       return versions.filter(
-        (ver, index) => index === 0 || fresh.isSameOrBefore(ver.date)
+        (ver, index) =>
+          index === 0 || isSameDay(fresh, ver.date) || isBefore(fresh, ver.date)
       );
     },
   },
   {
     label: 'agents < 6 months old',
     filterFunc: versions => {
-      const fresh = moment().subtract(6, 'months');
+      const fresh = subMonths(new Date(), 6);
       return versions.filter(
-        (ver, index) => index === 0 || fresh.isSameOrBefore(ver.date)
+        (ver, index) =>
+          index === 0 || isSameDay(fresh, ver.date) || isBefore(fresh, ver.date)
       );
     },
   },
   {
     label: 'agents < 1 year old (Support cutoff)',
     filterFunc: versions => {
-      const fresh = moment().subtract(12, 'months');
+      const fresh = subMonths(new Date(), 12);
       return versions.filter(
-        (ver, index) => index === 0 || fresh.isSameOrBefore(ver.date)
+        (ver, index) =>
+          index === 0 || isSameDay(fresh, ver.date) || isBefore(fresh, ver.date)
       );
     },
   },

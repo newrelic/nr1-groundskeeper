@@ -2,7 +2,11 @@ import './styles.scss';
 import { startCase } from 'lodash';
 import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
-import moment from 'moment';
+import {
+  parseISO,
+  differenceInMilliseconds,
+  differenceInWeeks,
+} from 'date-fns';
 
 import React from 'react';
 
@@ -320,7 +324,7 @@ export default class Groundskeeper extends React.Component {
           .map(ver => {
             return {
               version: cleanAgentVersion(ver.version),
-              date: moment(ver.date),
+              date: parseISO(ver.date),
             };
           })
           .sort((a, b) => {
@@ -528,7 +532,7 @@ export default class Groundskeeper extends React.Component {
         };
       }),
     };
-    const now = moment();
+    const now = new Date();
     analysis.outdatedTable = {
       columns: [
         {
@@ -572,14 +576,14 @@ export default class Groundskeeper extends React.Component {
           if (!ageA && !ageB) return 0;
           if (!ageA) return 1;
           if (!ageB) return -1;
-          const d = ageA.diff(ageB);
+          const d = differenceInMilliseconds(ageA, ageB);
           if (d < 0) return -1;
           if (d > 0) return 1;
           return 0;
         })
         .map((info, index) => {
           const age = agentAge(info, agentVersions);
-          const ageInWeeks = age ? now.diff(age, 'weeks') : -1;
+          const ageInWeeks = age ? differenceInWeeks(now, age) : -1;
           return {
             key: index,
             agentAge: [age, ageInWeeks],
