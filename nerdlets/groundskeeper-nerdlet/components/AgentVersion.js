@@ -6,7 +6,7 @@ import { format } from 'date-fns';
 export default class AgentVersion extends React.PureComponent {
   static propTypes = {
     agentVersions: PropTypes.object.isRequired,
-    freshAgentVersions: PropTypes.object.isRequired,
+    freshAgentVersions: PropTypes.object.isRequired
   };
 
   render() {
@@ -15,18 +15,18 @@ export default class AgentVersion extends React.PureComponent {
       {
         dataField: 'language',
         text: 'Language',
-        sort: true,
+        sort: true
       },
       {
         dataField: 'version',
         text: 'Version',
-        sort: true,
+        sort: true
       },
       {
         dataField: 'releasedOn',
         text: 'Released On',
-        sort: true,
-      },
+        sort: true
+      }
     ];
 
     const tableData = Object.keys(freshAgentVersions)
@@ -39,7 +39,7 @@ export default class AgentVersion extends React.PureComponent {
           agentVersions[lng].find(v => v.version === freshAgentVersions[lng][0])
             .date,
           'MMM do yyyy'
-        ),
+        )
       }));
 
     return (
