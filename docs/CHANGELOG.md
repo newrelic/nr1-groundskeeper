@@ -1,3 +1,13 @@
+## [0.7.1](https://github.com/newrelic/nr1-groundskeeper/compare/v0.7.0...v0.7.1) (2020-03-31)
+
+
+### Bug Fixes
+
+* added babel.config.js ([61878ad](https://github.com/newrelic/nr1-groundskeeper/commit/61878ad2c752bf54d86a01fa6aaf4e846f1e94d0))
+* adding back dev dependencies for jest tests. ([69a4128](https://github.com/newrelic/nr1-groundskeeper/commit/69a4128ecbce6bcd589e641cc59be9d6a472db0c))
+* eslitn fixes. Move to PureComponent. ([d5966ff](https://github.com/newrelic/nr1-groundskeeper/commit/d5966ff4d2fe7244e3904416e3d0b14765a016e0))
+* responding to PR review feedback from [@fightingmonk](https://github.com/fightingmonk). ([8141c77](https://github.com/newrelic/nr1-groundskeeper/commit/8141c77334e9a7aee8065eccf5eac6fadd4616be))
+
 # [0.7.0](https://github.com/newrelic/nr1-groundskeeper/compare/v0.6.0...v0.7.0) (2020-03-22)
 
 
