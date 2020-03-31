@@ -31,7 +31,7 @@ import {
 
 import { ACCOUNT_NG_QUERY, ENTITY_NG_QUERY } from './queries';
 
-export default class Groundskeeper extends React.PureComponent {
+export default class Groundskeeper extends React.Component {
   constructor(props) {
     super(props);
 
@@ -671,8 +671,10 @@ export default class Groundskeeper extends React.PureComponent {
     const upToDateLabel = agentSloOptions[agentSLO].label;
     const scanner = scanIsRunning ? <Spinner inline /> : undefined;
 
-    let tableBannerText = slaReportKey ? `SLA Report by ${slaReportKey}` : '';
-    if (tableState === 'outOfDate') {
+    let tableBannerText = '';
+    if (slaReportKey) {
+      tableBannerText = `SLA Report by ${slaReportKey}`;
+    } else if (tableState === 'outOfDate') {
       tableBannerText += `${presentationData.outdatedTable.data.length} apps are running outdated agents`;
     } else if (tableState === 'multipleVersions') {
       tableBannerText += `${presentationData.multiversionTable.data.length} apps are running multiple agent versions`;

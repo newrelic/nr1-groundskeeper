@@ -8,7 +8,7 @@ import { Spinner } from 'nr1';
 
 import { agentVersionInList } from '../helpers';
 
-export default class SLAReport extends React.PureComponent {
+export default class SLAReport extends React.Component {
   static propTypes = {
     slaReportKey: PropTypes.string.isRequired,
     agentData: PropTypes.array.isRequired,
