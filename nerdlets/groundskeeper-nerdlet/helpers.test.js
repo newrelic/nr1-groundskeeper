@@ -14,14 +14,14 @@ test('agentVersionInList matches on various permutations', () => {
     dotnet: ['6.8.7', '6.8.0', '6.7.0'],
   };
 
-  expect(agentVersionInList('5.8.0.23', freshAgentVersions['java'])).toBe(true);
-  expect(agentVersionInList('5.7.6', freshAgentVersions['java'])).toBe(false);
+  expect(agentVersionInList('5.8.0.23', freshAgentVersions.java)).toBe(true);
+  expect(agentVersionInList('5.7.6', freshAgentVersions.java)).toBe(false);
 
-  expect(agentVersionInList('6.8.0.1', freshAgentVersions['dotnet'])).toBe(true);
-  expect(agentVersionInList('6.8.0', freshAgentVersions['dotnet'])).toBe(true);
-  expect(agentVersionInList('6.8.7.1', freshAgentVersions['dotnet'])).toBe(true);
-  expect(agentVersionInList('6.8.7', freshAgentVersions['dotnet'])).toBe(true);
-  expect(agentVersionInList('5.7.6', freshAgentVersions['dotnet'])).toBe(false);
+  expect(agentVersionInList('6.8.0.1', freshAgentVersions.dotnet)).toBe(true);
+  expect(agentVersionInList('6.8.0', freshAgentVersions.dotnet)).toBe(true);
+  expect(agentVersionInList('6.8.7.1', freshAgentVersions.dotnet)).toBe(true);
+  expect(agentVersionInList('6.8.7', freshAgentVersions.dotnet)).toBe(true);
+  expect(agentVersionInList('5.7.6', freshAgentVersions.dotnet)).toBe(false);
 
 });
 

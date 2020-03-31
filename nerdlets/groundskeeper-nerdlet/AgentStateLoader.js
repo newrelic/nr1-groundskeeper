@@ -22,15 +22,15 @@ const AGENT_NG_QUERY_WEEK = `query($id: Int!) {
     }
 }`;
 
-export default class AgentStateLoader extends React.Component {
+export default class AgentStateLoader extends React.PureComponent {
   static propTypes = {
     accountId: PropTypes.number.isRequired,
     dataLoaded: PropTypes.func.isRequired,
-    weekly: PropTypes.bool,
+    weekly: PropTypes.bool
   };
 
   state = {
-    resultsSent: false,
+    resultsSent: false
   };
 
   sendResults = (agentData, error) => {
@@ -50,7 +50,7 @@ export default class AgentStateLoader extends React.Component {
     const { accountId, weekly } = this.props;
     const {
       sendResults,
-      state: { resultsSent },
+      state: { resultsSent }
     } = this;
 
     return (
@@ -87,7 +87,7 @@ export default class AgentStateLoader extends React.Component {
                   appId: result.apmAppId,
                   agentVersions: result.members,
                   language: result.language,
-                  appName: result.appName,
+                  appName: result.appName
                 };
               });
               sendResults(appInfo);

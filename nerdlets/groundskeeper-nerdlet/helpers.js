@@ -1,3 +1,4 @@
+import React from 'react';
 import { Link, navigation } from 'nr1';
 import { subWeeks, subMonths, isSameDay, isBefore } from 'date-fns';
 
@@ -66,7 +67,7 @@ function agentVersionInList(version, versionList) {
       )
     : null;
 
-  return agentVersion ? true : false;
+  return !!agentVersion;
 }
 
 /**
@@ -89,13 +90,13 @@ const agentSloOptions = [
     label: 'the latest agent',
     filterFunc: versions => {
       return [versions[0]];
-    },
+    }
   },
   {
     label: 'the last 3 agent releases',
     filterFunc: versions => {
       return versions.slice(0, 3);
-    },
+    }
   },
 
   {
@@ -106,7 +107,7 @@ const agentSloOptions = [
         (ver, index) =>
           index === 0 || isSameDay(fresh, ver.date) || isBefore(fresh, ver.date)
       );
-    },
+    }
   },
   {
     label: 'agents < 1 month old',
@@ -116,7 +117,7 @@ const agentSloOptions = [
         (ver, index) =>
           index === 0 || isSameDay(fresh, ver.date) || isBefore(fresh, ver.date)
       );
-    },
+    }
   },
   {
     label: 'agents < 6 months old',
@@ -126,7 +127,7 @@ const agentSloOptions = [
         (ver, index) =>
           index === 0 || isSameDay(fresh, ver.date) || isBefore(fresh, ver.date)
       );
-    },
+    }
   },
   {
     label: 'agents < 1 year old (Support cutoff)',
@@ -136,8 +137,8 @@ const agentSloOptions = [
         (ver, index) =>
           index === 0 || isSameDay(fresh, ver.date) || isBefore(fresh, ver.date)
       );
-    },
-  },
+    }
+  }
 ];
 
 export {
@@ -146,5 +147,5 @@ export {
   cleanAgentVersion,
   agentVersionInList,
   agentSloOptions,
-  defaultAgentSloOption,
+  defaultAgentSloOption
 };

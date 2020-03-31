@@ -12,16 +12,17 @@ export default class SLAReport extends React.Component {
   static propTypes = {
     slaReportKey: PropTypes.string.isRequired,
     agentData: PropTypes.array.isRequired,
-    freshAgentVersions: PropTypes.object.isRequired,
+    freshAgentVersions: PropTypes.object.isRequired
   };
 
   state = {
-    tableContent: undefined,
+    tableContent: undefined
   };
 
   componentDidMount() {
     this.computeSLAReport();
   }
+
   componentDidUpdate(prevProps) {
     if (
       this.props.slaReportKey !== prevProps.slaReportKey ||
@@ -44,8 +45,8 @@ export default class SLAReport extends React.Component {
         inSLA: 0,
         outdated: 0,
         multiple: 0,
-        unknown: 0,
-      },
+        unknown: 0
+      }
     };
 
     agentData.forEach(info => {
@@ -67,7 +68,7 @@ export default class SLAReport extends React.Component {
             inSLA: 0,
             outdated: 0,
             multiple: 0,
-            unknown: 0,
+            unknown: 0
           };
         }
         if (versions.length < 1) {
@@ -96,52 +97,53 @@ export default class SLAReport extends React.Component {
           inSLA: val.inSLA,
           outdated: val.outdated,
           multiple: val.multiple,
-          unknown: val.unknown,
+          unknown: val.unknown
         };
       })
       .filter(d => d)
-      .sort((a, b) =>
-        a.percentInSLA > b.percentInSLA
-          ? -1
-          : a.percentInSLA === b.percentInSLA
-          ? 0
-          : 1
-      );
+      .sort((a, b) => {
+        if (a.percentInSLA > b.percentInSLA) {
+          return -1;
+        } else if (a.percentInSLA === b.percentInSLA) {
+          return 0;
+        }
+        return 1;
+      });
 
     const tableContent = {
       columns: [
         {
           dataField: 'key',
           text: slaReportKey,
-          sort: true,
+          sort: true
         },
         {
           dataField: 'percentInSLA',
           text: '% within SLA',
-          sort: true,
+          sort: true
         },
         {
           dataField: 'inSLA',
           text: '# within SLA',
-          sort: true,
+          sort: true
         },
         {
           dataField: 'outdated',
           text: '# outdated',
-          sort: true,
+          sort: true
         },
         {
           dataField: 'multiple',
           text: '# w/ multiple versions',
-          sort: true,
+          sort: true
         },
         {
           dataField: 'unknown',
           text: '# w/out reported version',
-          sort: true,
-        },
+          sort: true
+        }
       ],
-      data: data,
+      data: data
     };
 
     this.setState({ tableContent });

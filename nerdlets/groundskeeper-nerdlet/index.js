@@ -1,15 +1,12 @@
-import './styles.scss';
+import React from 'react';
 import { startCase } from 'lodash';
 import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import {
   parseISO,
   differenceInMilliseconds,
-  differenceInWeeks,
+  differenceInWeeks
 } from 'date-fns';
-
-import React from 'react';
-
 import {
   NerdGraphQuery,
   Spinner,
@@ -18,9 +15,8 @@ import {
   Dropdown,
   DropdownItem,
   Grid,
-  GridItem,
+  GridItem
 } from 'nr1';
-
 import AgentVersion from './components/AgentVersion';
 import SLAReport from './components/SLAReport';
 
@@ -30,7 +26,7 @@ import {
   cleanAgentVersion,
   agentVersionInList,
   agentSloOptions,
-  defaultAgentSloOption,
+  defaultAgentSloOption
 } from './helpers';
 
 import { ACCOUNT_NG_QUERY, ENTITY_NG_QUERY } from './queries';
@@ -61,7 +57,7 @@ export default class Groundskeeper extends React.Component {
     filterKey: undefined,
     filterValue: undefined,
 
-    slaReportKey: undefined,
+    slaReportKey: undefined
   };
 
   componentDidMount() {
@@ -107,7 +103,7 @@ export default class Groundskeeper extends React.Component {
 
   setTableState(tableState) {
     this.setState({
-      tableState: tableState,
+      tableState: tableState
     });
   }
 
@@ -233,7 +229,7 @@ export default class Groundskeeper extends React.Component {
   loadInitialData = () => {
     const that = this;
     NerdGraphQuery.query({
-      query: ACCOUNT_NG_QUERY,
+      query: ACCOUNT_NG_QUERY
     })
       .then(res => {
         const { loading, data, errors } = res;
@@ -276,7 +272,7 @@ export default class Groundskeeper extends React.Component {
     const that = this;
     NerdGraphQuery.query({
       query: ENTITY_NG_QUERY,
-      variables: { queryCursor: cursor },
+      variables: { queryCursor: cursor }
     })
       .then(res => {
         const { loading, data, errors } = res;
@@ -324,7 +320,7 @@ export default class Groundskeeper extends React.Component {
           .map(ver => {
             return {
               version: cleanAgentVersion(ver.version),
-              date: parseISO(ver.date),
+              date: parseISO(ver.date)
             };
           })
           .sort((a, b) => {
@@ -369,7 +365,7 @@ export default class Groundskeeper extends React.Component {
               ? [ent.runningAgentVersions.maxVersion]
               : [
                   ent.runningAgentVersions.maxVersion,
-                  ent.runningAgentVersions.minVersion,
+                  ent.runningAgentVersions.minVersion
                 ];
 
           return {
@@ -380,7 +376,7 @@ export default class Groundskeeper extends React.Component {
             appName: ent.name,
             language: ent.language,
             agentVersions: versions,
-            tags: ent.tags,
+            tags: ent.tags
           };
         });
       if (newData.length > 0) {
@@ -423,14 +419,14 @@ export default class Groundskeeper extends React.Component {
       agentVersions,
       freshAgentVersions,
       filterKey,
-      filterValue,
+      filterValue
     } = this.state;
 
     const analysis = {
       current: [],
       old: [],
       multipleVersions: [],
-      noVersions: [],
+      noVersions: []
     };
 
     agentData.forEach(info => {
@@ -464,23 +460,23 @@ export default class Groundskeeper extends React.Component {
         {
           dataField: 'account',
           text: 'Account',
-          sort: true,
+          sort: true
         },
         {
           dataField: 'appId',
           text: 'AppId',
-          sort: true,
+          sort: true
         },
         {
           dataField: 'appName',
           text: 'App name',
-          sort: true,
+          sort: true
         },
         {
           dataField: 'language',
           text: 'Language',
-          sort: true,
-        },
+          sort: true
+        }
       ],
       data: analysis.noVersions.map((info, index) => {
         return {
@@ -488,9 +484,9 @@ export default class Groundskeeper extends React.Component {
           account: accounts[info.accountId] || info.accountId,
           appId: linkedAppId(info.accountId, info.appId),
           appName: info.appName,
-          language: info.language,
+          language: info.language
         };
-      }),
+      })
     };
 
     analysis.currentTable = {
@@ -498,28 +494,28 @@ export default class Groundskeeper extends React.Component {
         {
           dataField: 'account',
           text: 'Account',
-          sort: true,
+          sort: true
         },
         {
           dataField: 'appId',
           text: 'AppId',
-          sort: true,
+          sort: true
         },
         {
           dataField: 'appName',
           text: 'App name',
-          sort: true,
+          sort: true
         },
         {
           dataField: 'language',
           text: 'Language',
-          sort: true,
+          sort: true
         },
         {
           dataField: 'agentVersion',
           text: 'Agent Version',
-          sort: true,
-        },
+          sort: true
+        }
       ],
       data: analysis.current.map((info, index) => {
         return {
@@ -528,9 +524,9 @@ export default class Groundskeeper extends React.Component {
           appId: info.appId,
           appName: info.appName,
           language: info.language,
-          agentVersion: info.agentVersions.join(', '),
+          agentVersion: info.agentVersions.join(', ')
         };
-      }),
+      })
     };
     const now = new Date();
     analysis.outdatedTable = {
@@ -539,35 +535,35 @@ export default class Groundskeeper extends React.Component {
           dataField: 'agentAge[1]',
           text: 'Agent age',
           sort: true,
-          formatter: (cell, row) => {
+          formatter: cell => {
             return cell >= 0 ? `${cell} weeks old` : 'Unknown';
-          },
+          }
         },
         {
           dataField: 'account',
           text: 'Account',
-          sort: true,
+          sort: true
         },
         {
           dataField: 'appId',
           text: 'AppId',
-          sort: true,
+          sort: true
         },
         {
           dataField: 'appName',
           text: 'App name',
-          sort: true,
+          sort: true
         },
         {
           dataField: 'language',
           text: 'Language',
-          sort: true,
+          sort: true
         },
         {
           dataField: 'agentVersion',
           text: 'Agent Version',
-          sort: true,
-        },
+          sort: true
+        }
       ],
       data: analysis.old
         .sort((a, b) => {
@@ -591,37 +587,37 @@ export default class Groundskeeper extends React.Component {
             appId: linkedAppId(info.accountId, info.appId),
             appName: info.appName,
             language: info.language,
-            agentVersion: info.agentVersions.join(', '),
+            agentVersion: info.agentVersions.join(', ')
           };
-        }),
+        })
     };
     analysis.multiversionTable = {
       columns: [
         {
           dataField: 'account',
           text: 'Account',
-          sort: true,
+          sort: true
         },
         {
           dataField: 'appId',
           text: 'AppId',
-          sort: true,
+          sort: true
         },
         {
           dataField: 'appName',
           text: 'App name',
-          sort: true,
+          sort: true
         },
         {
           dataField: 'language',
           text: 'Language',
-          sort: true,
+          sort: true
         },
         {
           dataField: 'agentVersions',
           text: 'Agent Versions',
-          sort: true,
-        },
+          sort: true
+        }
       ],
       data: analysis.multipleVersions.map((info, index) => {
         return {
@@ -630,9 +626,9 @@ export default class Groundskeeper extends React.Component {
           appId: linkedAppId(info.accountId, info.appId),
           appName: info.appName,
           language: info.language,
-          agentVersions: info.agentVersions.join(', '),
+          agentVersions: info.agentVersions.join(', ')
         };
-      }),
+      })
     };
 
     return analysis;
@@ -659,8 +655,8 @@ export default class Groundskeeper extends React.Component {
         filterKey,
         filterValue,
         tableState,
-        slaReportKey,
-      },
+        slaReportKey
+      }
     } = this;
 
     if (loadingInitialState) {
@@ -675,21 +671,18 @@ export default class Groundskeeper extends React.Component {
     const upToDateLabel = agentSloOptions[agentSLO].label;
     const scanner = scanIsRunning ? <Spinner inline /> : undefined;
 
-    const tableBannerText = slaReportKey
-      ? `SLA Report by ${slaReportKey}`
-      : tableState === 'outOfDate'
-      ? `${presentationData.outdatedTable.data.length} apps are running
-              outdated agents`
-      : tableState === 'multipleVersions'
-      ? `${presentationData.multiversionTable.data.length} apps are running
-              multiple agent versions`
-      : tableState === 'upToDate'
-      ? `${presentationData.currentTable.data.length} apps are up to date
-              with ${upToDateLabel}`
-      : tableState === 'noVersionReported'
-      ? `${presentationData.noVersionsTable.data.length} apps are not
-              reporting agent version data (they may be inactive)`
-      : undefined;
+    let tableBannerText = '';
+    if (slaReportKey) {
+      tableBannerText = `SLA Report by ${slaReportKey}`;
+    } else if (tableState === 'outOfDate') {
+      tableBannerText += `${presentationData.outdatedTable.data.length} apps are running outdated agents`;
+    } else if (tableState === 'multipleVersions') {
+      tableBannerText += `${presentationData.multiversionTable.data.length} apps are running multiple agent versions`;
+    } else if (tableState === 'upToDate') {
+      tableBannerText += `${presentationData.currentTable.data.length} apps are up to date with ${upToDateLabel}`;
+    } else if (tableState === 'noVersionReported') {
+      tableBannerText += `${presentationData.noVersionsTable.data.length} apps are not reporting agent version data (they may be inactive)`;
+    }
 
     return (
       <div className="gk-content">
@@ -842,7 +835,7 @@ export default class Groundskeeper extends React.Component {
               </StackItem>
             </Stack>
             {tableBannerText ? (
-              <p className={`table-state-count`}>{tableBannerText}</p>
+              <p className="table-state-count">{tableBannerText}</p>
             ) : (
               undefined
             )}
