@@ -1,3 +1,10 @@
+# [0.8.0](https://github.com/newrelic/nr1-groundskeeper/compare/v0.7.1...v0.8.0) (2020-04-29)
+
+
+### Features
+
+* add new icon ([5a0f0f2](https://github.com/newrelic/nr1-groundskeeper/commit/5a0f0f2f9ff5deed98a6ca8448b896333000a18b))
+
 ## [0.7.1](https://github.com/newrelic/nr1-groundskeeper/compare/v0.7.0...v0.7.1) (2020-03-31)
 
 
