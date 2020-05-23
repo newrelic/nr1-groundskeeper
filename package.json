@@ -15,10 +15,10 @@
   "dependencies": {
     "date-fns": "^2.11.0",
     "prop-types": "^15.6.2",
-    "react": "^16.6.3",
+    "react": "^16.13.1",
     "react-bootstrap-table-next": "^3.3.3",
     "react-bootstrap-table2-toolkit": "^2.1.1",
-    "react-dom": "^16.6.3",
+    "react-dom": "^16.13.1",
     "react-table": "^6.10.3"
   },
   "browserslist": [
