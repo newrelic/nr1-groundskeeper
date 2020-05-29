@@ -13,7 +13,7 @@
     "eslint-fix": "eslint nerdlets/ --fix"
   },
   "dependencies": {
-    "date-fns": "^2.11.0",
+    "date-fns": "^2.13.0",
     "prop-types": "^15.6.2",
     "react": "^16.6.3",
     "react-bootstrap-table-next": "^3.3.3",
