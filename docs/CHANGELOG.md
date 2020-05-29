@@ -1,3 +1,10 @@
+# [0.10.0](https://github.com/newrelic/nr1-groundskeeper/compare/v0.9.0...v0.10.0) (2020-05-29)
+
+
+### Features
+
+* Switch CI to GitHub Actions ([#40](https://github.com/newrelic/nr1-groundskeeper/issues/40)) ([8856f7a](https://github.com/newrelic/nr1-groundskeeper/commit/8856f7a16ed8e2fd60a60b2fcdc5fac00e8db7e5))
+
 # [0.9.0](https://github.com/newrelic/nr1-groundskeeper/compare/v0.8.0...v0.9.0) (2020-04-29)
 
 
