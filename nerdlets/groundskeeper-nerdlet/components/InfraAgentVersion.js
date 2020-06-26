@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import BootstrapTable from 'react-bootstrap-table-next';
 import { format } from 'date-fns';
 
-export default class AgentVersion extends React.PureComponent {
+export default class InfraAgentVersion extends React.PureComponent {
   static propTypes = {
     agentVersions: PropTypes.object.isRequired,
     freshAgentVersions: PropTypes.object.isRequired
@@ -12,11 +12,6 @@ export default class AgentVersion extends React.PureComponent {
   render() {
     const { agentVersions, freshAgentVersions } = this.props;
     const columns = [
-      {
-        dataField: 'language',
-        text: 'Language',
-        sort: true
-      },
       {
         dataField: 'version',
         text: 'Version',
@@ -41,11 +36,13 @@ export default class AgentVersion extends React.PureComponent {
           'MMM do yyyy'
         )
       }));
-      let apmTableData = tableData.filter(it => ! it.language.includes('infrastructure'));
+
+      let infraTableData = tableData.filter(it => it.language.includes('infrastructure'));
+
     return (
       <div className="agent-versions">
-        <h3>Latest APM agent versions</h3>
-        <BootstrapTable keyField="id" columns={columns} data={apmTableData} />
+        <h3>Latest Infra Agent Version</h3>
+        <BootstrapTable keyField="id" columns={columns} data={infraTableData} />
       </div>
     );
   }

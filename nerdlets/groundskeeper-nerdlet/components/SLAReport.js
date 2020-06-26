@@ -50,37 +50,39 @@ export default class SLAReport extends React.Component {
     };
 
     agentData.forEach(info => {
-      const bucketTag = info.tags.find(t => t.key === slaReportKey) || {};
-      const bucketValues = bucketTag.values || ['(undefined)'];
+      if (typeof info !== 'undefined') {
+        const bucketTag = info.tags.find(t => t.key === slaReportKey) || {};
+        const bucketValues = bucketTag.values || ['(undefined)'];
 
-      const freshVersions = freshAgentVersions[info.language];
-      if (!freshVersions || freshVersions.length < 1) {
-        return;
+        const freshVersions = freshAgentVersions[info.language];
+        if (!freshVersions || freshVersions.length < 1) {
+          return;
+        }
+
+        const versions = (info.agentVersions || []).filter(
+            v => typeof v === 'string' && v.length > 0
+        );
+
+        bucketValues.forEach(bucket => {
+          if (!slaReportData[bucket]) {
+            slaReportData[bucket] = {
+              inSLA: 0,
+              outdated: 0,
+              multiple: 0,
+              unknown: 0
+            };
+          }
+          if (versions.length < 1) {
+            slaReportData[bucket].unknown += 1;
+          } else if (info.agentVersions.length > 1) {
+            slaReportData[bucket].multiple += 1;
+          } else if (agentVersionInList(versions[0], freshVersions)) {
+            slaReportData[bucket].inSLA += 1;
+          } else {
+            slaReportData[bucket].outdated += 1;
+          }
+        });
       }
-
-      const versions = (info.agentVersions || []).filter(
-        v => typeof v === 'string' && v.length > 0
-      );
-
-      bucketValues.forEach(bucket => {
-        if (!slaReportData[bucket]) {
-          slaReportData[bucket] = {
-            inSLA: 0,
-            outdated: 0,
-            multiple: 0,
-            unknown: 0
-          };
-        }
-        if (versions.length < 1) {
-          slaReportData[bucket].unknown += 1;
-        } else if (info.agentVersions.length > 1) {
-          slaReportData[bucket].multiple += 1;
-        } else if (agentVersionInList(versions[0], freshVersions)) {
-          slaReportData[bucket].inSLA += 1;
-        } else {
-          slaReportData[bucket].outdated += 1;
-        }
-      });
     });
 
     const data = Object.keys(slaReportData)

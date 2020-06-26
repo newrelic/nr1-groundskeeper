@@ -18,8 +18,8 @@ import {
   GridItem
 } from 'nr1';
 import AgentVersion from './components/AgentVersion';
+import InfraAgentVersion from './components/InfraAgentVersion';
 import SLAReport from './components/SLAReport';
-
 import {
   linkedAppId,
   agentAge,
@@ -28,8 +28,8 @@ import {
   agentSloOptions,
   defaultAgentSloOption
 } from './helpers';
-
 import { ACCOUNT_NG_QUERY, ENTITY_NG_QUERY } from './queries';
+
 
 export default class Groundskeeper extends React.Component {
   constructor(props) {
@@ -42,9 +42,7 @@ export default class Groundskeeper extends React.Component {
   state = {
     loadingInitialState: true,
     loadError: false,
-
     agentSLO: defaultAgentSloOption,
-
     agentData: [],
     tags: {},
     presentationData: {},
@@ -53,10 +51,9 @@ export default class Groundskeeper extends React.Component {
     freshAgentVersions: {},
     scanIsRunning: true,
     tableState: 'outOfDate',
-
     filterKey: undefined,
     filterValue: undefined,
-
+    entityTypeFilterValue: undefined,
     slaReportKey: undefined
   };
 
@@ -78,6 +75,13 @@ export default class Groundskeeper extends React.Component {
 
   setFilterValue = val => {
     this.setState({ filterValue: val || undefined }, () => {
+      this.recomputePresentation(this.state.agentData);
+    });
+  };
+
+
+  setEntityTypeFilterValue = val => {
+    this.setState({ entityTypeFilterValue: val || undefined, entityTypeFilterKey: val || undefined }, () => {
       this.recomputePresentation(this.state.agentData);
     });
   };
@@ -247,9 +251,8 @@ export default class Groundskeeper extends React.Component {
         if (data) {
           that.setAccountList(data.actor.accounts);
           that.setAgentVersions(data.docs);
-
-          const entities = data.actor.entitySearch.results.entities;
-          const cursor = data.actor.entitySearch.results.nextCursor;
+          const entities = data.actor.infra.results.entities.concat(data.actor.apm.results.entities);
+          const cursor = entities.nextCursor;
           that.setEntityData(entities, undefined);
           if (cursor) {
             that.setState({ scanIsRunning: true });
@@ -284,8 +287,8 @@ export default class Groundskeeper extends React.Component {
           return;
         }
         if (data) {
-          const entities = data.actor.entitySearch.results.entities;
-          const cursor = data.actor.entitySearch.results.nextCursor;
+          const entities = data.actor.infra.results.entities.concat(data.actor.apm.results.entities);
+          const cursor = entities.nextCursor;
           that.setEntityData(entities, undefined);
           if (cursor) {
             that.setState({ scanIsRunning: true });
@@ -315,7 +318,9 @@ export default class Groundskeeper extends React.Component {
 
     Object.keys(agentList).forEach(language => {
       const al = agentList[language];
+
       if (al && al.map && al.length > 0) {
+
         agentVersions[language] = al
           .map(ver => {
             return {
@@ -338,16 +343,21 @@ export default class Groundskeeper extends React.Component {
 
   setEntityData = (data, error) => {
     const { tags, agentData } = this.state;
-    if (data) {
+
+
+    if (data){
       const newData = data
         .filter(ent => {
-          if (!ent.runningAgentVersions) return false;
+          //if (!ent.runningAgentVersions) return false;
           const isPresent = agentData.find(
             a => a.accountId === ent.account.id && a.appId === ent.applicationId
           );
           return !isPresent;
         })
         .map(ent => {
+          let versions = [];
+          let names = [];
+
           ent.tags.forEach(({ key, values }) => {
             if (!tags[key]) {
               tags[key] = [];
@@ -355,29 +365,38 @@ export default class Groundskeeper extends React.Component {
             values.forEach(val => {
               if (tags[key].indexOf(val) < 0) {
                 tags[key].push(val);
-              }
-            });
+                }
+              if  (key == "agentVersion") versions = [val];
+              if  (key == "hostname") names = val;
+             });
           });
 
-          const versions =
-            ent.runningAgentVersions.minVersion ===
-            ent.runningAgentVersions.maxVersion
-              ? [ent.runningAgentVersions.maxVersion]
-              : [
-                  ent.runningAgentVersions.maxVersion,
-                  ent.runningAgentVersions.minVersion
-                ];
-
-          return {
-            accountId: ent.account.id,
-            accountName: ent.account.name,
-            appId: ent.applicationId,
-            guid: ent.guid,
-            appName: ent.name,
-            language: ent.language,
-            agentVersions: versions,
-            tags: ent.tags
-          };
+        if (ent.runningAgentVersions) {
+          versions =
+              ent.runningAgentVersions.minVersion ===
+              ent.runningAgentVersions.maxVersion
+                  ? [ent.runningAgentVersions.maxVersion]
+                  : [
+                    ent.runningAgentVersions.maxVersion,
+                    ent.runningAgentVersions.minVersion
+                  ];
+        }
+         const guids = (ent.permalink) ? ent.permalink : ent.guid;
+         const languages = (ent.language) ? ent.language : "infrastructure";
+         if (names.length == 0) names = ent.name;
+         if (versions.length > 0 && languages.length > 0) {
+             return {
+              accountId: ent.account.id,
+              accountName: ent.account.name,
+              appId: ent.applicationId,
+              guid: guids,
+              appName: names,
+              language: languages,
+              agentVersions: versions,
+              tags: ent.tags,
+              entityType: ent.entityType
+            }
+          }//else return false;
         });
       if (newData.length > 0) {
         this.setState({ tags });
@@ -419,7 +438,8 @@ export default class Groundskeeper extends React.Component {
       agentVersions,
       freshAgentVersions,
       filterKey,
-      filterValue
+      filterValue,
+      entityTypeFilterValue
     } = this.state;
 
     const analysis = {
@@ -428,31 +448,38 @@ export default class Groundskeeper extends React.Component {
       multipleVersions: [],
       noVersions: []
     };
+    agentData.filter(x => typeof x !== 'undefined').forEach(info => {
+        const freshVersions = freshAgentVersions[info.language];
+        if (!freshVersions || freshVersions.length < 1) {
+          return;
+        }
+        if (filterKey && filterValue) {
+          const tag = info.tags.find(t => t.key === filterKey);
+          if (!tag || tag.values.indexOf(filterValue) < 0) return;
+        }
 
-    agentData.forEach(info => {
-      const freshVersions = freshAgentVersions[info.language];
-      if (!freshVersions || freshVersions.length < 1) {
-        return;
-      }
-      if (filterKey && filterValue) {
-        const tag = info.tags.find(t => t.key === filterKey);
-        if (!tag || tag.values.indexOf(filterValue) < 0) return;
-      }
+        if (entityTypeFilterValue && entityTypeFilterValue !== 'undefined'){
+          //by entityType
+          console.log("entityTypeFilterValue="+entityTypeFilterValue);
+          console.log("filterValueInfo="+info.entityType);
+          if(info.entityType !== entityTypeFilterValue) return;
+        }
 
-      const originalVersions = info.agentVersions || [];
-      info.agentVersions = originalVersions.filter(
-        v => typeof v === 'string' && v.length > 0
-      );
-      if (info.agentVersions.length < 1) {
-        console.log(`No valid versions found for ${info.appName} `, originalVersions) // eslint-disable-line prettier/prettier, no-console
-        analysis.noVersions.push(info);
-      } else if (info.agentVersions.length > 1) {
-        analysis.multipleVersions.push(info);
-      } else if (agentVersionInList(info.agentVersions[0], freshVersions)) {
-        analysis.current.push(info);
-      } else {
-        analysis.old.push(info);
-      }
+        const originalVersions = info.agentVersions || [];
+        info.agentVersions = originalVersions.filter(
+            v => typeof v === 'string' && v.length > 0
+        );
+        if (info.agentVersions.length < 1) {
+          console.log(`No valid versions found for ${info.appName} `, originalVersions) // eslint-disable-line prettier/prettier, no-console
+          analysis.noVersions.push(info);
+        } else if (info.agentVersions.length > 1) {
+          analysis.multipleVersions.push(info);
+        } else if (agentVersionInList(info.agentVersions[0], freshVersions)) {
+          analysis.current.push(info);
+        } else {
+          analysis.old.push(info);
+        }
+
     });
 
     analysis.noVersionsTable = {
@@ -464,17 +491,17 @@ export default class Groundskeeper extends React.Component {
         },
         {
           dataField: 'appId',
-          text: 'AppId',
+          text: 'AppId/Entity Name',
           sort: true
         },
         {
           dataField: 'appName',
-          text: 'App name',
+          text: 'App/Host name',
           sort: true
         },
         {
           dataField: 'language',
-          text: 'Language',
+          text: 'Agent Type',
           sort: true
         }
       ],
@@ -482,7 +509,7 @@ export default class Groundskeeper extends React.Component {
         return {
           key: index,
           account: accounts[info.accountId] || info.accountId,
-          appId: linkedAppId(info.accountId, info.appId),
+          appId: linkedAppId(info.accountId, info.appId, info.guid),
           appName: info.appName,
           language: info.language
         };
@@ -498,17 +525,17 @@ export default class Groundskeeper extends React.Component {
         },
         {
           dataField: 'appId',
-          text: 'AppId',
+          text: 'AppId/Entity Name',
           sort: true
         },
         {
           dataField: 'appName',
-          text: 'App name',
+          text: 'App/Host name',
           sort: true
         },
         {
           dataField: 'language',
-          text: 'Language',
+          text: 'Agent Type',
           sort: true
         },
         {
@@ -546,17 +573,17 @@ export default class Groundskeeper extends React.Component {
         },
         {
           dataField: 'appId',
-          text: 'AppId',
+          text: 'AppId/Entity Name',
           sort: true
         },
         {
           dataField: 'appName',
-          text: 'App name',
+          text: 'App/Host name',
           sort: true
         },
         {
           dataField: 'language',
-          text: 'Language',
+          text: 'Agent Type',
           sort: true
         },
         {
@@ -584,7 +611,7 @@ export default class Groundskeeper extends React.Component {
             key: index,
             agentAge: [age, ageInWeeks],
             account: accounts[info.accountId] || info.accountId,
-            appId: linkedAppId(info.accountId, info.appId),
+            appId: linkedAppId(info.accountId, info.appId, info.guid),
             appName: info.appName,
             language: info.language,
             agentVersion: info.agentVersions.join(', ')
@@ -623,7 +650,7 @@ export default class Groundskeeper extends React.Component {
         return {
           key: index,
           account: accounts[info.accountId] || info.accountId,
-          appId: linkedAppId(info.accountId, info.appId),
+          appId: linkedAppId(info.accountId, info.appId, info.guid),
           appName: info.appName,
           language: info.language,
           agentVersions: info.agentVersions.join(', ')
@@ -640,6 +667,7 @@ export default class Groundskeeper extends React.Component {
       setFilterKey,
       setFilterValue,
       setSLAReportKey,
+      setEntityTypeFilterValue,
       setTableState,
       getTableStateCount,
       state: {
@@ -654,6 +682,7 @@ export default class Groundskeeper extends React.Component {
         tags,
         filterKey,
         filterValue,
+        entityTypeFilterValue,
         tableState,
         slaReportKey
       }
@@ -675,14 +704,22 @@ export default class Groundskeeper extends React.Component {
     if (slaReportKey) {
       tableBannerText = `SLA Report by ${slaReportKey}`;
     } else if (tableState === 'outOfDate') {
-      tableBannerText += `${presentationData.outdatedTable.data.length} apps are running outdated agents`;
+      tableBannerText += `${presentationData.outdatedTable.data.length} entities are running outdated agents`;
     } else if (tableState === 'multipleVersions') {
-      tableBannerText += `${presentationData.multiversionTable.data.length} apps are running multiple agent versions`;
+      tableBannerText += `${presentationData.multiversionTable.data.length} entities are running multiple agent versions`;
     } else if (tableState === 'upToDate') {
-      tableBannerText += `${presentationData.currentTable.data.length} apps are up to date with ${upToDateLabel}`;
+      tableBannerText += `${presentationData.currentTable.data.length} entities are up to date with ${upToDateLabel}`;
     } else if (tableState === 'noVersionReported') {
-      tableBannerText += `${presentationData.noVersionsTable.data.length} apps are not reporting agent version data (they may be inactive)`;
+      tableBannerText += `${presentationData.noVersionsTable.data.length} entities are not reporting agent version data (they may be inactive)`;
     }
+
+    const entityTypes = Array.from(new Set((agentData)
+        .filter(x => x !== 'undefined' && x != null && x.entityType !== 'undefined')
+        .sort()
+        .map(key => {return key.entityType;})
+    ));
+
+
 
     return (
       <div className="gk-content">
@@ -710,6 +747,32 @@ export default class Groundskeeper extends React.Component {
                   fullWidth
                   verticalType={Stack.VERTICAL_TYPE.FILL}
                 >
+                  <StackItem
+                      className={`toolbar-item ${
+                          entityTypeFilterValue ? '' : 'has-separator'
+                      }`}
+                  >
+                    <Dropdown
+                        label="Filter by agent"
+                        title={entityTypeFilterValue === undefined ? 'All' : entityTypeFilterValue}
+                    >
+                      <DropdownItem onClick={() => setEntityTypeFilterValue('')}>
+                        All
+                      </DropdownItem>
+                      {entityTypes
+                          .sort()
+                          .map(key => (
+                              <DropdownItem
+                                  key={`filter-tag-${key}`}
+                                  value={key}
+                                  onClick={() => setEntityTypeFilterValue(key)}
+                              >
+                                {key}
+                              </DropdownItem>
+
+                          ))}
+                    </Dropdown>
+                  </StackItem>
                   <StackItem className="toolbar-item has-separator">
                     <Dropdown
                       label="My Upgrade SLO is"
@@ -732,7 +795,7 @@ export default class Groundskeeper extends React.Component {
                     }`}
                   >
                     <Dropdown
-                      label="Filter applications by tag"
+                      label="Filter by tag"
                       title={filterKey === undefined ? '--' : filterKey}
                     >
                       <DropdownItem onClick={() => setFilterKey('')}>
@@ -829,7 +892,7 @@ export default class Groundskeeper extends React.Component {
                 >
                   <StackItem>
                     {scanner}
-                    <small>Loaded {agentData.length} applications</small>
+                    <small>Loaded {agentData.length} entities</small>
                   </StackItem>
                 </Stack>
               </StackItem>
@@ -851,11 +914,17 @@ export default class Groundskeeper extends React.Component {
                   this.renderTableState()
                 )}
               </GridItem>
+
               <GridItem columnSpan={3} className="secondary-table-grid-item">
+                 <InfraAgentVersion
+                     agentVersions={agentVersions}
+                     freshAgentVersions={freshAgentVersions}
+                 />
                 <AgentVersion
                   agentVersions={agentVersions}
                   freshAgentVersions={freshAgentVersions}
                 />
+
               </GridItem>
             </Grid>
           </>

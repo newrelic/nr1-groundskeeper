@@ -2,12 +2,13 @@ import React from 'react';
 import { Link, navigation } from 'nr1';
 import { subWeeks, subMonths, isSameDay, isBefore } from 'date-fns';
 
-function linkedAppId(accountId, appId) {
+function linkedAppId(accountId, appId, guid) {
   let entityGuid = btoa(`${accountId}|APM|APPLICATION|${appId}`);
   while (entityGuid.endsWith('=')) {
     entityGuid = entityGuid.slice(0, -1);
   }
-  const location = navigation.getOpenStackedEntityLocation(entityGuid);
+  //let location = navigation.getOpenStackedEntityLocation(entityGuid);
+  const location = (guid.startsWith("http")) ? guid : navigation.getOpenStackedEntityLocation(entityGuid);
   return <Link to={location}>{appId}</Link>;
 }
 
