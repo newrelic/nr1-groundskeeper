@@ -892,7 +892,7 @@ export default class Groundskeeper extends React.Component {
                 >
                   <StackItem>
                     {scanner}
-                    <small>Loaded {agentData.length} entities</small>
+                    <small>Loaded {agentData.filter(x => typeof x !== 'undefined').length} entities</small>
                   </StackItem>
                 </Stack>
               </StackItem>
