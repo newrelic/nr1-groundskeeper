@@ -1,6 +1,6 @@
 {
     "schemaType": "NERDLET",
-    "id": "groundskeeper-nerdlet-2",
+    "id": "groundskeeper-nerdlet",
     "description": "Describe me",
     "displayName": "Agent Groundskeeper"
 }
