@@ -31,29 +31,29 @@ const ACCOUNT_NG_QUERY = `query {
                                                nextCursor
                                            }
                                        }
-                                       infra: entitySearch(queryBuilder: {type: HOST, reporting: true}) {
-                                                          results {
-                                                              entities {
-                                                                  account {
-                                                                      id
-                                                                      name
-                                                                  }
-                                                                  name
-                                                                  ... on InfrastructureHostEntityOutline {
-                                                                             applicationId: name
-                                                                             appId: name
-                                                                             name
-                                                                             entityType
-                                                                             accountId
-                                                                             tags {
-                                                                               key
-                                                                               values
-                                                                             }
-                                                                             guid
-                                                                             permalink
-                                                                  }
-                                                              }
-                                                              nextCursor
+                                     infra: entitySearch(queryBuilder: {domain: INFRA, type: HOST, reporting: true}) {
+                                                                  results {
+                                                                      entities {
+                                                                          account {
+                                                                              id
+                                                                              name
+                                                                          }
+                                                                          name
+                                                                          ... on InfrastructureHostEntityOutline {
+                                                                                     applicationId: name
+                                                                                     appId: name
+                                                                                     name
+                                                                                     entityType
+                                                                                     accountId
+                                                                                     tags {
+                                                                                       key
+                                                                                       values
+                                                                                     }
+                                                                                     guid
+                                                                                     permalink
+                                                                          }
+                                                                      }
+                                                                      nextCursor
                                                           }
                                      }}
                                    docs {
@@ -130,8 +130,8 @@ query($queryCursor: String!) {
                 nextCursor
             }
         }
-        infra: entitySearch(queryBuilder: {type: HOST, reporting: true}) {
-                                                                  results {
+        infra: entitySearch(queryBuilder: {domain: INFRA, type: HOST, reporting: true}) {
+                                                                  results(cursor: $queryCursor)  {
                                                                       entities {
                                                                           account {
                                                                               id

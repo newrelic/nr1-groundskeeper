@@ -357,20 +357,20 @@ export default class Groundskeeper extends React.Component {
         .map(ent => {
           let versions = [];
           let names = [];
-
-          ent.tags.forEach(({ key, values }) => {
-            if (!tags[key]) {
-              tags[key] = [];
-            }
-            values.forEach(val => {
-              if (tags[key].indexOf(val) < 0) {
-                tags[key].push(val);
+          if (ent && ent.tags) {
+            ent.tags.forEach(({key, values}) => {
+              if (!tags[key]) {
+                tags[key] = [];
+              }
+              values.forEach(val => {
+                if (tags[key].indexOf(val) < 0) {
+                  tags[key].push(val);
                 }
-              if  (key == "agentVersion") versions = [val];
-              if  (key == "hostname") names = val;
-             });
-          });
-
+                if (key == "agentVersion") versions = [val];
+                if (key == "hostname") names = val;
+              });
+            });
+          }
         if (ent.runningAgentVersions) {
           versions =
               ent.runningAgentVersions.minVersion ===
@@ -381,7 +381,7 @@ export default class Groundskeeper extends React.Component {
                     ent.runningAgentVersions.minVersion
                   ];
         }
-         const guids = (ent.permalink) ? ent.permalink : ent.guid;
+         //const guids = (ent.permalink) ? ent.permalink : ent.guid;
          const languages = (ent.language) ? ent.language : "infrastructure";
          if (names.length == 0) names = ent.name;
          if (versions.length > 0 && languages.length > 0) {
@@ -389,7 +389,7 @@ export default class Groundskeeper extends React.Component {
               accountId: ent.account.id,
               accountName: ent.account.name,
               appId: ent.applicationId,
-              guid: guids,
+              guid: ent.guid,
               appName: names,
               language: languages,
               agentVersions: versions,
@@ -458,10 +458,8 @@ export default class Groundskeeper extends React.Component {
           if (!tag || tag.values.indexOf(filterValue) < 0) return;
         }
 
-        if (entityTypeFilterValue && entityTypeFilterValue !== 'undefined'){
+        if (entityTypeFilterValue && entityTypeFilterValue !== undefined){
           //by entityType
-          console.log("entityTypeFilterValue="+entityTypeFilterValue);
-          console.log("filterValueInfo="+info.entityType);
           if(info.entityType !== entityTypeFilterValue) return;
         }
 
@@ -509,7 +507,7 @@ export default class Groundskeeper extends React.Component {
         return {
           key: index,
           account: accounts[info.accountId] || info.accountId,
-          appId: linkedAppId(info.accountId, info.appId, info.guid),
+          appId: linkedAppId(info.accountId, info.appId, info.guid, info.entityType),
           appName: info.appName,
           language: info.language
         };
@@ -611,7 +609,7 @@ export default class Groundskeeper extends React.Component {
             key: index,
             agentAge: [age, ageInWeeks],
             account: accounts[info.accountId] || info.accountId,
-            appId: linkedAppId(info.accountId, info.appId, info.guid),
+            appId: linkedAppId(info.accountId, info.appId, info.guid, info.entityType),
             appName: info.appName,
             language: info.language,
             agentVersion: info.agentVersions.join(', ')
@@ -650,7 +648,7 @@ export default class Groundskeeper extends React.Component {
         return {
           key: index,
           account: accounts[info.accountId] || info.accountId,
-          appId: linkedAppId(info.accountId, info.appId, info.guid),
+          appId: linkedAppId(info.accountId, info.appId, info.guid, info.entityType),
           appName: info.appName,
           language: info.language,
           agentVersions: info.agentVersions.join(', ')
@@ -714,7 +712,7 @@ export default class Groundskeeper extends React.Component {
     }
 
     const entityTypes = Array.from(new Set((agentData)
-        .filter(x => x !== 'undefined' && x != null && x.entityType !== 'undefined')
+        .filter(x => x !== undefined && x != null && x.entityType !== undefined)
         .sort()
         .map(key => {return key.entityType;})
     ));
