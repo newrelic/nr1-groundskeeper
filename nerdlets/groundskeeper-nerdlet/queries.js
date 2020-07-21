@@ -159,6 +159,72 @@ query($queryCursor: String!) {
 }
 `;
 
+const ENTITY_NG_QUERY_APM = `
+query($queryCursor: String!) {
+    actor {
+        apm: entitySearch(queryBuilder: {domain: APM, type: APPLICATION, reporting: true}) {
+            results(cursor: $queryCursor) {
+                entities {
+                    account {
+                        id
+                        name
+                    }
+                    name
+                    ... on ApmApplicationEntityOutline {
+                        applicationId
+                        name
+                        language
+                        entityType
+                        runningAgentVersions {
+                            maxVersion
+                            minVersion
+                        }
+                        tags {
+                            key
+                            values
+                        }
+                        guid
+                    }
+                }
+                nextCursor
+            }
+        }
+                            
+    }
+}
+`;
+
+const ENTITY_NG_QUERY_INFRA = `
+query($queryCursor: String!) {
+    actor {
+        infra: entitySearch(queryBuilder: {domain: INFRA, type: HOST, reporting: true}) {
+                                                                  results(cursor: $queryCursor)  {
+                                                                      entities {
+                                                                          account {
+                                                                              id
+                                                                              name
+                                                                          }
+                                                                          name
+                                                                          ... on InfrastructureHostEntityOutline {
+                                                                                     applicationId: name
+                                                                                     appId: name
+                                                                                     name
+                                                                                     entityType
+                                                                                     accountId
+                                                                                     tags {
+                                                                                       key
+                                                                                       values
+                                                                                     }
+                                                                                     guid
+                                                                                     permalink
+                                                                          }
+                                                                      }
+                                                                      nextCursor
+                                                                  }
+                                             }
+    }
+}
+`;
 
 
-export { ACCOUNT_NG_QUERY, ENTITY_NG_QUERY };
+export { ACCOUNT_NG_QUERY, ENTITY_NG_QUERY, ENTITY_NG_QUERY_APM, ENTITY_NG_QUERY_INFRA };

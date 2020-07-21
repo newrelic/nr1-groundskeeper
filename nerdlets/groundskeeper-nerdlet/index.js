@@ -28,7 +28,7 @@ import {
   agentSloOptions,
   defaultAgentSloOption
 } from './helpers';
-import { ACCOUNT_NG_QUERY, ENTITY_NG_QUERY } from './queries';
+import { ACCOUNT_NG_QUERY, ENTITY_NG_QUERY, ENTITY_NG_QUERY_APM, ENTITY_NG_QUERY_INFRA } from './queries';
 
 
 export default class Groundskeeper extends React.Component {
@@ -251,12 +251,16 @@ export default class Groundskeeper extends React.Component {
         if (data) {
           that.setAccountList(data.actor.accounts);
           that.setAgentVersions(data.docs);
+          const cursor_apm = data.actor.apm.results.nextCursor;
+          const cursor_infra = data.actor.infra.results.nextCursor;
           const entities = data.actor.infra.results.entities.concat(data.actor.apm.results.entities);
-          const cursor = entities.nextCursor;
           that.setEntityData(entities, undefined);
-          if (cursor) {
+          if (cursor_apm || cursor_infra) {
+            //console.log("2.1.cursor_apm="+cursor_apm);
+            //console.log("2.2.cursor_infra="+cursor_infra);
             that.setState({ scanIsRunning: true });
-            that.getMoreEntityData(cursor);
+            if (cursor_apm) that.getMoreEntityData(cursor_apm, "apm");
+            if (cursor_infra) that.getMoreEntityData(cursor_infra, "infra");
           } else {
             that.setState({ scanIsRunning: false });
           }
@@ -271,10 +275,13 @@ export default class Groundskeeper extends React.Component {
       });
   };
 
-  getMoreEntityData = cursor => {
+  getMoreEntityData = (cursor, pQuery) => {
     const that = this;
+    const functions = {ENTITY_NG_QUERY_APM, ENTITY_NG_QUERY_INFRA};
+    const q = ( pQuery == "apm" ) ? "ENTITY_NG_QUERY_APM" : "ENTITY_NG_QUERY_INFRA";
+    //console.log("getMoreEntityData="+ cursor, q);
     NerdGraphQuery.query({
-      query: ENTITY_NG_QUERY,
+      query: functions[q],
       variables: { queryCursor: cursor }
     })
       .then(res => {
@@ -287,12 +294,12 @@ export default class Groundskeeper extends React.Component {
           return;
         }
         if (data) {
-          const entities = data.actor.infra.results.entities.concat(data.actor.apm.results.entities);
-          const cursor = entities.nextCursor;
+          const entities = ( pQuery == "apm" ) ? data.actor.apm.results.entities : data.actor.infra.results.entities ;
+          const cursor2 = ( pQuery == "apm" ) ? data.actor.apm.results.nextCursor : data.actor.infra.results.nextCursor;
           that.setEntityData(entities, undefined);
-          if (cursor) {
+          if (cursor2) {
             that.setState({ scanIsRunning: true });
-            that.getMoreEntityData(cursor);
+            that.getMoreEntityData(cursor2, pQuery);
           } else {
             that.setState({ scanIsRunning: false });
           }
@@ -349,8 +356,9 @@ export default class Groundskeeper extends React.Component {
       const newData = data
         .filter(ent => {
           //if (!ent.runningAgentVersions) return false;
+
           const isPresent = agentData.find(
-            a => a.accountId === ent.account.id && a.appId === ent.applicationId
+            a => typeof a !== 'undefined' && a.accountId === ent.account.id && a.appId === ent.applicationId
           );
           return !isPresent;
         })
