@@ -60,7 +60,7 @@ export default class SLAReport extends React.Component {
         }
 
         const versions = (info.agentVersions || []).filter(
-            v => typeof v === 'string' && v.length > 0
+          v => typeof v === 'string' && v.length > 0
         );
 
         bucketValues.forEach(bucket => {

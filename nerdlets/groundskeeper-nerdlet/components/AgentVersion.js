@@ -41,7 +41,9 @@ export default class AgentVersion extends React.PureComponent {
           'MMM do yyyy'
         )
       }));
-      let apmTableData = tableData.filter(it => ! it.language.includes('infrastructure'));
+    const apmTableData = tableData.filter(
+      it => !it.language.includes('infrastructure')
+    );
     return (
       <div className="agent-versions">
         <h3>Latest APM agent versions</h3>
