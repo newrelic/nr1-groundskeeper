@@ -37,7 +37,9 @@ export default class InfraAgentVersion extends React.PureComponent {
         )
       }));
 
-      let infraTableData = tableData.filter(it => it.language.includes('infrastructure'));
+    const infraTableData = tableData.filter(it =>
+      it.language.includes('infrastructure')
+    );
 
     return (
       <div className="agent-versions">

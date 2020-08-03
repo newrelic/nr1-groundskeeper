@@ -7,7 +7,9 @@ function linkedAppId(accountId, appId, guid, entityType) {
   while (entityGuid.endsWith('=')) {
     entityGuid = entityGuid.slice(0, -1);
   }
-  const location = (!entityType.startsWith("APM"))? navigation.getOpenStackedEntityLocation(guid) : navigation.getOpenStackedEntityLocation(entityGuid);
+  const location = !entityType.startsWith('APM')
+    ? navigation.getOpenStackedEntityLocation(guid)
+    : navigation.getOpenStackedEntityLocation(entityGuid);
   return <Link to={location}>{appId}</Link>;
 }
 
