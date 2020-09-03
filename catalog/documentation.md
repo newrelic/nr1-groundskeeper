@@ -8,7 +8,7 @@ This application will help you keep up to date with the latest agent versions an
 
 ## Open Source License
 
-This project is distributed under the [Apache 2 license](https://github.com/newrelic/nr1-groundskeeper/blob/master/LICENSE).
+This project is distributed under the [Apache 2 license](https://github.com/newrelic/nr1-groundskeeper/blob/main/LICENSE).
 
 ## Dependencies
 
@@ -65,6 +65,6 @@ Issues and enhancement requests can be submitted in the [Issues tab of this repo
 
 ## Contributing
 
-Contributions are welcome (and if you submit a Enhancement Request, expect to be invited to contribute it yourself :grin:). Please review our [Contributors Guide](https://github.com/newrelic/nr1-groundskeeper/blob/master/CONTRIBUTING.md).
+Contributions are welcome (and if you submit a Enhancement Request, expect to be invited to contribute it yourself :grin:). Please review our [Contributors Guide](https://github.com/newrelic/nr1-groundskeeper/blob/main/CONTRIBUTING.md).
 
 Keep in mind that when you submit your pull request, you'll need to sign the CLA via the click-through using CLA-Assistant. If you'd like to execute our corporate CLA, or if you have any questions, please drop us an email at opensource@newrelic.com.
