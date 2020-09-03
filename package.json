@@ -2,7 +2,7 @@
   "private": true,
   "name": "groundskeeper",
   "description": "Generate a live view of all the APM agents across your Services.",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "bugs": {
     "email": "opensource+nr1-groundskeeper@newrelic.com"
   },
