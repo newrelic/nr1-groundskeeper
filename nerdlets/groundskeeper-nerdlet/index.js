@@ -17,8 +17,7 @@ import {
   Grid,
   GridItem
 } from 'nr1';
-import AgentVersion from './components/AgentVersion';
-import InfraAgentVersion from './components/InfraAgentVersion';
+import VersionTableGridItem from './components/VersionTable';
 import SLAReport from './components/SLAReport';
 import {
   linkedAppId,
@@ -969,16 +968,10 @@ export default class Groundskeeper extends React.Component {
                 )}
               </GridItem>
 
-              <GridItem columnSpan={3} className="secondary-table-grid-item">
-                <InfraAgentVersion
-                  agentVersions={agentVersions}
-                  freshAgentVersions={freshAgentVersions}
-                />
-                <AgentVersion
-                  agentVersions={agentVersions}
-                  freshAgentVersions={freshAgentVersions}
-                />
-              </GridItem>
+              <VersionTableGridItem
+                agentVersions={agentVersions}
+                freshAgentVersions={freshAgentVersions}
+              />
             </Grid>
           </>
         ) : (

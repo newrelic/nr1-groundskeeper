@@ -43,7 +43,7 @@ export default class InfraAgentVersion extends React.PureComponent {
 
     return (
       <div className="agent-versions">
-        <h3>Latest Infra Agent Version</h3>
+        <h3>Latest Infra agent Version</h3>
         <BootstrapTable keyField="id" columns={columns} data={infraTableData} />
       </div>
     );
