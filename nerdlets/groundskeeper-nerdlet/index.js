@@ -134,13 +134,13 @@ export default class Groundskeeper extends React.Component {
     });
   };
 
-  setTableState = (tableState) => {
+  setTableState = tableState => {
     this.setState({
       tableState: tableState
     });
   };
 
-  getTableStateCount = (tableState) => {
+  getTableStateCount = tableState => {
     if (tableState === 'upToDate') {
       return this.state.presentationData.currentTable.data.length;
     } else if (tableState === 'multipleVersions') {

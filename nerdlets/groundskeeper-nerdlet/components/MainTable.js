@@ -125,6 +125,6 @@ export default class MainTable extends React.PureComponent {
       content = this.noVersionTable(presentationData, tableState);
     }
 
-    return <div className="table-state-container">{content}</div>
+    return <div className="table-state-container">{content}</div>;
   }
 }
