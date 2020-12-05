@@ -1,3 +1,10 @@
+## [0.10.1](https://github.com/newrelic/nr1-groundskeeper/compare/v0.10.0...v0.10.1) (2020-09-03)
+
+
+### Bug Fixes
+
+* updating default branch to main ([aea1e14](https://github.com/newrelic/nr1-groundskeeper/commit/aea1e146bfb57abf4b927e5245217050e5a185cc))
+
 # [0.10.0](https://github.com/newrelic/nr1-groundskeeper/compare/v0.9.0...v0.10.0) (2020-05-29)
 
 
