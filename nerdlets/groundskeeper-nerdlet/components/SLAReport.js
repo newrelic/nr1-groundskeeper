@@ -51,8 +51,11 @@ export default class SLAReport extends React.Component {
 
     agentData.forEach(info => {
       if (typeof info !== 'undefined') {
-        const bucketTag = info.tags.find(t => t.key === slaReportKey) || {};
-        const bucketValues = bucketTag.values || ['(undefined)'];
+        let bucketValues = ['(undefined)'];
+        if (info.tags && info.tags.find) {
+          const bucketTag = info.tags.find(t => t.key === slaReportKey) || {};
+          bucketValues = bucketTag.values || bucketValues;
+        }
 
         const freshVersions = freshAgentVersions[info.language];
         if (!freshVersions || freshVersions.length < 1) {
