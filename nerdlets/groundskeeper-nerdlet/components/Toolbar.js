@@ -76,7 +76,9 @@ export default class Toolbar extends React.PureComponent {
                 }
               >
                 {Object.keys(entityTypes)
-                  .sort()
+                  .sort((a, b) =>
+                    a.toLowerCase().localeCompare(b.toLowerCase())
+                  )
                   .map(eType => (
                     <DropdownItem
                       key={`entity-type-${eType}`}
