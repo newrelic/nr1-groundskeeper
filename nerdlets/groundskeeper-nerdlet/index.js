@@ -1,7 +1,5 @@
 import React from 'react';
-import { startCase } from 'lodash';
-import BootstrapTable from 'react-bootstrap-table-next';
-import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
+
 import {
   parseISO,
   differenceInMilliseconds,
@@ -10,14 +8,13 @@ import {
 import {
   NerdGraphQuery,
   Spinner,
-  Stack,
-  StackItem,
-  Dropdown,
-  DropdownItem,
   Grid,
-  GridItem
+  GridItem,
+  nerdlet,
+  PlatformStateContext
 } from 'nr1';
 
+import Toolbar from './components/Toolbar';
 import MainTable from './components/MainTable';
 import VersionTableGridItem from './components/VersionTable';
 import SLAReport from './components/SLAReport';
@@ -35,14 +32,13 @@ import {
   ENTITY_NG_QUERY_INFRA
 } from './queries';
 
+const entityTypes = {
+  All: undefined,
+  APM: 'APM_APPLICATION_ENTITY',
+  Infra: 'INFRASTRUCTURE_HOST_ENTITY'
+};
+
 export default class Groundskeeper extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.setTableState = this.setTableState.bind(this);
-    this.getTableStateCount = this.getTableStateCount.bind(this);
-  }
-
   state = {
     loadingInitialState: true,
     loadError: false,
@@ -57,12 +53,38 @@ export default class Groundskeeper extends React.Component {
     tableState: 'outOfDate',
     filterKey: undefined,
     filterValue: undefined,
-    slaReportKey: undefined
+    slaReportKey: undefined,
+    accountId: null,
+    entityTypeFilter: 'APM'
   };
 
   componentDidMount() {
-    this.loadInitialData();
+    nerdlet.setConfig({
+      timePicker: false,
+      accountPicker: false,
+      accountPickerValues: [
+        nerdlet.ACCOUNT_PICKER_VALUE.CROSS_ACCOUNT,
+        ...nerdlet.ACCOUNT_PICKER_DEFAULT_VALUES
+      ]
+    });
+    this.setState({ accountId: this.context.accountId }, () => {
+      this.loadInitialData();
+    });
   }
+
+  componentDidUpdate() {
+    const that = this;
+    const newAccountId = this.context.accountId;
+    if (newAccountId !== this.state.accountId) {
+      setTimeout(() => {
+        that.setState({ accountId: newAccountId }, () => {
+          that.loadInitialData();
+        });
+      }, 1);
+    }
+  }
+
+  static contextType = PlatformStateContext;
 
   loaders = undefined;
   initialEntityDataSet = false;
@@ -82,10 +104,10 @@ export default class Groundskeeper extends React.Component {
     });
   };
 
-  setEntityTypeFilterValue = val => {
+  setEntityTypeFilter = val => {
     this.setState(
       {
-        entityTypeFilterValue: val || undefined
+        entityTypeFilter: val || undefined
       },
       () => {
         this.recomputePresentation(this.state.agentData);
@@ -97,7 +119,7 @@ export default class Groundskeeper extends React.Component {
     this.setState({ slaReportKey: val || undefined });
   };
 
-  updateAgentSLO = slo => {
+  setAgentSLO = slo => {
     if (slo === this.state.agentSLO) {
       return;
     }
@@ -112,13 +134,13 @@ export default class Groundskeeper extends React.Component {
     });
   };
 
-  setTableState(tableState) {
+  setTableState = (tableState) => {
     this.setState({
       tableState: tableState
     });
-  }
+  };
 
-  getTableStateCount(tableState) {
+  getTableStateCount = (tableState) => {
     if (tableState === 'upToDate') {
       return this.state.presentationData.currentTable.data.length;
     } else if (tableState === 'multipleVersions') {
@@ -128,7 +150,7 @@ export default class Groundskeeper extends React.Component {
     } else if (tableState === 'noVersionReported') {
       return this.state.presentationData.noVersionsTable.data.length;
     }
-  }
+  };
 
   loadInitialData = () => {
     const that = this;
@@ -357,7 +379,7 @@ export default class Groundskeeper extends React.Component {
       freshAgentVersions,
       filterKey,
       filterValue,
-      entityTypeFilterValue
+      entityTypeFilter
     } = this.state;
 
     const analysis = {
@@ -378,9 +400,9 @@ export default class Groundskeeper extends React.Component {
           if (!tag || tag.values.indexOf(filterValue) < 0) return;
         }
 
-        if (entityTypeFilterValue && entityTypeFilterValue !== undefined) {
+        if (entityTypeFilter && entityTypes[entityTypeFilter] !== undefined) {
           // by entityType
-          if (info.entityType !== entityTypeFilterValue) return;
+          if (info.entityType !== entityTypes[entityTypeFilter]) return;
         }
 
         const originalVersions = info.agentVersions || [];
@@ -595,11 +617,11 @@ export default class Groundskeeper extends React.Component {
 
   render() {
     const {
-      updateAgentSLO,
+      setAgentSLO,
       setFilterKey,
       setFilterValue,
       setSLAReportKey,
-      setEntityTypeFilterValue,
+      setEntityTypeFilter,
       setTableState,
       getTableStateCount,
       state: {
@@ -614,7 +636,7 @@ export default class Groundskeeper extends React.Component {
         tags,
         filterKey,
         filterValue,
-        entityTypeFilterValue,
+        entityTypeFilter,
         tableState,
         slaReportKey
       }
@@ -630,7 +652,6 @@ export default class Groundskeeper extends React.Component {
     }
 
     const upToDateLabel = agentSloOptions[agentSLO].label;
-    const scanner = scanIsRunning ? <Spinner inline /> : undefined;
 
     let tableBannerText = '';
     if (slaReportKey) {
@@ -645,19 +666,6 @@ export default class Groundskeeper extends React.Component {
       tableBannerText += `${presentationData.noVersionsTable.data.length} entities are not reporting agent version data (they may be inactive)`;
     }
 
-    const entityTypes = Array.from(
-      new Set(
-        agentData
-          .filter(
-            x => x !== undefined && x != null && x.entityType !== undefined
-          )
-          .sort()
-          .map(key => {
-            return key.entityType;
-          })
-      )
-    );
-
     return (
       <div className="gk-content">
         {loadError ? (
@@ -671,180 +679,30 @@ export default class Groundskeeper extends React.Component {
 
         {agentData.length ? (
           <>
-            <Stack
-              className="toolbar-container"
-              fullWidth
-              gapType={Stack.GAP_TYPE.NONE}
-              horizontalType={Stack.HORIZONTAL_TYPE.FILL_EVENLY}
-              verticalType={Stack.VERTICAL_TYPE.FILL}
-            >
-              <StackItem className="toolbar-section1">
-                <Stack
-                  gapType={Stack.GAP_TYPE.NONE}
-                  fullWidth
-                  verticalType={Stack.VERTICAL_TYPE.FILL}
-                >
-                  <StackItem
-                    className={`toolbar-item ${
-                      entityTypeFilterValue ? '' : 'has-separator'
-                    }`}
-                  >
-                    <Dropdown
-                      label="Filter by agent"
-                      title={
-                        entityTypeFilterValue === undefined
-                          ? 'All'
-                          : entityTypeFilterValue
-                      }
-                    >
-                      <DropdownItem
-                        onClick={() => setEntityTypeFilterValue('')}
-                      >
-                        All
-                      </DropdownItem>
-                      {entityTypes.sort().map(key => (
-                        <DropdownItem
-                          key={`filter-tag-${key}`}
-                          value={key}
-                          onClick={() => setEntityTypeFilterValue(key)}
-                        >
-                          {key}
-                        </DropdownItem>
-                      ))}
-                    </Dropdown>
-                  </StackItem>
-                  <StackItem className="toolbar-item has-separator">
-                    <Dropdown
-                      label="My Upgrade SLO is"
-                      title={agentSloOptions[this.state.agentSLO].label}
-                    >
-                      {agentSloOptions.map((slo, index) => (
-                        <DropdownItem
-                          value={slo.label}
-                          key={`slo-opt-${index}`}
-                          onClick={() => updateAgentSLO(index)}
-                        >
-                          {slo.label}
-                        </DropdownItem>
-                      ))}
-                    </Dropdown>
-                  </StackItem>
-                  <StackItem
-                    className={`toolbar-item ${
-                      filterKey ? '' : 'has-separator'
-                    }`}
-                  >
-                    <Dropdown
-                      label="Filter by tag"
-                      title={filterKey === undefined ? '--' : filterKey}
-                    >
-                      <DropdownItem onClick={() => setFilterKey('')}>
-                        --
-                      </DropdownItem>
-                      {Object.keys(tags)
-                        .sort()
-                        .map(key => (
-                          <DropdownItem
-                            key={`filter-tag-${key}`}
-                            value={key}
-                            onClick={() => setFilterKey(key)}
-                          >
-                            {key}
-                          </DropdownItem>
-                        ))}
-                    </Dropdown>
-                  </StackItem>
-                  {filterKey && (
-                    <StackItem className="toolbar-item has-separator">
-                      <Dropdown
-                        label="to value"
-                        title={filterValue !== undefined ? filterValue : '--'}
-                      >
-                        {tags[filterKey].sort().map(val => (
-                          <DropdownItem
-                            key={`filter-val-${val}`}
-                            value={val}
-                            onClick={() => setFilterValue(val)}
-                          >
-                            {val}
-                          </DropdownItem>
-                        ))}
-                      </Dropdown>
-                    </StackItem>
-                  )}
-                  <StackItem className="toolbar-item">
-                    <Dropdown
-                      label="Filter by state"
-                      title={`${startCase(tableState)} (${getTableStateCount(
-                        tableState
-                      )})`}
-                    >
-                      <DropdownItem onClick={() => setTableState('upToDate')}>
-                        Up to date ({presentationData.currentTable.data.length})
-                      </DropdownItem>
-                      <DropdownItem
-                        onClick={() => setTableState('multipleVersions')}
-                      >
-                        Multiple versions (
-                        {presentationData.multiversionTable.data.length})
-                      </DropdownItem>
-                      <DropdownItem onClick={() => setTableState('outOfDate')}>
-                        Out of date (
-                        {presentationData.outdatedTable.data.length})
-                      </DropdownItem>
-                      <DropdownItem
-                        onClick={() => setTableState('noVersionReported')}
-                      >
-                        No version reported (
-                        {presentationData.noVersionsTable.data.length})
-                      </DropdownItem>
-                    </Dropdown>
-                  </StackItem>
-                  <StackItem className="toolbar-item has-separator">
-                    <Dropdown
-                      label="Show SLA Report by"
-                      title={slaReportKey === undefined ? '--' : slaReportKey}
-                    >
-                      <DropdownItem onClick={() => setSLAReportKey('')}>
-                        --
-                      </DropdownItem>
-                      {Object.keys(tags)
-                        .sort()
-                        .map(key => (
-                          <DropdownItem
-                            key={`filter-tag-${key}`}
-                            value={key}
-                            onClick={() => setSLAReportKey(key)}
-                          >
-                            {key}
-                          </DropdownItem>
-                        ))}
-                    </Dropdown>
-                  </StackItem>
-                </Stack>
-              </StackItem>
-              <StackItem className="toolbar-section2">
-                <Stack
-                  fullWidth
-                  fullHeight
-                  verticalType={Stack.VERTICAL_TYPE.CENTER}
-                  horizontalType={Stack.HORIZONTAL_TYPE.RIGHT}
-                >
-                  <StackItem>
-                    {scanner}
-                    <small>
-                      Loaded{' '}
-                      {
-                        agentData.filter(
-                          x => typeof x !== 'undefined' && x !== false
-                        ).length
-                      }{' '}
-                      entities
-                    </small>
-                  </StackItem>
-                </Stack>
-              </StackItem>
-            </Stack>
+            <Toolbar
+              entityCount={
+                agentData.filter(x => typeof x !== 'undefined' && x !== false)
+                  .length
+              }
+              entityTypes={entityTypes}
+              entityTypeFilter={entityTypeFilter}
+              setEntityTypeFilter={setEntityTypeFilter}
+              agentSloOptions={agentSloOptions}
+              agentSLO={agentSLO}
+              setAgentSLO={setAgentSLO}
+              filterKey={filterKey}
+              setFilterKey={setFilterKey}
+              tags={tags}
+              filterValue={filterValue}
+              setFilterValue={setFilterValue}
+              tableState={tableState}
+              setTableState={setTableState}
+              getTableStateCount={getTableStateCount}
+              slaReportKey={slaReportKey}
+              setSLAReportKey={setSLAReportKey}
+              scanIsRunning={scanIsRunning}
+              presentationData={presentationData}
+            />
             {tableBannerText ? (
               <p className="table-state-count">{tableBannerText}</p>
             ) : (

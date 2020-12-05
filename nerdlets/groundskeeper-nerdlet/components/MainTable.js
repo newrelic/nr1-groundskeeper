@@ -4,10 +4,10 @@ import PropTypes from 'prop-types';
 import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 
-export default class MainVersionTable extends React.PureComponent {
-  propTypes = {
+export default class MainTable extends React.PureComponent {
+  static propTypes = {
     presentationData: PropTypes.object,
-    tableState: PropTypes.object
+    tableState: PropTypes.string
   };
 
   upToDateTable(presentationData) {
