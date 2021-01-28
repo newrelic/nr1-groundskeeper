@@ -13,6 +13,8 @@ import {
   Stack,
   StackItem,
   Dropdown,
+  Select,
+  SelectItem,
   DropdownItem,
   Grid,
   GridItem
@@ -711,20 +713,20 @@ export default class Groundskeeper extends React.Component {
                   verticalType={Stack.VERTICAL_TYPE.FILL}
                 >
                   <StackItem className="toolbar-item has-separator">
-                    <Dropdown
+                    <Select
                       label="My Upgrade SLO is"
                       title={agentSloOptions[this.state.agentSLO].label}
                     >
                       {agentSloOptions.map((slo, index) => (
-                        <DropdownItem
+                        <SelectItem
                           value={slo.label}
                           key={`slo-opt-${index}`}
                           onClick={() => updateAgentSLO(index)}
                         >
                           {slo.label}
-                        </DropdownItem>
+                        </SelectItem>
                       ))}
-                    </Dropdown>
+                    </Select>
                   </StackItem>
                   <StackItem
                     className={`toolbar-item ${
