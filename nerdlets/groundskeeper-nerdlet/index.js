@@ -1,5 +1,4 @@
 import React from 'react';
-import { startCase } from 'lodash';
 import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import {
@@ -12,8 +11,8 @@ import {
   Spinner,
   Stack,
   StackItem,
-  Dropdown,
-  DropdownItem,
+  Select,
+  SelectItem,
   Grid,
   GridItem
 } from 'nr1';
@@ -36,7 +35,6 @@ export default class Groundskeeper extends React.Component {
     super(props);
 
     this.setTableState = this.setTableState.bind(this);
-    this.getTableStateCount = this.getTableStateCount.bind(this);
   }
 
   state = {
@@ -67,33 +65,33 @@ export default class Groundskeeper extends React.Component {
   loaders = undefined;
   initialEntityDataSet = false;
 
-  setFilterKey = key => {
+  setFilterKey = (event, value) => {
     this.setState(
-      { filterKey: key || undefined, filterValue: undefined },
+      { filterKey: value || undefined, filterValue: undefined },
       () => {
         this.recomputePresentation(this.state.agentData);
       }
     );
   };
 
-  setFilterValue = val => {
-    this.setState({ filterValue: val || undefined }, () => {
+  setFilterValue = (event, value) => {
+    this.setState({ filterValue: value || undefined }, () => {
       this.recomputePresentation(this.state.agentData);
     });
   };
 
-  setSLAReportKey = val => {
-    this.setState({ slaReportKey: val || undefined });
+  setSLAReportKey = (event, value) => {
+    this.setState({ slaReportKey: value || undefined });
   };
 
-  updateAgentSLO = slo => {
-    if (slo === this.state.agentSLO) {
+  updateAgentSLO = (event, value) => {
+    if (value === this.state.agentSLO) {
       return;
     }
 
     const newState =
-      slo >= 0 && slo < agentSloOptions.length
-        ? { agentSLO: slo }
+      value >= 0 && value < agentSloOptions.length
+        ? { agentSLO: value }
         : { agentSLO: defaultAgentSloOption };
 
     this.setState(newState, () => {
@@ -101,23 +99,11 @@ export default class Groundskeeper extends React.Component {
     });
   };
 
-  setTableState(tableState) {
+  setTableState = (event, value) => {
     this.setState({
-      tableState: tableState
+      tableState: value
     });
-  }
-
-  getTableStateCount(tableState) {
-    if (tableState === 'upToDate') {
-      return this.state.presentationData.currentTable.data.length;
-    } else if (tableState === 'multipleVersions') {
-      return this.state.presentationData.multiversionTable.data.length;
-    } else if (tableState === 'outOfDate') {
-      return this.state.presentationData.outdatedTable.data.length;
-    } else if (tableState === 'noVersionReported') {
-      return this.state.presentationData.noVersionsTable.data.length;
-    }
-  }
+  };
 
   renderTableState() {
     const { presentationData, tableState } = this.state;
@@ -641,7 +627,6 @@ export default class Groundskeeper extends React.Component {
       setFilterValue,
       setSLAReportKey,
       setTableState,
-      getTableStateCount,
       state: {
         agentData,
         agentSLO,
@@ -711,112 +696,88 @@ export default class Groundskeeper extends React.Component {
                   verticalType={Stack.VERTICAL_TYPE.FILL}
                 >
                   <StackItem className="toolbar-item has-separator">
-                    <Dropdown
+                    <Select
                       label="My Upgrade SLO is"
-                      title={agentSloOptions[this.state.agentSLO].label}
+                      value={agentSLO}
+                      onChange={updateAgentSLO}
                     >
                       {agentSloOptions.map((slo, index) => (
-                        <DropdownItem
-                          value={slo.label}
-                          key={`slo-opt-${index}`}
-                          onClick={() => updateAgentSLO(index)}
-                        >
+                        <SelectItem value={index} key={`slo-opt-${index}`}>
                           {slo.label}
-                        </DropdownItem>
+                        </SelectItem>
                       ))}
-                    </Dropdown>
+                    </Select>
                   </StackItem>
                   <StackItem
                     className={`toolbar-item ${
                       filterKey ? '' : 'has-separator'
                     }`}
                   >
-                    <Dropdown
+                    <Select
                       label="Filter applications by tag"
-                      title={filterKey === undefined ? '--' : filterKey}
+                      value={filterKey}
+                      onChange={setFilterKey}
                     >
-                      <DropdownItem onClick={() => setFilterKey('')}>
-                        --
-                      </DropdownItem>
+                      <SelectItem value="">--</SelectItem>
                       {Object.keys(tags)
                         .sort()
                         .map(key => (
-                          <DropdownItem
-                            key={`filter-tag-${key}`}
-                            value={key}
-                            onClick={() => setFilterKey(key)}
-                          >
+                          <SelectItem key={`filter-tag-${key}`} value={key}>
                             {key}
-                          </DropdownItem>
+                          </SelectItem>
                         ))}
-                    </Dropdown>
+                    </Select>
                   </StackItem>
                   {filterKey && (
                     <StackItem className="toolbar-item has-separator">
-                      <Dropdown
+                      <Select
                         label="to value"
-                        title={filterValue !== undefined ? filterValue : '--'}
+                        value={filterValue}
+                        onChange={setFilterValue}
                       >
                         {tags[filterKey].sort().map(val => (
-                          <DropdownItem
-                            key={`filter-val-${val}`}
-                            value={val}
-                            onClick={() => setFilterValue(val)}
-                          >
+                          <SelectItem key={`filter-val-${val}`} value={val}>
                             {val}
-                          </DropdownItem>
+                          </SelectItem>
                         ))}
-                      </Dropdown>
+                      </Select>
                     </StackItem>
                   )}
                   <StackItem className="toolbar-item">
-                    <Dropdown
+                    <Select
                       label="Filter by state"
-                      title={`${startCase(tableState)} (${getTableStateCount(
-                        tableState
-                      )})`}
+                      value={tableState}
+                      onChange={setTableState}
                     >
-                      <DropdownItem onClick={() => setTableState('upToDate')}>
-                        Up to date ({presentationData.currentTable.data.length})
-                      </DropdownItem>
-                      <DropdownItem
-                        onClick={() => setTableState('multipleVersions')}
-                      >
-                        Multiple versions (
-                        {presentationData.multiversionTable.data.length})
-                      </DropdownItem>
-                      <DropdownItem onClick={() => setTableState('outOfDate')}>
-                        Out of date (
-                        {presentationData.outdatedTable.data.length})
-                      </DropdownItem>
-                      <DropdownItem
-                        onClick={() => setTableState('noVersionReported')}
-                      >
-                        No version reported (
-                        {presentationData.noVersionsTable.data.length})
-                      </DropdownItem>
-                    </Dropdown>
+                      <SelectItem value="upToDate">
+                        {`Up to date (${presentationData.currentTable.data.length})`}
+                      </SelectItem>
+                      <SelectItem value="multipleVersions">
+                        {`Multiple versions (${presentationData.multiversionTable.data.length})`}
+                      </SelectItem>
+                      <SelectItem value="outOfDate">
+                        {`Out of date (${presentationData.outdatedTable.data.length})`}
+                      </SelectItem>
+                      <SelectItem value="noVersionReported">
+                        {`No version reported (${presentationData.noVersionsTable.data.length})`}
+                      </SelectItem>
+                    </Select>
                   </StackItem>
                   <StackItem className="toolbar-item has-separator">
-                    <Dropdown
+                    <Select
                       label="Show SLA Report by"
-                      title={slaReportKey === undefined ? '--' : slaReportKey}
+                      value={slaReportKey}
+                      onChange={setSLAReportKey}
                     >
-                      <DropdownItem onClick={() => setSLAReportKey('')}>
-                        --
-                      </DropdownItem>
+                      <SelectItem value="">--</SelectItem>
                       {Object.keys(tags)
                         .sort()
                         .map(key => (
-                          <DropdownItem
-                            key={`filter-tag-${key}`}
-                            value={key}
-                            onClick={() => setSLAReportKey(key)}
-                          >
+                          <SelectItem key={`filter-tag-${key}`} value={key}>
                             {key}
-                          </DropdownItem>
+                          </SelectItem>
                         ))}
-                    </Dropdown>
+                    </Select>
                   </StackItem>
                 </Stack>
               </StackItem>
