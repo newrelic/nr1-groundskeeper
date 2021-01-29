@@ -38,7 +38,6 @@ export default class Groundskeeper extends React.Component {
     super(props);
 
     this.setTableState = this.setTableState.bind(this);
-    this.getTableStateCount = this.getTableStateCount.bind(this);
   }
 
   state = {
@@ -107,18 +106,6 @@ export default class Groundskeeper extends React.Component {
     this.setState({
       tableState: value,
     });
-  }
-
-  getTableStateCount(tableState) {
-    if (tableState === 'upToDate') {
-      return this.state.presentationData.currentTable.data.length;
-    } else if (tableState === 'multipleVersions') {
-      return this.state.presentationData.multiversionTable.data.length;
-    } else if (tableState === 'outOfDate') {
-      return this.state.presentationData.outdatedTable.data.length;
-    } else if (tableState === 'noVersionReported') {
-      return this.state.presentationData.noVersionsTable.data.length;
-    }
   }
 
   renderTableState() {
@@ -643,7 +630,6 @@ export default class Groundskeeper extends React.Component {
       setFilterValue,
       setSLAReportKey,
       setTableState,
-      getTableStateCount,
       state: {
         agentData,
         agentSLO,
