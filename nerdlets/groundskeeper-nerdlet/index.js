@@ -65,7 +65,7 @@ export default class Groundskeeper extends React.Component {
   loaders = undefined;
   initialEntityDataSet = false;
 
-  setFilterKey =  (event, value)  => {
+  setFilterKey = (event, value) => {
     this.setState(
       { filterKey: value || undefined, filterValue: undefined },
       () => {
@@ -90,7 +90,7 @@ export default class Groundskeeper extends React.Component {
     }
 
     const newState =
-    value >= 0 && value < agentSloOptions.length
+      value >= 0 && value < agentSloOptions.length
         ? { agentSLO: value }
         : { agentSLO: defaultAgentSloOption };
 
@@ -101,9 +101,9 @@ export default class Groundskeeper extends React.Component {
 
   setTableState = (event, value) => {
     this.setState({
-      tableState: value,
+      tableState: value
     });
-  }
+  };
 
   renderTableState() {
     const { presentationData, tableState } = this.state;
@@ -640,7 +640,7 @@ export default class Groundskeeper extends React.Component {
         filterKey,
         filterValue,
         tableState,
-        slaReportKey,
+        slaReportKey
       }
     } = this;
 
@@ -702,10 +702,7 @@ export default class Groundskeeper extends React.Component {
                       onChange={updateAgentSLO}
                     >
                       {agentSloOptions.map((slo, index) => (
-                        <SelectItem
-                          value={index}
-                          key={`slo-opt-${index}`}
-                        >
+                        <SelectItem value={index} key={`slo-opt-${index}`}>
                           {slo.label}
                         </SelectItem>
                       ))}
@@ -721,18 +718,11 @@ export default class Groundskeeper extends React.Component {
                       value={filterKey}
                       onChange={setFilterKey}
                     >
-                      <SelectItem 
-                        value={''}
-                      >
-                        --
-                      </SelectItem>
+                      <SelectItem value="">--</SelectItem>
                       {Object.keys(tags)
                         .sort()
                         .map(key => (
-                          <SelectItem
-                            key={`filter-tag-${key}`}
-                            value={key}
-                          >
+                          <SelectItem key={`filter-tag-${key}`} value={key}>
                             {key}
                           </SelectItem>
                         ))}
@@ -746,10 +736,7 @@ export default class Groundskeeper extends React.Component {
                         onChange={setFilterValue}
                       >
                         {tags[filterKey].sort().map(val => (
-                          <SelectItem
-                            key={`filter-val-${val}`}
-                            value={val}
-                          >
+                          <SelectItem key={`filter-val-${val}`} value={val}>
                             {val}
                           </SelectItem>
                         ))}
@@ -762,16 +749,16 @@ export default class Groundskeeper extends React.Component {
                       value={tableState}
                       onChange={setTableState}
                     >
-                      <SelectItem value='upToDate'>
+                      <SelectItem value="upToDate">
                         {`Up to date (${presentationData.currentTable.data.length})`}
                       </SelectItem>
-                      <SelectItem value='multipleVersions'>
+                      <SelectItem value="multipleVersions">
                         {`Multiple versions (${presentationData.multiversionTable.data.length})`}
                       </SelectItem>
-                      <SelectItem  value='outOfDate'>
-                         {`Out of date (${presentationData.outdatedTable.data.length})`}
+                      <SelectItem value="outOfDate">
+                        {`Out of date (${presentationData.outdatedTable.data.length})`}
                       </SelectItem>
-                      <SelectItem value='noVersionReported'>
+                      <SelectItem value="noVersionReported">
                         {`No version reported (${presentationData.noVersionsTable.data.length})`}
                       </SelectItem>
                     </Select>
@@ -782,16 +769,11 @@ export default class Groundskeeper extends React.Component {
                       value={slaReportKey}
                       onChange={setSLAReportKey}
                     >
-                      <SelectItem value=''>
-                        --
-                      </SelectItem>
+                      <SelectItem value="">--</SelectItem>
                       {Object.keys(tags)
                         .sort()
                         .map(key => (
-                          <SelectItem
-                            key={`filter-tag-${key}`}
-                            value={key}
-                          >
+                          <SelectItem key={`filter-tag-${key}`} value={key}>
                             {key}
                           </SelectItem>
                         ))}
