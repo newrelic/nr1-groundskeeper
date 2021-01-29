@@ -69,9 +69,9 @@ export default class Groundskeeper extends React.Component {
   loaders = undefined;
   initialEntityDataSet = false;
 
-  setFilterKey = key => {
+  setFilterKey =  (event, value)  => {
     this.setState(
-      { filterKey: key || undefined, filterValue: undefined },
+      { filterKey: value || undefined, filterValue: undefined },
       () => {
         this.recomputePresentation(this.state.agentData);
       }
@@ -715,7 +715,7 @@ export default class Groundskeeper extends React.Component {
                   <StackItem className="toolbar-item has-separator">
                     <Select
                       label="My Upgrade SLO is"
-                      value={this.state.agentSLO}
+                      value={agentSLO}
                       onChange={updateAgentSLO}
                     >
                       {agentSloOptions.map((slo, index) => (
@@ -733,25 +733,27 @@ export default class Groundskeeper extends React.Component {
                       filterKey ? '' : 'has-separator'
                     }`}
                   >
-                    <Dropdown
+                    <Select
                       label="Filter applications by tag"
-                      title={filterKey === undefined ? '--' : filterKey}
+                      value={filterKey}
+                      onChange={setFilterKey}
                     >
-                      <DropdownItem onClick={() => setFilterKey('')}>
+                      <SelectItem 
+                        value={''}
+                      >
                         --
-                      </DropdownItem>
+                      </SelectItem>
                       {Object.keys(tags)
                         .sort()
                         .map(key => (
-                          <DropdownItem
+                          <SelectItem
                             key={`filter-tag-${key}`}
                             value={key}
-                            onClick={() => setFilterKey(key)}
                           >
                             {key}
-                          </DropdownItem>
+                          </SelectItem>
                         ))}
-                    </Dropdown>
+                    </Select>
                   </StackItem>
                   {filterKey && (
                     <StackItem className="toolbar-item has-separator">
