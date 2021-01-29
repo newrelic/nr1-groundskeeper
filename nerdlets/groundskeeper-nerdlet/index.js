@@ -103,9 +103,9 @@ export default class Groundskeeper extends React.Component {
     });
   };
 
-  setTableState(tableState) {
+  setTableState = (event, value) => {
     this.setState({
-      tableState: tableState
+      tableState: value,
     });
   }
 
@@ -657,7 +657,7 @@ export default class Groundskeeper extends React.Component {
         filterKey,
         filterValue,
         tableState,
-        slaReportKey
+        slaReportKey,
       }
     } = this;
 
@@ -774,32 +774,24 @@ export default class Groundskeeper extends React.Component {
                     </StackItem>
                   )}
                   <StackItem className="toolbar-item">
-                    <Dropdown
+                    <Select
                       label="Filter by state"
-                      title={`${startCase(tableState)} (${getTableStateCount(
-                        tableState
-                      )})`}
+                      value={tableState}
+                      onChange={setTableState}
                     >
-                      <DropdownItem onClick={() => setTableState('upToDate')}>
-                        Up to date ({presentationData.currentTable.data.length})
-                      </DropdownItem>
-                      <DropdownItem
-                        onClick={() => setTableState('multipleVersions')}
-                      >
-                        Multiple versions (
-                        {presentationData.multiversionTable.data.length})
-                      </DropdownItem>
-                      <DropdownItem onClick={() => setTableState('outOfDate')}>
-                        Out of date (
-                        {presentationData.outdatedTable.data.length})
-                      </DropdownItem>
-                      <DropdownItem
-                        onClick={() => setTableState('noVersionReported')}
-                      >
-                        No version reported (
-                        {presentationData.noVersionsTable.data.length})
-                      </DropdownItem>
-                    </Dropdown>
+                      <SelectItem value='upToDate'>
+                        {`Up to date (${presentationData.currentTable.data.length})`}
+                      </SelectItem>
+                      <SelectItem value='multipleVersions'>
+                        {`Multiple versions (${presentationData.multiversionTable.data.length})`}
+                      </SelectItem>
+                      <SelectItem  value='outOfDate'>
+                         {`Out of date (${presentationData.outdatedTable.data.length})`}
+                      </SelectItem>
+                      <SelectItem value='noVersionReported'>
+                        {`No version reported (${presentationData.noVersionsTable.data.length})`}
+                      </SelectItem>
+                    </Select>
                   </StackItem>
                   <StackItem className="toolbar-item has-separator">
                     <Dropdown
