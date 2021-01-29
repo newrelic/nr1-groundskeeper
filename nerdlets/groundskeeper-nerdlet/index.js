@@ -1,5 +1,4 @@
 import React from 'react';
-import { startCase } from 'lodash';
 import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import {
@@ -12,10 +11,8 @@ import {
   Spinner,
   Stack,
   StackItem,
-  Dropdown,
   Select,
   SelectItem,
-  DropdownItem,
   Grid,
   GridItem
 } from 'nr1';
