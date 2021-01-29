@@ -83,8 +83,8 @@ export default class Groundskeeper extends React.Component {
     });
   };
 
-  setSLAReportKey = val => {
-    this.setState({ slaReportKey: val || undefined });
+  setSLAReportKey = (event, value) => {
+    this.setState({ slaReportKey: value || undefined });
   };
 
   updateAgentSLO = (event, value) => {
@@ -780,25 +780,25 @@ export default class Groundskeeper extends React.Component {
                     </Select>
                   </StackItem>
                   <StackItem className="toolbar-item has-separator">
-                    <Dropdown
+                    <Select
                       label="Show SLA Report by"
-                      title={slaReportKey === undefined ? '--' : slaReportKey}
+                      value={slaReportKey}
+                      onChange={setSLAReportKey}
                     >
-                      <DropdownItem onClick={() => setSLAReportKey('')}>
+                      <SelectItem value=''>
                         --
-                      </DropdownItem>
+                      </SelectItem>
                       {Object.keys(tags)
                         .sort()
                         .map(key => (
-                          <DropdownItem
+                          <SelectItem
                             key={`filter-tag-${key}`}
                             value={key}
-                            onClick={() => setSLAReportKey(key)}
                           >
                             {key}
-                          </DropdownItem>
+                          </SelectItem>
                         ))}
-                    </Dropdown>
+                    </Select>
                   </StackItem>
                 </Stack>
               </StackItem>
