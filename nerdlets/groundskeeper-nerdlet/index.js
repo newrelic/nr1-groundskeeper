@@ -78,8 +78,8 @@ export default class Groundskeeper extends React.Component {
     );
   };
 
-  setFilterValue = val => {
-    this.setState({ filterValue: val || undefined }, () => {
+  setFilterValue = (event, value) => {
+    this.setState({ filterValue: value || undefined }, () => {
       this.recomputePresentation(this.state.agentData);
     });
   };
@@ -757,20 +757,20 @@ export default class Groundskeeper extends React.Component {
                   </StackItem>
                   {filterKey && (
                     <StackItem className="toolbar-item has-separator">
-                      <Dropdown
+                      <Select
                         label="to value"
-                        title={filterValue !== undefined ? filterValue : '--'}
+                        value={filterValue}
+                        onChange={setFilterValue}
                       >
                         {tags[filterKey].sort().map(val => (
-                          <DropdownItem
+                          <SelectItem
                             key={`filter-val-${val}`}
                             value={val}
-                            onClick={() => setFilterValue(val)}
                           >
                             {val}
-                          </DropdownItem>
+                          </SelectItem>
                         ))}
-                      </Dropdown>
+                      </Select>
                     </StackItem>
                   )}
                   <StackItem className="toolbar-item">
