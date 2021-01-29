@@ -89,8 +89,6 @@ export default class Groundskeeper extends React.Component {
   };
 
   updateAgentSLO = (event, value) => {
-console.log("value", value);
-console.log("agentSloOptions[this.state.agentSLO].label", agentSloOptions[this.state.agentSLO].label)
     if (value === this.state.agentSLO) {
       return;
     }
