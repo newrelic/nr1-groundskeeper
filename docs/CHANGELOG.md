@@ -1,3 +1,10 @@
+## [0.10.2](https://github.com/newrelic/nr1-groundskeeper/compare/v0.10.1...v0.10.2) (2021-01-29)
+
+
+### Bug Fixes
+
+* Remove deprecated nr1 Dropdown component implementations ([9b6b118](https://github.com/newrelic/nr1-groundskeeper/commit/9b6b118104df60882b35d3ec72634d259c296416))
+
 ## [0.10.1](https://github.com/newrelic/nr1-groundskeeper/compare/v0.10.0...v0.10.1) (2020-09-03)
 
 
