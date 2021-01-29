@@ -88,14 +88,16 @@ export default class Groundskeeper extends React.Component {
     this.setState({ slaReportKey: val || undefined });
   };
 
-  updateAgentSLO = slo => {
-    if (slo === this.state.agentSLO) {
+  updateAgentSLO = (event, value) => {
+console.log("value", value);
+console.log("agentSloOptions[this.state.agentSLO].label", agentSloOptions[this.state.agentSLO].label)
+    if (value === this.state.agentSLO) {
       return;
     }
 
     const newState =
-      slo >= 0 && slo < agentSloOptions.length
-        ? { agentSLO: slo }
+    value >= 0 && value < agentSloOptions.length
+        ? { agentSLO: value }
         : { agentSLO: defaultAgentSloOption };
 
     this.setState(newState, () => {
@@ -715,13 +717,14 @@ export default class Groundskeeper extends React.Component {
                   <StackItem className="toolbar-item has-separator">
                     <Select
                       label="My Upgrade SLO is"
-                      title={agentSloOptions[this.state.agentSLO].label}
+                      // TODO(rtyree): What we pass to this 'value' prop isn't updating the Select value. Must fix
+                      value={agentSloOptions[this.state.agentSLO].label}
+                      onChange={updateAgentSLO}
                     >
                       {agentSloOptions.map((slo, index) => (
                         <SelectItem
-                          value={slo.label}
+                          value={index}
                           key={`slo-opt-${index}`}
-                          onClick={() => updateAgentSLO(index)}
                         >
                           {slo.label}
                         </SelectItem>
