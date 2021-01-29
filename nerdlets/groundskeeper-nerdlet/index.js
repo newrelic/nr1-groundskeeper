@@ -715,8 +715,7 @@ export default class Groundskeeper extends React.Component {
                   <StackItem className="toolbar-item has-separator">
                     <Select
                       label="My Upgrade SLO is"
-                      // TODO(rtyree): What we pass to this 'value' prop isn't updating the Select value. Must fix
-                      value={agentSloOptions[this.state.agentSLO].label}
+                      value={this.state.agentSLO}
                       onChange={updateAgentSLO}
                     >
                       {agentSloOptions.map((slo, index) => (
