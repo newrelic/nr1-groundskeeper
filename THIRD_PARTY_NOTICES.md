@@ -39,9 +39,11 @@ code, the source code can be found at [https://ngithub.com/newlrelic/nr1-grounds
 
 ### date-fns
 
-This product includes source derived from [date-fns](https://github.com/date-fns/date-fns) ([v2.14.0](https://github.com/date-fns/date-fns/tree/v2.14.0)), distributed under the [MIT License](https://github.com/date-fns/date-fns/blob/v2.14.0/LICENSE.md):
+This product includes source derived from [date-fns](https://github.com/date-fns/date-fns) ([v2.16.0](https://github.com/date-fns/date-fns/tree/v2.16.0)), distributed under the [MIT License](https://github.com/date-fns/date-fns/blob/v2.16.0/LICENSE.md):
 
 ```
+Copyright (C) 2020 Sasha Koss and Lesha Koss
+
 # License
 
 date-fns is licensed under the [MIT license](http://kossnocorp.mit-license.org).
@@ -83,11 +85,13 @@ SOFTWARE.
 This product includes source derived from [react-bootstrap-table-next](https://github.com/react-bootstrap-table/react-bootstrap-table2) ([v3.3.5](https://github.com/react-bootstrap-table/react-bootstrap-table2/tree/v3.3.5)), distributed under the [MIT License](https://github.com/react-bootstrap-table/react-bootstrap-table2/blob/v3.3.5/README.md):
 
 ```
-MIT License Copyright (c) <year> <copyright holders>
+MIT License
+
+Copyright (c) <year> <copyright holders>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice (including the next paragraph) shall be included in all copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
@@ -97,11 +101,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 This product includes source derived from [react-bootstrap-table2-toolkit](https://github.com/react-bootstrap-table/react-bootstrap-table2) ([v2.1.3](https://github.com/react-bootstrap-table/react-bootstrap-table2/tree/v2.1.3)), distributed under the [MIT License](https://github.com/react-bootstrap-table/react-bootstrap-table2/blob/v2.1.3/README.md):
 
 ```
-MIT License Copyright (c) <year> <copyright holders>
+MIT License
+
+Copyright (c) <year> <copyright holders>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice (including the next paragraph) shall be included in all copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
