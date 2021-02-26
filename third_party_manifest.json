@@ -1,18 +1,18 @@
 {
-  "lastUpdated": "Wed Feb 24 2021 21:18:01 GMT+0000 (Coordinated Universal Time)",
+  "lastUpdated": "Fri Feb 26 2021 00:32:49 GMT+0000 (Coordinated Universal Time)",
   "projectName": "NR1 Agent Groundskeeper",
   "projectUrl": "https://ngithub.com/newlrelic/nr1-groundskeeper",
   "includeDev": true,
   "dependencies": {
-    "date-fns@2.16.0": {
+    "date-fns@2.16.1": {
       "name": "date-fns",
-      "version": "2.16.0",
-      "range": "^2.16.0",
+      "version": "2.16.1",
+      "range": "^2.16.1",
       "licenses": "MIT",
       "repoUrl": "https://github.com/date-fns/date-fns",
-      "versionedRepoUrl": "https://github.com/date-fns/date-fns/tree/v2.16.0",
+      "versionedRepoUrl": "https://github.com/date-fns/date-fns/tree/v2.16.1",
       "licenseFile": "node_modules/date-fns/LICENSE.md",
-      "licenseUrl": "https://github.com/date-fns/date-fns/blob/v2.16.0/LICENSE.md",
+      "licenseUrl": "https://github.com/date-fns/date-fns/blob/v2.16.1/LICENSE.md",
       "licenseTextSource": "file"
     },
     "prop-types@15.7.2": {

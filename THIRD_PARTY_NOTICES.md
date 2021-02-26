@@ -39,7 +39,7 @@ code, the source code can be found at [https://ngithub.com/newlrelic/nr1-grounds
 
 ### date-fns
 
-This product includes source derived from [date-fns](https://github.com/date-fns/date-fns) ([v2.16.0](https://github.com/date-fns/date-fns/tree/v2.16.0)), distributed under the [MIT License](https://github.com/date-fns/date-fns/blob/v2.16.0/LICENSE.md):
+This product includes source derived from [date-fns](https://github.com/date-fns/date-fns) ([v2.16.1](https://github.com/date-fns/date-fns/tree/v2.16.1)), distributed under the [MIT License](https://github.com/date-fns/date-fns/blob/v2.16.1/LICENSE.md):
 
 ```
 Copyright (C) 2020 Sasha Koss and Lesha Koss
