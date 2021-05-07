@@ -1,3 +1,10 @@
+## [0.10.3](https://github.com/newrelic/nr1-groundskeeper/compare/v0.10.2...v0.10.3) (2021-05-07)
+
+
+### Bug Fixes
+
+* upgrade date-fns from 2.14.0 to 2.19.0 ([078c913](https://github.com/newrelic/nr1-groundskeeper/commit/078c913bd2c39f38c5cfb2c34d4b0ff15fd35d11))
+
 ## [0.10.2](https://github.com/newrelic/nr1-groundskeeper/compare/v0.10.1...v0.10.2) (2021-01-29)
 
 
