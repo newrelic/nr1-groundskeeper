@@ -1,3 +1,10 @@
+# [0.11.0](https://github.com/newrelic/nr1-groundskeeper/compare/v0.10.3...v0.11.0) (2021-10-04)
+
+
+### Features
+
+* update semantic release with node ([2df0acd](https://github.com/newrelic/nr1-groundskeeper/commit/2df0acdc8d4e85ad40e954f0cf44d8190395492b))
+
 ## [0.10.3](https://github.com/newrelic/nr1-groundskeeper/compare/v0.10.2...v0.10.3) (2021-05-07)
 
 
