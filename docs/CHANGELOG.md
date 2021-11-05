@@ -1,3 +1,10 @@
+# [0.12.0](https://github.com/newrelic/nr1-groundskeeper/compare/v0.11.0...v0.12.0) (2021-11-05)
+
+
+### Features
+
+* add catalog keywords and categoryTerms ([927fab9](https://github.com/newrelic/nr1-groundskeeper/commit/927fab99e31d9c520c132edb2c7cbf9183e97f70))
+
 # [0.11.0](https://github.com/newrelic/nr1-groundskeeper/compare/v0.10.3...v0.11.0) (2021-10-04)
 
 
