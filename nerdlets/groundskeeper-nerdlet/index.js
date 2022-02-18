@@ -218,14 +218,14 @@ export default class Groundskeeper extends React.Component {
       query: ACCOUNT_NG_QUERY
     })
       .then(res => {
-        const { loading, data, errors } = res;
+        const { loading, data, error } = res;
         if (loading) {
           that.setState({ loadingInitialState: true });
           return;
         }
-        if (errors) {
+        if (error) {
           /* eslint-disable no-console */
-          console.log('account query error', errors);
+          console.log('account query error', error?.graphQLErrors);
           /* eslint-enable no-console */
           that.setState({ loadingInitialState: false, loadError: true });
           return;
@@ -261,11 +261,11 @@ export default class Groundskeeper extends React.Component {
       variables: { queryCursor: cursor }
     })
       .then(res => {
-        const { loading, data, errors } = res;
+        const { loading, data, error } = res;
         if (loading) return;
-        if (errors) {
+        if (error) {
           /* eslint-disable no-console */
-          console.log('entity query error', errors);
+          console.log('entity query error', error?.graphQLErrors);
           /* eslint-enable no-console */
           return;
         }
