@@ -1,3 +1,10 @@
+## [0.12.1](https://github.com/newrelic/nr1-groundskeeper/compare/v0.12.0...v0.12.1) (2022-02-22)
+
+
+### Bug Fixes
+
+* Update error return value and lock file ([6f4423f](https://github.com/newrelic/nr1-groundskeeper/commit/6f4423f4232418a04bc976dd0aad693d1225f1de))
+
 # [0.12.0](https://github.com/newrelic/nr1-groundskeeper/compare/v0.11.0...v0.12.0) (2021-11-05)
 
 
