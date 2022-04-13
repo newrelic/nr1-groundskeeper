@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "date-fns": "^2.18.0",
-    "prop-types": "^15.6.2",
+    "prop-types": "^15.8.1",
     "react": "^16.6.3",
     "react-bootstrap-table-next": "^3.3.5",
     "react-bootstrap-table2-toolkit": "^2.1.3",
