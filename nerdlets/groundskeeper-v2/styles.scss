@@ -1,0 +1,167 @@
+.container {
+  display: flex;
+  height: 100%;
+  background-color: #F3F4F4;
+  flex: 1 1 0;
+  gap: 8px;
+
+  .loader {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    .status {
+      width: 300px;
+
+      .info {
+        padding: 8px 0;
+        color: #555;
+        text-align: center;
+      }
+    }
+
+    
+  }
+
+  .sidebar-aside{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: #FFF;
+    border-radius: 4px;
+    overflow-y: auto;
+    flex: 0 0 360px;
+    max-width: 240px;
+
+    .sidebar {
+      padding: 8px;
+
+      .link {
+        font-size: 12px;
+        line-height: 16px;
+        margin: 8px 4px;
+        border-radius: 4px;
+        color: #293338;
+
+        &.selected {
+          background-color: #e8e8e8;
+          font-weight: 600;
+        }
+
+        &.disabled {
+          background-color: #F3F4F4;
+          color: #9FA5A5;
+
+          .btn {
+            cursor: not-allowed;
+          }
+        }
+
+        &:not(.selected):hover {
+          background-color: #f3f4f4;
+        }
+
+        .btn {
+          padding: 8px 20px;
+          cursor: pointer;
+
+          .count {
+            margin-left: 4px;
+            color: #6b757b;
+          }
+        }
+      }
+
+      .section, .tag {
+        padding: 8px 0;
+        
+        .title {
+          span {
+            margin-left: 8px;
+          }
+        }
+      }
+
+      .section  {
+        .title {
+          span {
+            font-size: 14px;
+            line-height: 20px;
+          }
+        }
+      }
+
+      .tag {
+        padding-bottom: 0;
+
+        .title {
+          span {
+            color: #6b757b;
+            font-size: 12px;
+            line-height: 16px;
+          }
+        }
+      }
+    }
+    
+  }
+  
+  .listing-section {
+    flex: 1;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    flex-grow: 1;
+    border-radius: 4px;
+    overflow-y: auto;
+    background-color: #FFF;
+
+    .head {
+      flex-shrink: 0;
+      padding: 8px;
+      display: flex;
+      align-self: flex-end;
+
+      .col {
+        display: inline-grid;
+        gap: 4px;
+        grid-template-rows: 1fr 8px;
+      }
+    }
+
+    .body {
+      flex-grow: 1;
+      overflow-y: auto;
+      display: flex;
+
+      .recommendations {
+        .status-cell {
+          display: flex;
+          height: 100%;
+          flex-direction: column;
+          align-items: center;
+          justify-content: space-between;
+        }
+      }
+    }
+  }
+
+  
+}
+
+.progress {
+  border-radius: 4px;
+  background-color: #edeeee;
+
+  .counter {
+    height: 8px;
+    width: 0;
+    border-radius: 4px;
+    background-color: rgb(22, 179, 213);
+    transition: width 3s;
+  }
+}
