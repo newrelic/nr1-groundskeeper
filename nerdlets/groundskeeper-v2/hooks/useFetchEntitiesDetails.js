@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNerdGraphQuery } from 'nr1';
 import semver from 'semver';
-import { APPS_DETAILS } from './queries';
-import { AGENTS, AGENTS_REGEX_STRING, RUNTIMES } from './constants';
+import { APPS_DETAILS } from '../queries';
+import { AGENTS, AGENTS_REGEX_STRING, RUNTIMES } from '../constants';
 
 const MAX_ENTITIES_IN_SET = 10;
 const featuresList = {
@@ -28,19 +28,19 @@ const useFetchEntitiesDetails = ({guidsToFetch = []}) => {
     skip: skip,
   });
 
-  useEffect(() => {console.log('guidsToFetch', guidsToFetch?.length)
+  useEffect(() => {
     const guidsDiff = guidsToFetch.filter(gu => !lastPropsGuids.current.some(lpg => lpg === gu));
-    if (guidsDiff.length) {console.log('guidsDiff', guidsDiff.length)
+    if (guidsDiff.length) {
       setGuidsQueue(gq => [...gq, ...guidsDiff]);
       lastPropsGuids.current = guidsToFetch;
     }
   }, [guidsToFetch]);
 
-  useEffect(() => {console.log('guids queue changed')
+  useEffect(() => {
     if (!detailsLoading) fetchSet();
   }, [guidsQueue]);
 
-  useEffect(() => {console.log('guids changed', guids?.length)
+  useEffect(() => {
     if (!guids || !guids.length) return;
     setSkip(false);
   }, [guids]);
@@ -54,7 +54,7 @@ const useFetchEntitiesDetails = ({guidsToFetch = []}) => {
     if (detailsError) console.error('Error fetching entity details', detailsError);
   }, [detailsError]);
 
-  useEffect(() => {console.log('GOT DETAILS', detailsData)
+  useEffect(() => {
     if (detailsLoading || !detailsData || !Object.keys(detailsData).length) return;
     setSkip(true);
     const {entities: entitiesDetails = []} = detailsData.actor || {};

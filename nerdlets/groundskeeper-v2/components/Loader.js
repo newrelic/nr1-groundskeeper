@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import ProgressBar from './progress-bar';
+import ProgressBar from './ProgressBar';
 
 const Loader = ({ count, loaded, onEnd }) => {
   const [infoText, setInfoText] = useState('');

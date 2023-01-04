@@ -7,7 +7,7 @@ const Sidebar = ({ sidebarItems, onChange }) => {
 
   const clickHandler = index => {
     setSelection(index);
-    if (onChange) onChange(sidebarItems[index]);
+    if (onChange) onChange(sidebarItems[index], index);
   };
 
   const isDisabled = item => item.count > MAX_ENTITIES_FETCHED;
