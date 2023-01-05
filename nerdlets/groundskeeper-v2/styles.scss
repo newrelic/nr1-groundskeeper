@@ -39,6 +39,19 @@
     .sidebar {
       padding: 8px;
 
+      .filter {
+        display: inline-flex;
+        width: 100%;
+        border: 1px solid #E7E9EA;
+        border-radius: 4px;
+        align-items: center;
+        // margin: 8px auto;
+
+        .tf-icon {
+          margin-left: 4px;
+        }
+      }
+
       .link {
         font-size: 12px;
         line-height: 16px;

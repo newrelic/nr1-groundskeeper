@@ -64,7 +64,7 @@ const GroundskeeperV2Nerdlet = () => {
   return loaderIsDone ? (
     <div className="container">
       <aside className="sidebar-aside">
-        <Sidebar sidebarItems={sidebarItems} onChange={changeSelection} />
+        <Sidebar sidebarItems={sidebarItems} onSelect={changeSelection} />
       </aside>
       <section className="listing-section">
         {count === entities.length ? (
