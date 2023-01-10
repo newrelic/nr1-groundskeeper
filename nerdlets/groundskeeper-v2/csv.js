@@ -5,16 +5,14 @@ const download = (displayedEntities = []) => {
     'AccountName',
     'App Name',
     'Language',
-    'Agent Version Min',
-    'Agent Version Max',
-    'Agent Version Default',
-    'Age (in days of default version)',
+    'Agent Version',
+    'How old (in days)',
     'Runtime Version',
-    'Runtime Type',
     'DT Enabled',
-    'Loging Enabled',
-    'Infinte Tracing Enabled',
+    'Logging Enabled',
+    'Infinite Tracing Enabled',
     'Recommended Version',
+    'Notes',
     'Exposures',
   ].join(',');
 
@@ -22,26 +20,31 @@ const download = (displayedEntities = []) => {
     heading,
     ...displayedEntities.map(entity =>
       [
-        entity.account.id || '',
-        entity.account.name || '',
+        entity.account?.id || '',
+        entity.account?.name || '',
         entity.name || '',
         entity.language || '',
-        entity.agentVersions.min || '',
-        entity.agentVersions.max || '',
-        entity.agentVersions.default || '',
+        entity.agentVersions?.default || '',
         entity.recommend?.age?.days || '',
-        entity.runtimeVersions?.display || '',
-        entity.runtimeVersions?.type || '',
+        runtimeStr(entity.runtimeVersions),
         entity.features?.dtEnabled || '',
         entity.features?.logEnabled || '',
         entity.features?.infTraceHost || '',
         entity.recommend?.version || '',
+        entity.recommend?.message || '',
         (entity.exposures?.list || []).join('|'),
       ].join(',')
     ),
   ].join('\n');
 
   if (body) window.open(encodeURI(`${header}${body}`));
+};
+
+const runtimeStr = runtimeVersions => {
+  if (!runtimeVersions) return '';
+  const {display, type} = runtimeVersions;
+  const typeStr = type ? ` (${type})` : '';
+  return display ? `${display}${typeStr}` : '';
 };
 
 export default { download };

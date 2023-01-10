@@ -61,7 +61,7 @@ const ListingTable = ({ displayedEntities = [] }) => {
             />{' '}
             <FeatureIcon feature="logs" enabled={item.features?.logEnabled} />{' '}
             <FeatureIcon
-              feature="infinteTracing"
+              feature="infiniteTracing"
               enabled={item.features?.infTraceHost}
             />
           </TableRowCell>

@@ -30,7 +30,7 @@ const GroundskeeperV2Nerdlet = () => {
     setSidebarItems([
       {
         text: 'All entities',
-        count: allEntities.guids.length || 0,
+        count: allEntities.entities.length || 0,
         type: 'button',
         action: 'all',
         guids: allEntities.guids,

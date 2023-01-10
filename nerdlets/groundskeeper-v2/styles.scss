@@ -138,11 +138,13 @@
       padding: 8px;
       display: flex;
       align-self: flex-end;
+      gap: 16px;
 
       .col {
         display: inline-grid;
         gap: 4px;
         grid-template-rows: 1fr 8px;
+        align-items: end;
       }
     }
 

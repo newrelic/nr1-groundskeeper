@@ -11,9 +11,9 @@ const characteristics = {
     icon: Icon.TYPE.HARDWARE_AND_SOFTWARE__SOFTWARE__LOGS,
     text: 'Logs',
   },
-  infinteTracing: {
+  infiniteTracing: {
     icon: Icon.TYPE.HARDWARE_AND_SOFTWARE__SOFTWARE__MONITORING,
-    text: 'Infinte Tracing',
+    text: 'Infinite Tracing',
   }
 };
 

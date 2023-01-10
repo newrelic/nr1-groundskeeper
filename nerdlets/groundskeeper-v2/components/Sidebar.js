@@ -7,19 +7,17 @@ const MAX_ENTITIES_CAN_FETCH = 100;
 const Sidebar = ({ sidebarItems, onSelect }) => {
   const [selection, setSelection] = useState(-1);
   const [filterText, setFilterText] = useState('');
-  const [tagsTexts, setTagsTexts] = useState([]);
+  const [tagsTexts, setTagsTexts] = useState({});
 
   useEffect(() => {
     setTagsTexts(
       sidebarItems.reduce((acc, item) => {
         if (!('tagIndex' in item)) return acc;
-        if (item.type === 'tag') {
-          acc.push([item.text]);
-        } else {
-          acc[item.tagIndex].push(item.text);
-        }
-        return acc;
-      }, [])
+        const { tagIndex, type, text } = item;
+        return type === 'tag'
+          ? { ...acc, [tagIndex]: [text] }
+          : { ...acc, [tagIndex]: [...acc[tagIndex], text] };
+      }, {})
     );
   }, [sidebarItems]);
 
@@ -44,7 +42,7 @@ const Sidebar = ({ sidebarItems, onSelect }) => {
     return textMatchesFilter(text);
   };
 
-  const filterMatchTag = ({ type = '', text, tagIndex } = {}) => {
+  const filterMatchTag = ({ type = '', tagIndex } = {}) => {
     if (type !== 'tag' || !filterText.trim()) return true;
     return tagsTexts[tagIndex].some(txt => textMatchesFilter(txt));
   };
