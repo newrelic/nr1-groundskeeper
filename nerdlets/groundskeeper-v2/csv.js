@@ -32,7 +32,7 @@ const download = (displayedEntities = []) => {
         entity.features?.infTraceHost || '',
         entity.recommend?.version || '',
         entity.recommend?.message || '',
-        (entity.exposures?.list || []).join('|'),
+        (entity.exposures?.list || []).map(exp => exp.display).join(' | '),
       ].join(',')
     ),
   ].join('\n');
@@ -42,7 +42,7 @@ const download = (displayedEntities = []) => {
 
 const runtimeStr = runtimeVersions => {
   if (!runtimeVersions) return '';
-  const {display, type} = runtimeVersions;
+  const { display, type } = runtimeVersions;
   const typeStr = type ? ` (${type})` : '';
   return display ? `${display}${typeStr}` : '';
 };

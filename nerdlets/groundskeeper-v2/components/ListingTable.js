@@ -13,6 +13,7 @@ import {
 } from 'nr1';
 
 import FeatureIcon from './FeatureIcon';
+import { exposures } from '../cve';
 
 const colors = {
   ok: '#01a76a',
@@ -70,9 +71,7 @@ const ListingTable = ({ displayedEntities = [] }) => {
           </TableRowCell>
           <TableRowCell>
             <List rowHeight={16}>
-              {(item.exposures?.list || []).map((exposure, i) => (
-                <ListItem key={i}>{exposure}</ListItem>
-              ))}
+              {(item.exposures?.list || []).map(exposuresCell)}
             </List>
           </TableRowCell>
         </TableRow>
@@ -97,6 +96,18 @@ const statusCell = ({ message, status, version = '' } = {}) => (
       </Tooltip>
     ) : null}
   </>
+);
+
+const exposuresCell = (exposure, index) => (
+  <ListItem key={index}>
+    <a
+      className="u-unstyledLink cell-link"
+      target="_blank"
+      href={exposure.releaseNotes}
+    >
+      {exposure.display}
+    </a>
+  </ListItem>
 );
 
 export default ListingTable;
