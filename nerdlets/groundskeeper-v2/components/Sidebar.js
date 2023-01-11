@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { Button, Icon, Link } from 'nr1';
+import { Icon } from 'nr1';
 
 const MAX_ENTITIES_CAN_FETCH = 100;
 const MAX_SIDEBAR_SECTION_ITEMS = 10;
