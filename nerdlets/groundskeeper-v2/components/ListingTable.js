@@ -13,7 +13,6 @@ import {
 } from 'nr1';
 
 import FeatureIcon from './FeatureIcon';
-import { exposures } from '../cve';
 
 const colors = {
   ok: '#01a76a',
