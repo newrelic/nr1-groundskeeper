@@ -157,12 +157,6 @@ const Sidebar = ({ sidebarItems, onSelect }) => {
       </div>
 
       {sidebarItemsArr.ay}
-
-      {/* {sidebarItems.map(({ type }, index) =>
-        type === 'button'
-          ? buttonItem(sidebarItems[index], index)
-          : otherItem(sidebarItems[index], index)
-      )} */}
     </div>
   );
 };
