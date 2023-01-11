@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react';
 
-import { Icon } from 'nr1';
+import { Button, Icon, Link } from 'nr1';
 
 const MAX_ENTITIES_CAN_FETCH = 100;
+const MAX_SIDEBAR_SECTION_ITEMS = 10;
 
 const Sidebar = ({ sidebarItems, onSelect }) => {
   const [selection, setSelection] = useState(-1);
   const [filterText, setFilterText] = useState('');
   const [tagsTexts, setTagsTexts] = useState({});
+  const [skipAcctLimit, setSkipAcctLimit] = useState(false);
+  const [skipTagLimit, setSkipTagLimit] = useState(false);
 
   useEffect(() => {
     setTagsTexts(
@@ -65,14 +68,73 @@ const Sidebar = ({ sidebarItems, onSelect }) => {
       </div>
     ) : null;
 
-  const otherItem = (item, index) =>
+  const otherItem = (item, index, viewAllLink) =>
     filterMatchTag(item) ? (
       <div className={item.type} key={index}>
         <div className="title">
           <span>{item.text}</span>
+          {item.type === 'section' ? viewAllLink : null}
         </div>
       </div>
     ) : null;
+
+  const sidebarItemsArr = sidebarItems.reduce(
+    (acc, item, index) => {
+      if (item.type === 'section') {
+        let link;
+        if (item.text === 'Accounts') {
+          acc.acctMax =
+            item.count < MAX_SIDEBAR_SECTION_ITEMS
+              ? item.count
+              : MAX_SIDEBAR_SECTION_ITEMS;
+          if (!filterText.trim() && item.count > acc.acctMax)
+            link = (
+              <a
+                className="view-all"
+                onClick={() => setSkipAcctLimit(sal => !sal)}
+              >
+                {skipAcctLimit ? `View ${acc.acctMax}` : 'View all'}
+              </a>
+            );
+        } else if (item.text === 'Tags') {
+          acc.tagMax =
+            item.count < MAX_SIDEBAR_SECTION_ITEMS
+              ? item.count
+              : MAX_SIDEBAR_SECTION_ITEMS;
+          if (!filterText.trim() && item.count > acc.tagMax)
+            link = (
+              <a
+                className="view-all"
+                onClick={() => setSkipTagLimit(stl => !stl)}
+              >
+                {skipTagLimit ? `View ${acc.tagMax}` : 'View all'}
+              </a>
+            );
+        }
+        acc.ay.push(otherItem(item, index, link));
+      } else if (item.account) {
+        if (filterText.trim() || skipAcctLimit || acc.acctCounter < acc.acctMax)
+          acc.ay.push(buttonItem(item, index));
+        acc.acctCounter++;
+      } else if (item.type === 'tag') {
+        if (filterText.trim() || skipTagLimit || acc.tagCounter < acc.tagMax)
+          acc.ay.push(otherItem(item, index));
+        acc.tagCounter++;
+      } else if (item.type === 'button') {
+        if (
+          filterText.trim() ||
+          !('tagIndex' in item) ||
+          skipTagLimit ||
+          acc.tagCounter <= acc.tagMax
+        )
+          acc.ay.push(buttonItem(item, index));
+      } else {
+        acc.ay.push(otherItem(item, index));
+      }
+      return acc;
+    },
+    { ay: [], acctCounter: 0, acctMax: 0, tagCounter: 0, tagMax: 0 }
+  );
 
   return (
     <div className="sidebar">
@@ -94,11 +156,13 @@ const Sidebar = ({ sidebarItems, onSelect }) => {
         />
       </div>
 
-      {sidebarItems.map(({ type }, index) =>
+      {sidebarItemsArr.ay}
+
+      {/* {sidebarItems.map(({ type }, index) =>
         type === 'button'
           ? buttonItem(sidebarItems[index], index)
           : otherItem(sidebarItems[index], index)
-      )}
+      )} */}
     </div>
   );
 };

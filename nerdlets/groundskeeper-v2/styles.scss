@@ -100,8 +100,16 @@
 
       .section  {
         .title {
+          display: flex;
+
           span {
             font-size: 14px;
+            line-height: 20px;
+          }
+
+          .view-all {
+            margin-left: auto;
+            font-size: 12px;
             line-height: 20px;
           }
         }

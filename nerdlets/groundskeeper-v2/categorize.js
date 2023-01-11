@@ -13,8 +13,11 @@ const categorizeEntities = entities => {
   );
   return {
     entitiesByAccount: flattenAccounts(byAccount),
+    accountsCount: Object.keys(byAccount).length,
     entitiesByLanguage: flattenLanguages(byLanguage),
+    languagesCount: Object.keys(byLanguage).length,
     entitiesByTag: flattenTags(byTag),
+    tagsCount: Object.keys(byTag).length,
     allEntities: all,
   };
 };
@@ -112,6 +115,7 @@ const flattenAccounts = byAccount =>
       type: 'button',
       guids: account.guids,
       entities: account.entities,
+      account: acct,
     });
     return acc;
   }, []);
