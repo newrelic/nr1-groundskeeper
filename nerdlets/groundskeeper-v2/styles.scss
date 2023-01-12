@@ -100,8 +100,16 @@
 
       .section  {
         .title {
+          display: flex;
+
           span {
             font-size: 14px;
+            line-height: 20px;
+          }
+
+          .view-all {
+            margin-left: auto;
+            font-size: 12px;
             line-height: 20px;
           }
         }
@@ -138,11 +146,13 @@
       padding: 8px;
       display: flex;
       align-self: flex-end;
+      gap: 16px;
 
       .col {
         display: inline-grid;
         gap: 4px;
         grid-template-rows: 1fr 8px;
+        align-items: end;
       }
     }
 
@@ -152,6 +162,24 @@
       display: flex;
 
       .recommendations {
+        .cell-link {
+          background: none;
+          border: 0;
+          color: #0C74DF;
+          cursor: pointer;
+          padding: 0;
+          text-decoration: none;
+
+          &:focus {
+            background-color: #DBEDFE;
+            text-decoration: underline;
+          }
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+
         .status-cell {
           display: flex;
           height: 100%;

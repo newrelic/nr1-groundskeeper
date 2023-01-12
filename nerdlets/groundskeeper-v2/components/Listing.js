@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { Button, EmptyState } from 'nr1';
+import { Button, Checkbox, EmptyState } from 'nr1';
 
 import useFetchEntitiesDetails from '../hooks/useFetchEntitiesDetails';
 import { exposures } from '../cve';
@@ -21,6 +21,7 @@ const Listing = ({
   const [isLoading, setIsLoading] = useState(true);
   const [guidsToFetch, setGuidsToFetch] = useState([]);
   const [guidsFetched, setGuidsFetched] = useState(0);
+  const [showNonReporting, setShowNonReporting] = useState(false);
   const { details } = useFetchEntitiesDetails({ guidsToFetch });
 
   useEffect(() => {
@@ -50,19 +51,31 @@ const Listing = ({
 
   const transitionHandler = () => setIsLoading(false);
 
+  const checkHandler = ({ target: { checked } = {} } = {}) =>
+    setShowNonReporting(checked);
+
   const displayedEntities = () =>
-    entities.map(({ guid, ...entity }) => ({
-      ...entity,
-      runtimeVersions: entitiesDetails[guid]?.runtimeVersions,
-      recommend: recommend(
-        entitiesDetails[guid],
-        entity,
-        latestReleases,
-        agentReleases
-      ),
-      features: entitiesDetails[guid]?.features,
-      exposures: exposures(entity),
-    }));
+    entities.reduce(
+      (acc, { guid, reporting, ...entity }) =>
+        showNonReporting || reporting
+          ? [
+              ...acc,
+              {
+                ...entity,
+                runtimeVersions: entitiesDetails[guid]?.runtimeVersions,
+                recommend: recommend(
+                  entitiesDetails[guid],
+                  entity,
+                  latestReleases,
+                  agentReleases
+                ),
+                features: entitiesDetails[guid]?.features,
+                exposures: exposures(entity),
+              },
+            ]
+          : acc,
+      []
+    );
 
   return !entities || !entities.length ? (
     <EmptyState
@@ -71,12 +84,19 @@ const Listing = ({
       iconType={
         EmptyState.ICON_TYPE.HARDWARE_AND_SOFTWARE__SOFTWARE__ALL_ENTITIES
       }
-      title="No entities to display"
-      description="Select a filter on the left to display entities"
+      title="Select a filter on the left to display entities"
     />
   ) : (
     <>
       <div className="head">
+        <div className="col">
+          <Checkbox
+            checked={showNonReporting}
+            onChange={checkHandler}
+            label="Show non-reporting"
+            info={`Checking this option displays applications that are not currently reporting. Non-reporting applications cannot show upgrade recommendations.`}
+          />
+        </div>
         <div className="col">
           <Button
             loading={isLoading}

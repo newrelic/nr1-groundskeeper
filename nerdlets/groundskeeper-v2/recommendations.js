@@ -195,8 +195,8 @@ const recommend = (
       status = STATUS.OK;
       message = 'Running latest version!';
     } else if (version === currentVersion) {
-      app.recommend.status = STATUS.OK;
-      app.recommend.message = 'Running recommended version!';
+      status = STATUS.OK;
+      message = 'Running recommended version!';
     }
     const releases = agentReleases[language];
     if (currentVersion && releases)
