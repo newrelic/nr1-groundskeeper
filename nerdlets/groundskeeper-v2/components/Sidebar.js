@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import { Icon } from 'nr1';
 
-const MAX_ENTITIES_CAN_FETCH = 100;
+const MAX_ENTITIES_CAN_FETCH = 1000;
 const MAX_SIDEBAR_SECTION_ITEMS = 10;
 
 const Sidebar = ({ sidebarItems, onSelect }) => {
@@ -144,10 +144,10 @@ const Sidebar = ({ sidebarItems, onSelect }) => {
         </div>
         <input
           placeholder="Filter items"
-          autocomplete="off"
-          autocorrect="off"
-          autocapitalize="off"
-          spellcheck="false"
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck="false"
           value={filterText}
           onChange={({ target: { value = '' } = {} } = {}) =>
             setFilterText(value)
