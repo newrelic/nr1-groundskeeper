@@ -22,25 +22,28 @@ const GroundskeeperV2Nerdlet = () => {
 
     const {
       entitiesByAccount,
+      accountsCount,
       entitiesByLanguage,
+      languagesCount,
       entitiesByTag,
+      tagsCount,
       allEntities,
     } = categorizeEntities(entities);
 
     setSidebarItems([
       {
         text: 'All entities',
-        count: allEntities.guids.length || 0,
+        count: allEntities.entities.length || 0,
         type: 'button',
         action: 'all',
         guids: allEntities.guids,
         entities: allEntities.entities,
       },
-      { text: 'Accounts', type: 'section' },
+      { text: 'Accounts', type: 'section', count: accountsCount },
       ...entitiesByAccount,
-      { text: 'Languages', type: 'section' },
+      { text: 'Languages', type: 'section', count: languagesCount },
       ...entitiesByLanguage,
-      { text: 'Tags', type: 'section' },
+      { text: 'Tags', type: 'section', count: tagsCount },
       ...entitiesByTag,
     ]);
   }, [entities.length, loaderIsDone]);
@@ -64,7 +67,7 @@ const GroundskeeperV2Nerdlet = () => {
   return loaderIsDone ? (
     <div className="container">
       <aside className="sidebar-aside">
-        <Sidebar sidebarItems={sidebarItems} onChange={changeSelection} />
+        <Sidebar sidebarItems={sidebarItems} onSelect={changeSelection} />
       </aside>
       <section className="listing-section">
         {count === entities.length ? (

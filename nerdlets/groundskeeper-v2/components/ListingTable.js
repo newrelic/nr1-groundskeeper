@@ -26,13 +26,19 @@ const ListingTable = ({ displayedEntities = [] }) => {
       <TableHeader>
         <TableHeaderCell>Account</TableHeaderCell>
         <TableHeaderCell>App</TableHeaderCell>
-        <TableHeaderCell>Agent Version(s)</TableHeaderCell>
-        <TableHeaderCell>Runtime Version(s)</TableHeaderCell>
         <TableHeaderCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
-          Features
+          Agent version(s)
         </TableHeaderCell>
-        <TableHeaderCell>Recommended Version</TableHeaderCell>
+        <TableHeaderCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
+          Runtime version(s)
+        </TableHeaderCell>
+        <TableHeaderCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
+          Features enabled
+        </TableHeaderCell>
         <TableHeaderCell>Exposures</TableHeaderCell>
+        <TableHeaderCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
+          Recommended version
+        </TableHeaderCell>
       </TableHeader>
       {({ item }) => (
         <TableRow>
@@ -61,19 +67,17 @@ const ListingTable = ({ displayedEntities = [] }) => {
             />{' '}
             <FeatureIcon feature="logs" enabled={item.features?.logEnabled} />{' '}
             <FeatureIcon
-              feature="infinteTracing"
+              feature="infiniteTracing"
               enabled={item.features?.infTraceHost}
             />
           </TableRowCell>
-          <TableRowCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
-            {statusCell(item.recommend)}
-          </TableRowCell>
           <TableRowCell>
             <List rowHeight={16}>
-              {(item.exposures?.list || []).map((exposure, i) => (
-                <ListItem key={i}>{exposure}</ListItem>
-              ))}
+              {(item.exposures?.list || []).map(exposuresCell)}
             </List>
+          </TableRowCell>
+          <TableRowCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
+            {statusCell(item.recommend)}
           </TableRowCell>
         </TableRow>
       )}
@@ -97,6 +101,18 @@ const statusCell = ({ message, status, version = '' } = {}) => (
       </Tooltip>
     ) : null}
   </>
+);
+
+const exposuresCell = (exposure, index) => (
+  <ListItem key={index}>
+    <a
+      className="u-unstyledLink cell-link"
+      target="_blank"
+      href={exposure.releaseNotes}
+    >
+      {exposure.display}
+    </a>
+  </ListItem>
 );
 
 export default ListingTable;
