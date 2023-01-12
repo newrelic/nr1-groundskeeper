@@ -22,8 +22,11 @@ const GroundskeeperV2Nerdlet = () => {
 
     const {
       entitiesByAccount,
+      accountsCount,
       entitiesByLanguage,
+      languagesCount,
       entitiesByTag,
+      tagsCount,
       allEntities,
     } = categorizeEntities(entities);
 
@@ -36,11 +39,11 @@ const GroundskeeperV2Nerdlet = () => {
         guids: allEntities.guids,
         entities: allEntities.entities,
       },
-      { text: 'Accounts', type: 'section' },
+      { text: 'Accounts', type: 'section', count: accountsCount },
       ...entitiesByAccount,
-      { text: 'Languages', type: 'section' },
+      { text: 'Languages', type: 'section', count: languagesCount },
       ...entitiesByLanguage,
-      { text: 'Tags', type: 'section' },
+      { text: 'Tags', type: 'section', count: tagsCount },
       ...entitiesByTag,
     ]);
   }, [entities.length, loaderIsDone]);
