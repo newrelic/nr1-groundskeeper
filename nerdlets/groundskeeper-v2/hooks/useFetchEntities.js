@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { ngql, useEntitiesByDomainTypeQuery, useNerdGraphQuery } from 'nr1';
 import semver from 'semver';
-import { AGENT_RELEASES } from './queries';
-import { AGENTS, AGENTS_REGEX_STRING, LANGUAGES, RUNTIMES } from './constants';
+import { AGENT_RELEASES } from '../queries';
+import { AGENTS, AGENTS_REGEX_STRING, LANGUAGES, RUNTIMES } from '../constants';
 
 const entityFragmentExtension = ngql`
   fragment EntityFragmentExtension on ApmApplicationEntityOutline {
@@ -65,7 +65,7 @@ const useFetchEntities = () => {
   }, [releaseData]);
 
   // useEffect(() => {
-  //   console.log('HOOK', entities.length)
+  //   console.log('entities', entities)
   // }, [entities]);
 
   // useEffect(() => {
@@ -87,6 +87,7 @@ const sanitize = entities =>
       guid,
       name: appName,
       language,
+      reporting,
       runningAgentVersions,
       tags = [],
     } = {}) => ({
@@ -94,6 +95,7 @@ const sanitize = entities =>
       guid,
       name: appName,
       language,
+      reporting,
       tags: tags.reduce(
         (acc, { key, values }) => ({
           ...acc,

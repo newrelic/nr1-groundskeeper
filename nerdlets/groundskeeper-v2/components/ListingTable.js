@@ -20,19 +20,25 @@ const colors = {
   critical: '#f5554b',
 };
 
-const ListingTable = ({ entities = [], entitiesDetails = {} }) => {
+const ListingTable = ({ displayedEntities = [] }) => {
   return (
-    <Table className="recommendations" items={entities} multivalue>
+    <Table className="recommendations" items={displayedEntities} multivalue>
       <TableHeader>
         <TableHeaderCell>Account</TableHeaderCell>
         <TableHeaderCell>App</TableHeaderCell>
-        <TableHeaderCell>Agent Version(s)</TableHeaderCell>
-        <TableHeaderCell>Runtime Version(s)</TableHeaderCell>
         <TableHeaderCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
-          Features
+          Agent version(s)
         </TableHeaderCell>
-        <TableHeaderCell>Recommended Version</TableHeaderCell>
+        <TableHeaderCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
+          Runtime version(s)
+        </TableHeaderCell>
+        <TableHeaderCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
+          Features enabled
+        </TableHeaderCell>
         <TableHeaderCell>Exposures</TableHeaderCell>
+        <TableHeaderCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
+          Recommended version
+        </TableHeaderCell>
       </TableHeader>
       {({ item }) => (
         <TableRow>
@@ -44,41 +50,34 @@ const ListingTable = ({ entities = [], entitiesDetails = {} }) => {
           </TableRowCell>
           <TableRowCell
             alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}
-            additionalValue={entitiesDetails[item.guid]?.recommend?.age?.display}
+            additionalValue={item.recommend?.age?.display}
           >
             {item.agentVersions?.display || ''}
           </TableRowCell>
           <TableRowCell
             alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}
-            additionalValue={entitiesDetails[item.guid]?.runtimeVersions?.type}
+            additionalValue={item.runtimeVersions?.type}
           >
-            {entitiesDetails[item.guid]?.runtimeVersions?.display || ''}
+            {item.runtimeVersions?.display || ''}
           </TableRowCell>
           <TableRowCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
             <FeatureIcon
               feature="distributedTracing"
-              enabled={entitiesDetails[item.guid]?.features?.dtEnabled}
+              enabled={item.features?.dtEnabled}
             />{' '}
+            <FeatureIcon feature="logs" enabled={item.features?.logEnabled} />{' '}
             <FeatureIcon
-              feature="logs"
-              enabled={entitiesDetails[item.guid]?.features?.logEnabled}
-            />{' '}
-            <FeatureIcon
-              feature="infinteTracing"
-              enabled={entitiesDetails[item.guid]?.features?.infTraceHost}
+              feature="infiniteTracing"
+              enabled={item.features?.infTraceHost}
             />
           </TableRowCell>
-          <TableRowCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
-            {statusCell(entitiesDetails[item.guid]?.recommend)}
-          </TableRowCell>
           <TableRowCell>
-            <List>
-              {(entitiesDetails[item.guid]?.exposures?.list || []).map(
-                exposure => (
-                  <ListItem>{exposure}</ListItem>
-                )
-              )}
+            <List rowHeight={16}>
+              {(item.exposures?.list || []).map(exposuresCell)}
             </List>
+          </TableRowCell>
+          <TableRowCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
+            {statusCell(item.recommend)}
           </TableRowCell>
         </TableRow>
       )}
@@ -102,6 +101,18 @@ const statusCell = ({ message, status, version = '' } = {}) => (
       </Tooltip>
     ) : null}
   </>
+);
+
+const exposuresCell = (exposure, index) => (
+  <ListItem key={index}>
+    <a
+      className="u-unstyledLink cell-link"
+      target="_blank"
+      href={exposure.releaseNotes}
+    >
+      {exposure.display}
+    </a>
+  </ListItem>
 );
 
 export default ListingTable;
