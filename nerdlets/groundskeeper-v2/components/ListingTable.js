@@ -26,13 +26,19 @@ const ListingTable = ({ displayedEntities = [] }) => {
       <TableHeader>
         <TableHeaderCell>Account</TableHeaderCell>
         <TableHeaderCell>App</TableHeaderCell>
-        <TableHeaderCell>Agent Version(s)</TableHeaderCell>
-        <TableHeaderCell>Runtime Version(s)</TableHeaderCell>
         <TableHeaderCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
-          Features
+          Agent version(s)
         </TableHeaderCell>
-        <TableHeaderCell>Recommended Version</TableHeaderCell>
+        <TableHeaderCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
+          Runtime version(s)
+        </TableHeaderCell>
+        <TableHeaderCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
+          Features enabled
+        </TableHeaderCell>
         <TableHeaderCell>Exposures</TableHeaderCell>
+        <TableHeaderCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
+          Recommended version
+        </TableHeaderCell>
       </TableHeader>
       {({ item }) => (
         <TableRow>
@@ -65,13 +71,13 @@ const ListingTable = ({ displayedEntities = [] }) => {
               enabled={item.features?.infTraceHost}
             />
           </TableRowCell>
-          <TableRowCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
-            {statusCell(item.recommend)}
-          </TableRowCell>
           <TableRowCell>
             <List rowHeight={16}>
               {(item.exposures?.list || []).map(exposuresCell)}
             </List>
+          </TableRowCell>
+          <TableRowCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
+            {statusCell(item.recommend)}
           </TableRowCell>
         </TableRow>
       )}

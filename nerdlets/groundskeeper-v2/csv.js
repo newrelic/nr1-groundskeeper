@@ -1,19 +1,19 @@
 const download = (displayedEntities = []) => {
   const header = 'data:text/csv;charset=utf-8,';
   const heading = [
-    'AccountId',
-    'AccountName',
-    'App Name',
+    'Account id',
+    'Account name',
+    'App name',
     'Language',
-    'Agent Version',
+    'Agent version',
     'How old (in days)',
-    'Runtime Version',
-    'DT Enabled',
-    'Logging Enabled',
-    'Infinite Tracing Enabled',
-    'Recommended Version',
-    'Notes',
+    'Runtime version',
+    'Distributed tracing enabled',
+    'Logging enabled',
+    'Infinite tracing enabled',
     'Exposures',
+    'Recommended version',
+    'Notes',
   ].join(',');
 
   const body = [
@@ -30,9 +30,9 @@ const download = (displayedEntities = []) => {
         entity.features?.dtEnabled || '',
         entity.features?.logEnabled || '',
         entity.features?.infTraceHost || '',
+        (entity.exposures?.list || []).map(exp => exp.display).join(' | '),
         entity.recommend?.version || '',
         entity.recommend?.message || '',
-        (entity.exposures?.list || []).map(exp => exp.display).join(' | '),
       ].join(',')
     ),
   ].join('\n');
