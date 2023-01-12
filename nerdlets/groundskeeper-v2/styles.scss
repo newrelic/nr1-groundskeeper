@@ -162,6 +162,24 @@
       display: flex;
 
       .recommendations {
+        .cell-link {
+          background: none;
+          border: 0;
+          color: #0C74DF;
+          cursor: pointer;
+          padding: 0;
+          text-decoration: none;
+
+          &:focus {
+            background-color: #DBEDFE;
+            text-decoration: underline;
+          }
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+
         .status-cell {
           display: flex;
           height: 100%;
