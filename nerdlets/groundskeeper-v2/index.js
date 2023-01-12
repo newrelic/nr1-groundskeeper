@@ -5,6 +5,7 @@ import categorizeEntities from './categorize';
 import Listing from './components/Listing';
 import Sidebar from './components/Sidebar';
 import Loader from './components/Loader';
+import Redirector from './components/Redirector';
 
 const GroundskeeperV2Nerdlet = () => {
   const [guids, setGuids] = useState([]);
@@ -64,27 +65,36 @@ const GroundskeeperV2Nerdlet = () => {
 
   const loaderEndHandler = () => setLoaderIsDone(true);
 
-  return loaderIsDone ? (
-    <div className="container">
-      <aside className="sidebar-aside">
-        <Sidebar sidebarItems={sidebarItems} onSelect={changeSelection} />
-      </aside>
-      <section className="listing-section">
-        {count === entities.length ? (
-          <Listing
-            entities={shownEntities}
-            guids={guids}
-            entitiesDetails={entitiesDetails}
-            setEntitiesDetails={setEntitiesDetails}
-            agentReleases={agentReleases}
-            latestReleases={latestReleases}
-            selectedIndex={selectedIndex}
-          />
-        ) : null}
-      </section>
-    </div>
-  ) : (
-    <Loader count={count} loaded={entities.length} onEnd={loaderEndHandler} />
+  return (
+    <>
+      <Redirector />
+      {loaderIsDone ? (
+        <div className="container">
+          <aside className="sidebar-aside">
+            <Sidebar sidebarItems={sidebarItems} onSelect={changeSelection} />
+          </aside>
+          <section className="listing-section">
+            {count === entities.length ? (
+              <Listing
+                entities={shownEntities}
+                guids={guids}
+                entitiesDetails={entitiesDetails}
+                setEntitiesDetails={setEntitiesDetails}
+                agentReleases={agentReleases}
+                latestReleases={latestReleases}
+                selectedIndex={selectedIndex}
+              />
+            ) : null}
+          </section>
+        </div>
+      ) : (
+        <Loader
+          count={count}
+          loaded={entities.length}
+          onEnd={loaderEndHandler}
+        />
+      )}
+    </>
   );
 };
 
