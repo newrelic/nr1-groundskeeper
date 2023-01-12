@@ -6,6 +6,8 @@
 
 ## Usage
 
+**Note:** Version 2 available now! Find out [what's new](./v2-whats-new.md) in v2.
+
 Agent Groundskeeper allows you to see the latest agent versions, compared to the versions currently running based on your upgrade SLO.
 
 Quickly and easily zoom in on your environment by filtering on tags and searching by account, language and application.

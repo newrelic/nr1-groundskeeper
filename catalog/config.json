@@ -15,5 +15,5 @@
       "url": "https://discuss.newrelic.com/t/groundskeeper-nerdpack/84168"
     }
   },
-  "whatsNew": "- Feat: Add 'last 3 releases' to SLO options and refactor SLO code to be more flexible\n- Feat: Specify whether or not agent age is known\n\n- Fix: Sort agent age column numerically\n- Fix: Use the correct dataset for populating the 'no version reported' table"
+  "whatsNew": "- Version 2 released!\n- Feat: Add 'last 3 releases' to SLO options and refactor SLO code to be more flexible\n- Feat: Specify whether or not agent age is known\n\n- Fix: Sort agent age column numerically\n- Fix: Use the correct dataset for populating the 'no version reported' table"
 }
