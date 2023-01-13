@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import {
   Icon,
@@ -9,7 +10,7 @@ import {
   TableHeaderCell,
   TableRow,
   TableRowCell,
-  Tooltip,
+  Tooltip
 } from 'nr1';
 
 import FeatureIcon from './FeatureIcon';
@@ -17,7 +18,7 @@ import FeatureIcon from './FeatureIcon';
 const colors = {
   ok: '#01a76a',
   warning: '#ffd23d',
-  critical: '#f5554b',
+  critical: '#f5554b'
 };
 
 const ListingTable = ({ displayedEntities = [] }) => {
@@ -108,11 +109,16 @@ const exposuresCell = (exposure, index) => (
     <a
       className="u-unstyledLink cell-link"
       target="_blank"
+      rel="noreferrer"
       href={exposure.releaseNotes}
     >
       {exposure.display}
     </a>
   </ListItem>
 );
+
+ListingTable.propTypes = {
+  displayedEntities: PropTypes.array
+};
 
 export default ListingTable;
