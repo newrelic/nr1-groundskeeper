@@ -14,7 +14,9 @@ import {
   Select,
   SelectItem,
   Grid,
-  GridItem
+  GridItem,
+  navigation,
+  SectionMessage
 } from 'nr1';
 import AgentVersion from './components/AgentVersion';
 import SLAReport from './components/SLAReport';
@@ -669,8 +671,21 @@ export default class Groundskeeper extends React.Component {
       tableBannerText += `${presentationData.noVersionsTable.data.length} apps are not reporting agent version data (they may be inactive)`;
     }
 
+    const v2nerdletLocation = navigation.getReplaceNerdletLocation({
+      id: 'groundskeeper-router',
+      urlState: {
+        toNerdletId: 'groundskeeper-v2'
+      }
+    });
+
     return (
       <div className="gk-content">
+        <div style={{ backgroundColor: '#F3F4F4', paddingBottom: '1em' }}>
+          <SectionMessage
+            description="Updated version of Agent Groundskeeper available to preview now."
+            actions={[{ label: 'Switch to v2', to: v2nerdletLocation }]}
+          />
+        </div>
         {loadError ? (
           <h3>
             An error occurred while loading data. Please check your browser

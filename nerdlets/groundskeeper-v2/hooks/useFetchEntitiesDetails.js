@@ -1,0 +1,155 @@
+import { useEffect, useRef, useState } from 'react';
+import { useNerdGraphQuery } from 'nr1';
+import semver from 'semver';
+import { APPS_DETAILS } from '../queries';
+import { AGENTS, AGENTS_REGEX_STRING, RUNTIMES } from '../constants';
+
+const MAX_ENTITIES_IN_SET = 10;
+const featuresList = {
+  dtEnabled: 'newrelic.distributed_tracing.enabled',
+  infTraceHost: 'newrelic.infinite_tracing.trace_observer_host',
+  logEnabled: 'newrelic.application_logging.enabled'
+};
+
+const useFetchEntitiesDetails = ({ guidsToFetch = [] }) => {
+  const [details, setDetails] = useState({});
+  const [guidsQueue, setGuidsQueue] = useState([]);
+  const [guids, setGuids] = useState([]);
+  const [skip, setSkip] = useState(true);
+  const indexMarker = useRef(0);
+  const lastPropsGuids = useRef([]);
+  const {
+    data: detailsData,
+    error: detailsError,
+    loading: detailsLoading
+  } = useNerdGraphQuery({
+    query: APPS_DETAILS,
+    variables: { guids },
+    skip: skip
+  });
+
+  useEffect(() => {
+    const guidsDiff = guidsToFetch.filter(
+      gu => !lastPropsGuids.current.some(lpg => lpg === gu)
+    );
+    if (guidsDiff.length) {
+      setGuidsQueue(gq => [...gq, ...guidsDiff]);
+      lastPropsGuids.current = guidsToFetch;
+    }
+  }, [guidsToFetch]);
+
+  useEffect(() => {
+    if (!detailsLoading) fetchSet();
+  }, [guidsQueue]);
+
+  useEffect(() => {
+    if (!guids || !guids.length) return;
+    setSkip(false);
+  }, [guids]);
+
+  useEffect(() => {
+    if (!details || !Object.keys(details).length) return;
+    fetchSet();
+  }, [details]);
+
+  useEffect(() => {
+    if (detailsError)
+      console.error('Error fetching entity details', detailsError); // eslint-disable-line no-console
+  }, [detailsError]);
+
+  useEffect(() => {
+    if (detailsLoading || !detailsData || !Object.keys(detailsData).length)
+      return;
+    setSkip(true);
+    const { entities: entitiesDetails = [] } = detailsData.actor || {};
+    const detailsObject = entitiesDetails.reduce(
+      (acc, { guid, language, applicationInstances }) => ({
+        ...acc,
+        [guid]: applicationInstances
+          ? entityDetails(applicationInstances, language)
+          : {}
+      }),
+      {}
+    );
+    setDetails(deets => ({ ...deets, ...detailsObject }));
+  }, [detailsData]);
+
+  const fetchSet = () => {
+    if (indexMarker.current < guidsQueue.length) {
+      const index = indexMarker.current;
+      const guidsList = guidsQueue.slice(index, index + MAX_ENTITIES_IN_SET);
+      indexMarker.current = index + guidsList.length;
+      setGuids(() => [...guidsList]);
+    }
+  };
+
+  return { details };
+};
+
+const entityDetails = (applicationInstances = [], language) => {
+  const { versions, runtimeTypes, features } = applicationInstances.reduce(
+    (acc, applicationInstance) => {
+      const {
+        agentSettingsAttributes,
+        environmentAttributes
+      } = applicationInstance;
+      acc.features = Object.keys(featuresList).reduce(
+        (fo, feat) =>
+          !acc.features[feat] &&
+          agentSettingsAttributes.find(
+            ({ attribute }) => attribute && attribute === featuresList[feat]
+          )
+            ? { ...fo, [feat]: true }
+            : fo,
+        acc.features
+      );
+      if (!environmentAttributes || !(language in AGENTS_REGEX_STRING))
+        return acc;
+      const versionRegexString = AGENTS_REGEX_STRING[language];
+      const foundVersion = environmentAttributes.find(({ attribute }) =>
+        versionRegexString.test(attribute)
+      );
+      if (!foundVersion) return acc;
+      const ver = semver.valid(semver.coerce(foundVersion.value));
+      if (acc.versions.every(v => v !== ver)) acc.versions.push(ver);
+      const runtimeType = parseRuntimeType(language, foundVersion.value);
+      if (runtimeType && acc.runtimeTypes.every(r => r !== runtimeType))
+        acc.runtimeTypes.push(runtimeType);
+
+      return acc;
+    },
+    {
+      versions: [],
+      runtimeTypes: [],
+      features: { dtEnabled: false, infTraceHost: false, logEnabled: false }
+    }
+  );
+
+  const display = versions.length === 1 ? versions[0] : versions.join(', ');
+  const type =
+    runtimeTypes.length === 1 ? runtimeTypes[0] : runtimeTypes.join(', ');
+
+  return {
+    runtimeVersions: {
+      versions,
+      display,
+      type,
+      default: versions.length === 1 ? versions[0] : null
+    },
+    features
+  };
+};
+
+const parseRuntimeType = (language, value) => {
+  if (language === AGENTS.DOTNET) {
+    return value.match(RUNTIMES.DOTNET_CORE.MATCH)
+      ? RUNTIMES.DOTNET_CORE.DISPLAY
+      : RUNTIMES.DOTNET_FRAMEWORK.DISPLAY;
+  } else if (language === AGENTS.RUBY) {
+    return value.match(RUNTIMES.RUBY_JRUBY.MATCH)
+      ? RUNTIMES.RUBY_JRUBY.DISPLAY
+      : RUNTIMES.RUBY_CRUBY.DISPLAY;
+  }
+};
+
+export default useFetchEntitiesDetails;
