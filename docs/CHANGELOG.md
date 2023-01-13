@@ -1,3 +1,10 @@
+## [2.1.1](https://github.com/newrelic/nr1-groundskeeper/compare/v2.1.0...v2.1.1) (2023-01-13)
+
+
+### Bug Fixes
+
+* sidebar tweaks incl. filter limits banner ([feb3ce3](https://github.com/newrelic/nr1-groundskeeper/commit/feb3ce317ac764ca595d34366cc2d1fb3379c142))
+
 # [2.1.0](https://github.com/newrelic/nr1-groundskeeper/compare/v2.0.1...v2.1.0) (2023-01-13)
 
 
