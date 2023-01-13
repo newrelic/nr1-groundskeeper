@@ -1,3 +1,10 @@
+## [0.13.1](https://github.com/newrelic/nr1-groundskeeper/compare/v0.13.0...v0.13.1) (2023-01-13)
+
+
+### Bug Fixes
+
+* alt text for image ([93fcd61](https://github.com/newrelic/nr1-groundskeeper/commit/93fcd61acc7bdd163146a40f965b4e5b785089e1))
+
 # [0.13.0](https://github.com/newrelic/nr1-groundskeeper/compare/v0.12.1...v0.13.0) (2023-01-13)
 
 
