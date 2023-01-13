@@ -6,7 +6,7 @@
 
 ## Usage
 
-**Note:** Version 2 available now! Find out [what's new](./v2-whats-new.md) in v2.
+**Note:** Agent Groundskeeper version 2 available now! Find out [what's new](./v2-whats-new.md) in v2.
 
 Agent Groundskeeper allows you to see the latest agent versions, compared to the versions currently running based on your upgrade SLO.
 
