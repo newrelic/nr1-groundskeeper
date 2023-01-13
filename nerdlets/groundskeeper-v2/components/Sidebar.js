@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { Icon } from 'nr1';
+import { Icon, SectionMessage } from 'nr1';
 
 const MAX_ENTITIES_CAN_FETCH = 1000;
 const MAX_SIDEBAR_SECTION_ITEMS = 10;
@@ -139,12 +139,15 @@ const Sidebar = ({ sidebarItems, onSelect }) => {
 
   return (
     <div className="sidebar">
+      <div className="message filter-limit">
+        <SectionMessage description="Filters with over a 1000 entities are currently disabled." />
+      </div>
       <div className="filter">
         <div className="tf-icon">
-          <Icon type={Icon.TYPE.INTERFACE__OPERATIONS__FILTER} />
+          <Icon type={Icon.TYPE.INTERFACE__OPERATIONS__SEARCH} />
         </div>
         <input
-          placeholder="Filter items"
+          placeholder="Search filters"
           autoComplete="off"
           autoCorrect="off"
           autoCapitalize="off"
