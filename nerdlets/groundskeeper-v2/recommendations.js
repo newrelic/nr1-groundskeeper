@@ -11,66 +11,66 @@ const recommendations = {
         match: '2.0 - 3.0',
         version: '9.9.0',
         status: STATUS.WARNING,
-        message: '',
+        message: ''
       },
-      { match: '>=3.1', version: LATEST, status: STATUS.WARNING, message: '' },
+      { match: '>=3.1', version: LATEST, status: STATUS.WARNING, message: '' }
     ],
     [RUNTIMES.DOTNET_FRAMEWORK.KEY]: [
       {
         match: '<=4.0',
         version: '6.22.0',
         status: STATUS.WARNING,
-        message: '',
+        message: ''
       },
       {
         match: '4.5.0 - 4.6.1',
         version: '9.9.0',
         status: STATUS.WARNING,
-        message: '',
+        message: ''
       },
       {
         match: '>=4.6.2',
         version: LATEST,
         status: STATUS.WARNING,
-        message: '',
-      },
-    ],
+        message: ''
+      }
+    ]
   },
   [AGENTS.GO]: [
     {
       match: '<1.7',
       version: null,
       status: STATUS.CRITICAL,
-      message: 'Runtime not supported!',
+      message: 'Runtime not supported!'
     },
     {
       match: '1.7 - 1.16',
       version: '3.19.1',
       status: STATUS.CRITICAL,
-      message: 'Golang version out of support. Please upgrade.',
+      message: 'Golang version out of support. Please upgrade.'
     },
     {
       match: '1.17.x',
       version: LATEST,
       status: STATUS.CRITICAL,
-      message: 'Golang version out of support. Please upgrade.',
+      message: 'Golang version out of support. Please upgrade.'
     },
     {
       match: '1.18 - 1.19.x',
       version: LATEST,
       status: STATUS.WARNING,
-      message: '',
-    },
+      message: ''
+    }
   ],
   [AGENTS.JAVA]: [
     {
       match: '<=1.6.x',
       version: null,
       status: STATUS.CRITICAL,
-      message: 'No supported agent version',
+      message: 'No supported agent version'
     },
     { match: '1.7.x', version: '6.5.4', status: STATUS.WARNING, message: '' },
-    { match: '>1.7.x', version: LATEST, status: STATUS.WARNING, message: '' },
+    { match: '>1.7.x', version: LATEST, status: STATUS.WARNING, message: '' }
   ],
   [AGENTS.NODEJS]: [
     { match: '10.x', version: '7.5.2', status: STATUS.WARNING, message: '' },
@@ -79,55 +79,55 @@ const recommendations = {
       match: '14.x || 16.x || 18.x',
       version: LATEST,
       status: STATUS.WARNING,
-      message: '',
-    },
+      message: ''
+    }
   ],
   [AGENTS.PHP]: [
     {
       match: '<7.4',
       version: null,
       status: STATUS.CRITICAL,
-      message: 'No supported agent version',
+      message: 'No supported agent version'
     },
-    { match: '>=7.4', version: LATEST, status: STATUS.WARNING, message: '' },
+    { match: '>=7.4', version: LATEST, status: STATUS.WARNING, message: '' }
   ],
   [AGENTS.PYTHON]: [
     {
       match: '<=2.6.x',
       version: null,
       status: STATUS.CRITICAL,
-      message: 'No supported agent version',
+      message: 'No supported agent version'
     },
     {
       match: '2.6.x || 3.3',
       version: '3.4.0.95',
       status: STATUS.WARNING,
-      message: '',
+      message: ''
     },
     {
       match: '3.4.x',
       version: '4.20.0.120',
       status: STATUS.WARNING,
-      message: '',
+      message: ''
     },
     {
       match: '3.5.x',
       version: '5.24.0.153',
       status: STATUS.WARNING,
-      message: '',
+      message: ''
     },
     {
       match: '3.6.x',
       version: '7.16.0.178',
       status: STATUS.WARNING,
-      message: '',
+      message: ''
     },
     {
       match: '2.7 || >=3.7.x',
       version: LATEST,
       status: STATUS.WARNING,
-      message: '',
-    },
+      message: ''
+    }
   ],
   [AGENTS.RUBY]: {
     [RUNTIMES.RUBY_CRUBY.KEY]: [
@@ -135,36 +135,36 @@ const recommendations = {
         match: '<2.0.x',
         version: null,
         status: STATUS.CRITICAL,
-        message: 'No supported agent version',
+        message: 'No supported agent version'
       },
       {
         match: '2.0.x - 2.1.x',
         version: '6.15.0',
         status: STATUS.WARNING,
-        message: '',
+        message: ''
       },
       {
         match: '>=2.2.x',
         version: LATEST,
         status: STATUS.WARNING,
-        message: '',
-      },
+        message: ''
+      }
     ],
     [RUNTIMES.RUBY_JRUBY.KEY]: [
       {
         match: '<9.0.x',
         version: null,
         status: STATUS.CRITICAL,
-        message: 'No supported agent version',
+        message: 'No supported agent version'
       },
       {
         match: '>=9.0.x',
         version: LATEST,
         status: STATUS.WARNING,
-        message: '',
-      },
-    ],
-  },
+        message: ''
+      }
+    ]
+  }
 };
 
 const recommend = (
@@ -174,7 +174,10 @@ const recommend = (
   agentReleases
 ) => {
   if (!runtimeVersion || !language) return {};
-  let version, status, message, age;
+  let version;
+  let status;
+  let message;
+  let age;
   const agentRecommendations = runtimeType
     ? recommendations[language][runtimeKey(language, runtimeType)]
     : recommendations[language];
@@ -215,7 +218,7 @@ const howOld = (recommendedVersion, currentVersion, releases) => {
       days: daysOld,
       display: `${plural ? 'over' : ''} ${years} year${
         years > 1 ? 's' : ''
-      } old`,
+      } old`
     };
   }
   if (daysOld > 30) {
@@ -224,7 +227,7 @@ const howOld = (recommendedVersion, currentVersion, releases) => {
       days: daysOld,
       display: `${plural ? 'over' : ''} ${months} month${
         months > 1 ? 's' : ''
-      } old`,
+      } old`
     };
   }
   return { days: daysOld, display: `${daysOld} days old` };

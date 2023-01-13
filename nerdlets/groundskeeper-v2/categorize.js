@@ -5,7 +5,7 @@ const categorizeEntities = entities => {
     byAccount: {},
     byLanguage: {},
     byTag: {},
-    all: { entities: [], guids: [] },
+    all: { entities: [], guids: [] }
   };
   const { byAccount, byLanguage, byTag, all } = entities.reduce(
     categorizeFn,
@@ -18,7 +18,7 @@ const categorizeEntities = entities => {
     languagesCount: Object.keys(byLanguage).length,
     entitiesByTag: flattenTags(byTag),
     tagsCount: Object.keys(byTag).length,
-    allEntities: all,
+    allEntities: all
   };
 };
 
@@ -28,7 +28,7 @@ const categorizeFn = (acc, entity) => {
     guid,
     language,
     tags,
-    reporting,
+    reporting
   } = entity;
   if (!LANGUAGES.some(lang => lang === language)) return acc;
   if (reporting) acc.all.guids.push(guid);
@@ -44,8 +44,8 @@ const categorizeFn = (acc, entity) => {
               guids: reporting
                 ? [...acc.byAccount[id].guids, guid]
                 : acc.byAccount[id].guids,
-              entities: [...acc.byAccount[id].entities, entity],
-            },
+              entities: [...acc.byAccount[id].entities, entity]
+            }
           }
         : {
             ...acc.byAccount,
@@ -53,8 +53,8 @@ const categorizeFn = (acc, entity) => {
               name,
               count: 1,
               guids: reporting ? [guid] : [],
-              entities: [entity],
-            },
+              entities: [entity]
+            }
           };
   }
   if (language) {
@@ -67,16 +67,16 @@ const categorizeFn = (acc, entity) => {
               guids: reporting
                 ? [...acc.byLanguage[language].guids, guid]
                 : acc.byLanguage[language].guids,
-              entities: [...acc.byLanguage[language].entities, entity],
-            },
+              entities: [...acc.byLanguage[language].entities, entity]
+            }
           }
         : {
             ...acc.byLanguage,
             [language]: {
               count: 1,
               guids: reporting ? [guid] : [],
-              entities: [entity],
-            },
+              entities: [entity]
+            }
           };
   }
   if (tags) {
@@ -89,14 +89,14 @@ const categorizeFn = (acc, entity) => {
           acc.byTag[tag][val] = {
             count: 0,
             guids: [],
-            entities: [],
+            entities: []
           };
         acc.byTag[tag][val] = {
           count: acc.byTag[tag][val].count + 1,
           guids: reporting
             ? [...acc.byTag[tag][val].guids, guid]
             : acc.byTag[tag][val].guids,
-          entities: [...acc.byTag[tag][val].entities, entity],
+          entities: [...acc.byTag[tag][val].entities, entity]
         };
       });
     });
@@ -115,7 +115,7 @@ const flattenAccounts = byAccount =>
       type: 'button',
       guids: account.guids,
       entities: account.entities,
-      account: acct,
+      account: acct
     });
     return acc;
   }, []);
@@ -130,7 +130,7 @@ const flattenLanguages = byLanguage =>
       count: language.count,
       type: 'button',
       guids: language.guids,
-      entities: language.entities,
+      entities: language.entities
     });
     return acc;
   }, []);
@@ -153,7 +153,7 @@ const flattenTags = tagsObject =>
           type: 'button',
           guids,
           entities,
-          tagIndex,
+          tagIndex
         });
         return tacc;
       },
@@ -163,10 +163,10 @@ const flattenTags = tagsObject =>
             text: tag,
             type: 'tag',
             tagIndex,
-            valuesCount: values.length,
-          },
+            valuesCount: values.length
+          }
         ],
-        entitiesCount: 0,
+        entitiesCount: 0
       }
     );
     tagArr[0] = { ...tagArr[0], entitiesCount };

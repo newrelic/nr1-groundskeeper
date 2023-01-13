@@ -16,7 +16,7 @@ import {
   Grid,
   GridItem,
   navigation,
-  SectionMessage,
+  SectionMessage
 } from 'nr1';
 import AgentVersion from './components/AgentVersion';
 import SLAReport from './components/SLAReport';
@@ -674,13 +674,13 @@ export default class Groundskeeper extends React.Component {
     const v2nerdletLocation = navigation.getReplaceNerdletLocation({
       id: 'groundskeeper-router',
       urlState: {
-        toNerdletId: 'groundskeeper-v2',
-      },
+        toNerdletId: 'groundskeeper-v2'
+      }
     });
 
     return (
       <div className="gk-content">
-        <div style={{backgroundColor: '#F3F4F4', paddingBottom: '1em'}}>
+        <div style={{ backgroundColor: '#F3F4F4', paddingBottom: '1em' }}>
           <SectionMessage
             description="Updated version of Agent Groundskeeper available to preview now."
             actions={[{ label: 'Switch to v2', to: v2nerdletLocation }]}

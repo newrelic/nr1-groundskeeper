@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 
 import { Icon } from 'nr1';
 
@@ -159,6 +160,11 @@ const Sidebar = ({ sidebarItems, onSelect }) => {
       {sidebarItemsArr.ay}
     </div>
   );
+};
+
+Sidebar.propTypes = {
+  sidebarItems: PropTypes.array,
+  onSelect: PropTypes.func
 };
 
 export default Sidebar;

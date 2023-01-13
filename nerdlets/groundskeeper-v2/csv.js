@@ -13,7 +13,7 @@ const download = (displayedEntities = []) => {
     'Infinite tracing enabled',
     'Exposures',
     'Recommended version',
-    'Notes',
+    'Notes'
   ].join(',');
 
   const body = [
@@ -32,9 +32,9 @@ const download = (displayedEntities = []) => {
         entity.features?.infTraceHost || '',
         (entity.exposures?.list || []).map(exp => exp.display).join(' | '),
         entity.recommend?.version || '',
-        entity.recommend?.message || '',
+        entity.recommend?.message || ''
       ].join(',')
-    ),
+    )
   ].join('\n');
 
   if (body) window.open(encodeURI(`${header}${body}`));

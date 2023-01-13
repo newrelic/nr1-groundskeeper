@@ -28,7 +28,7 @@ const GroundskeeperV2Nerdlet = () => {
       languagesCount,
       entitiesByTag,
       tagsCount,
-      allEntities,
+      allEntities
     } = categorizeEntities(entities);
 
     setSidebarItems([
@@ -38,14 +38,14 @@ const GroundskeeperV2Nerdlet = () => {
         type: 'button',
         action: 'all',
         guids: allEntities.guids,
-        entities: allEntities.entities,
+        entities: allEntities.entities
       },
       { text: 'Accounts', type: 'section', count: accountsCount },
       ...entitiesByAccount,
       { text: 'Languages', type: 'section', count: languagesCount },
       ...entitiesByLanguage,
       { text: 'Tags', type: 'section', count: tagsCount },
-      ...entitiesByTag,
+      ...entitiesByTag
     ]);
   }, [entities.length, loaderIsDone]);
 

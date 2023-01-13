@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
+
 import ProgressBar from './ProgressBar';
 
 const Loader = ({ count, loaded, onEnd }) => {
@@ -18,6 +20,12 @@ const Loader = ({ count, loaded, onEnd }) => {
       </div>
     </div>
   );
+};
+
+Loader.propTypes = {
+  count: PropTypes.number,
+  loaded: PropTypes.number,
+  onEnd: PropTypes.func
 };
 
 export default Loader;

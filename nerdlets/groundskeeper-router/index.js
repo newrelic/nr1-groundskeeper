@@ -1,15 +1,15 @@
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import {
   navigation,
   NerdletStateContext,
   useUserStorageQuery,
-  useUserStorageMutation,
+  useUserStorageMutation
 } from 'nr1';
 
 const userStorageLoc = {
   collection: 'agent-groundskeeper',
-  documentId: 'user-pref',
+  documentId: 'user-pref'
 };
 
 const DEFAULT_NERDLET_ID = 'groundskeeper-nerdlet';
@@ -20,17 +20,17 @@ const GroundskeeperRouter = () => {
   const {
     data: queryData,
     error: queryError,
-    loading: queryLoading,
+    loading: queryLoading
   } = useUserStorageQuery({
     ...userStorageLoc,
-    skip: skipQuerying,
+    skip: skipQuerying
   });
   const [
     mutateUserStorage,
-    { data: mutationData, error: mutationError },
+    { data: mutationData, error: mutationError }
   ] = useUserStorageMutation({
     actionType: useUserStorageMutation.ACTION_TYPE.WRITE_DOCUMENT,
-    ...userStorageLoc,
+    ...userStorageLoc
   });
 
   useEffect(() => {
@@ -44,7 +44,7 @@ const GroundskeeperRouter = () => {
 
   useEffect(() => {
     if (!queryError) return;
-    console.error('Error reading user preference', queryError);
+    console.error('Error reading user preference', queryError); // eslint-disable-line no-console
   }, [queryError]);
 
   useEffect(() => {
@@ -60,18 +60,18 @@ const GroundskeeperRouter = () => {
   useEffect(() => {
     if (!mutationData || !Object.keys(mutationData).length) return;
     const {
-      nerdStorageWriteDocument: { defaultNerdletId } = {},
+      nerdStorageWriteDocument: { defaultNerdletId } = {}
     } = mutationData;
     redirectTo(defaultNerdletId);
   }, [mutationData]);
 
   useEffect(() => {
     if (!mutationError) return;
-    console.error('Error saving user preference', mutationError);
+    console.error('Error saving user preference', mutationError); // eslint-disable-line no-console
   }, [mutationError]);
 
   const saveDefaultNerdletId = nerdletId => {
-    const defaultNerdletId = nerdletId ? nerdletId : DEFAULT_NERDLET_ID;
+    const defaultNerdletId = nerdletId || DEFAULT_NERDLET_ID;
     mutateUserStorage({ document: { defaultNerdletId } });
   };
 

@@ -5,7 +5,7 @@ const agentsList = [
   { key: 'NODEJS', id: 'nodejs', match: /^Node.js version$/ },
   { key: 'PHP', id: 'php', match: /^Dispatcher$/ },
   { key: 'PYTHON', id: 'python', match: /^Python Version$/ },
-  { key: 'RUBY', id: 'ruby', match: /^[J]?Ruby version$/ },
+  { key: 'RUBY', id: 'ruby', match: /^[J]?Ruby version$/ }
 ];
 
 const AGENTS = agentsList.reduce(
@@ -24,29 +24,29 @@ const RUNTIMES = {
   RUBY_JRUBY: {
     MATCH: /jruby/,
     KEY: 'jruby',
-    DISPLAY: 'JRuby',
+    DISPLAY: 'JRuby'
   },
   RUBY_CRUBY: {
     MATCH: /cruby/,
     KEY: 'cruby',
-    DISPLAY: 'CRuby',
+    DISPLAY: 'CRuby'
   },
   DOTNET_CORE: {
     MATCH: /Core/,
     KEY: 'core',
-    DISPLAY: '.NET Core',
+    DISPLAY: '.NET Core'
   },
   DOTNET_FRAMEWORK: {
     MATCH: /Framework/,
     KEY: 'framework',
-    DISPLAY: '.Net Framework',
-  },
+    DISPLAY: '.Net Framework'
+  }
 };
 
 const STATUS = {
   OK: 'ok',
   WARNING: 'warning',
-  CRITICAL: 'critical',
+  CRITICAL: 'critical'
 };
 
 export { AGENTS, AGENTS_REGEX_STRING, LANGUAGES, RUNTIMES, STATUS };

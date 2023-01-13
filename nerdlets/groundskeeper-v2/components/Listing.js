@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 
 import { Button, Checkbox, EmptyState } from 'nr1';
 
@@ -16,7 +17,7 @@ const Listing = ({
   setEntitiesDetails,
   agentReleases = {},
   latestReleases = {},
-  selectedIndex = -1,
+  selectedIndex = -1
 }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [guidsToFetch, setGuidsToFetch] = useState([]);
@@ -41,7 +42,7 @@ const Listing = ({
             ? acc
             : {
                 ...acc,
-                [entity]: details[entity],
+                [entity]: details[entity]
               },
         deets
       )
@@ -70,8 +71,8 @@ const Listing = ({
                   agentReleases
                 ),
                 features: entitiesDetails[guid]?.features,
-                exposures: exposures(entity),
-              },
+                exposures: exposures(entity)
+              }
             ]
           : acc,
       []
@@ -94,7 +95,7 @@ const Listing = ({
             checked={showNonReporting}
             onChange={checkHandler}
             label="Show non-reporting"
-            info={`Checking this option displays applications that are not currently reporting. Non-reporting applications cannot show upgrade recommendations.`}
+            info="Checking this option displays applications that are not currently reporting. Non-reporting applications cannot show upgrade recommendations."
           />
         </div>
         <div className="col">
@@ -121,6 +122,16 @@ const Listing = ({
       </div>
     </>
   );
+};
+
+Listing.propTypes = {
+  entities: PropTypes.array,
+  guids: PropTypes.array,
+  entitiesDetails: PropTypes.object,
+  setEntitiesDetails: PropTypes.func,
+  agentReleases: PropTypes.object,
+  latestReleases: PropTypes.object,
+  selectedIndex: PropTypes.number
 };
 
 export default Listing;

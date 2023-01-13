@@ -6,8 +6,8 @@ const Redirector = () => {
   const v1nerdletLocation = navigation.getReplaceNerdletLocation({
     id: 'groundskeeper-router',
     urlState: {
-      toNerdletId: 'groundskeeper-nerdlet',
-    },
+      toNerdletId: 'groundskeeper-nerdlet'
+    }
   });
 
   return (
