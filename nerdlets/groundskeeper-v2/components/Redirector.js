@@ -11,10 +11,7 @@ const Redirector = () => {
   });
 
   return (
-    <div
-      className="redirector"
-      style={{ paddingBottom: '8px', backgroundColor: '#f3f4f4' }}
-    >
+    <div className="message redirector">
       <SectionMessage
         description="Prefer the original version of Agent Groundskeeper?"
         actions={[{ label: 'Switch to v1', to: v1nerdletLocation }]}

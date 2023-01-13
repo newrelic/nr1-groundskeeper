@@ -206,3 +206,14 @@
     transition: width 3s;
   }
 }
+
+.message {
+  &.filter-limit {
+    margin-bottom: 16px;
+  }
+
+  &.redirector {
+    padding-bottom: 8px;
+    background-color: #f3f4f4;
+  }
+}
