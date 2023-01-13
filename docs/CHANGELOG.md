@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/newrelic/nr1-groundskeeper/compare/v2.0.1...v2.1.0) (2023-01-13)
+
+
+### Features
+
+* changed readme to fix semantic-release ([80f2a41](https://github.com/newrelic/nr1-groundskeeper/commit/80f2a41f749ed2bc663a18325d0fa181d65fd6b3))
+
 ## [2.0.1](https://github.com/newrelic/nr1-groundskeeper/compare/v2.0.0...v2.0.1) (2023-01-13)
 
 
