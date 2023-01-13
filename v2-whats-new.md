@@ -13,4 +13,4 @@ Improvements include
 - Download the application list for project planning
 
 
-![Version 2 screenshot](catalog/screenshots/nr1-groundskeeper-2.png)
+![Agent Groundskeeper version 2 screenshot](catalog/screenshots/nr1-groundskeeper-2.png)
