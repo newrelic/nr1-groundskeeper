@@ -1,3 +1,24 @@
+# [0.13.0](https://github.com/newrelic/nr1-groundskeeper/compare/v0.12.1...v0.13.0) (2023-01-13)
+
+
+### Bug Fixes
+
+* bug in recommmed function ([f6aeac8](https://github.com/newrelic/nr1-groundskeeper/commit/f6aeac82210c2ab51be8bc037f51f0c0cc816c5b))
+* input attributes and max entities ([2e26142](https://github.com/newrelic/nr1-groundskeeper/commit/2e26142a2d60c469634efbbe19a76062128387e4))
+* update listing table ([a1c5e20](https://github.com/newrelic/nr1-groundskeeper/commit/a1c5e20cd045665bc0956a7565eb805c9197844c))
+
+
+### Features
+
+* add links to cve ([d648ba5](https://github.com/newrelic/nr1-groundskeeper/commit/d648ba5d2b6ec7a7ed023fa9652c1839ada78047))
+* add links to cve (cleanup) ([717c916](https://github.com/newrelic/nr1-groundskeeper/commit/717c91647f382d0349ad6926f784b876932e3867))
+* add redirect to router in v1 ([c178a32](https://github.com/newrelic/nr1-groundskeeper/commit/c178a3239e4f343155dc63806f0e7b4d4835e945))
+* add router nerdlet and redirector component in v2 ([38e86ff](https://github.com/newrelic/nr1-groundskeeper/commit/38e86ff65f47990a9df1a142a7ad4b7d75697ac4))
+* filter for sidebar items ([ea153a5](https://github.com/newrelic/nr1-groundskeeper/commit/ea153a5846a702456d3ba684713a959ca8263e1c))
+* limits sidebar items (cleanup) ([d8e6a6f](https://github.com/newrelic/nr1-groundskeeper/commit/d8e6a6f46658d3c140ff7b4b5d922d0b1edf4788))
+* limits sidebar items (more cleanup) ([b0b13f1](https://github.com/newrelic/nr1-groundskeeper/commit/b0b13f1be6b69f46c91d655d13ae78fcfc590531))
+* limits sidebar items shown by default for accounts and tags ([be2de9e](https://github.com/newrelic/nr1-groundskeeper/commit/be2de9e64b56298629430f37f292012e8464a1ec))
+
 ## [0.12.1](https://github.com/newrelic/nr1-groundskeeper/compare/v0.12.0...v0.12.1) (2022-02-22)
 
 
