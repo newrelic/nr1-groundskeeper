@@ -175,9 +175,8 @@ const recommend = (
 ) => {
   if (!runtimeVersion || !language) return {};
   let version;
-  let status;
-  let message;
   let age;
+  const statuses = [];
   const agentRecommendations = runtimeType
     ? recommendations[language][runtimeKey(language, runtimeType)]
     : recommendations[language];
@@ -188,24 +187,29 @@ const recommend = (
           recommendation.version === LATEST
             ? latestReleases[language].version
             : recommendation.version;
-        status = recommendation.status;
-        message = recommendation.message;
+        const { status, message } = recommendation;
+        statuses.push({ status, message });
         return true;
       }
       return false;
     });
     if (latestReleases[language].version === currentVersion) {
-      status = STATUS.OK;
-      message = 'Running latest version!';
-    } else if (version === currentVersion) {
-      status = STATUS.OK;
-      message = 'Running recommended version!';
+      statuses.push({
+        status: STATUS.OK,
+        message: 'Running latest version!'
+      });
+    }
+    if (version === currentVersion) {
+      statuses.push({
+        status: STATUS.OK,
+        message: 'Running recommended version!'
+      });
     }
     const releases = agentReleases[language];
     if (currentVersion && releases)
       age = howOld(version, currentVersion, releases);
   }
-  return { version, status, message, age };
+  return { version, statuses, age };
 };
 
 const howOld = (recommendedVersion, currentVersion, releases) => {

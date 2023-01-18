@@ -14,11 +14,12 @@ import {
 } from 'nr1';
 
 import FeatureIcon from './FeatureIcon';
+import { STATUS } from '../constants';
 
 const colors = {
-  ok: '#01a76a',
-  warning: '#ffd23d',
-  critical: '#f5554b'
+  [STATUS.OK]: '#01a76a',
+  [STATUS.WARNING]: '#ffd23d',
+  [STATUS.CRITICAL]: '#f5554b'
 };
 
 const ListingTable = ({ displayedEntities = [] }) => {
@@ -86,23 +87,27 @@ const ListingTable = ({ displayedEntities = [] }) => {
   );
 };
 
-const statusCell = ({ message, status, version = '' } = {}) => (
+const statusCell = ({ version = '', statuses = [] } = {}) => (
   <>
-    {version}{' '}
-    {message ? (
-      <Tooltip text={message}>
-        <Icon
-          type={
-            status && status === 'ok'
-              ? Icon.TYPE.INTERFACE__SIGN__CHECKMARK__V_ALTERNATE__WEIGHT_BOLD
-              : Icon.TYPE.INTERFACE__INFO__INFO__WEIGHT_BOLD
-          }
-          color={status ? colors[status] : null}
-        />
-      </Tooltip>
-    ) : null}
+    {version}
+    {statuses.map(statusIcon)}
   </>
 );
+
+const statusIcon = ({ message, status } = {}, index) =>
+  message ? (
+    <Tooltip text={message} key={index}>
+      <Icon
+        className="status-icon"
+        type={
+          status && status === 'ok'
+            ? Icon.TYPE.INTERFACE__SIGN__CHECKMARK__V_ALTERNATE__WEIGHT_BOLD
+            : Icon.TYPE.INTERFACE__INFO__INFO__WEIGHT_BOLD
+        }
+        color={status ? colors[status] : ''}
+      />
+    </Tooltip>
+  ) : null;
 
 const exposuresCell = (exposure, index) => (
   <ListItem key={index}>

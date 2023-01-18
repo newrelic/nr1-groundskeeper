@@ -30,15 +30,23 @@ const download = (displayedEntities = []) => {
         entity.features?.dtEnabled || '',
         entity.features?.logEnabled || '',
         entity.features?.infTraceHost || '',
-        (entity.exposures?.list || []).map(exp => exp.display).join(' | '),
+        pipeSeparated(entity.exposures?.list, 'display'),
         entity.recommend?.version || '',
-        entity.recommend?.message || ''
+        pipeSeparated(entity.recommend?.statuses, 'message')
       ].join(',')
     )
   ].join('\n');
 
   if (body) window.open(encodeURI(`${header}${body}`));
 };
+
+const pipeSeparated = (arr = [], key) =>
+  arr
+    .reduce(
+      (acc, cur) => (cur[key] ? [...acc, cur[key].replace(/,/g, '')] : acc),
+      []
+    )
+    .join(' | ');
 
 const runtimeStr = runtimeVersions => {
   if (!runtimeVersions) return '';
