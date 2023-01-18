@@ -1,3 +1,10 @@
+## [2.1.2](https://github.com/newrelic/nr1-groundskeeper/compare/v2.1.1...v2.1.2) (2023-01-18)
+
+
+### Bug Fixes
+
+* display multiple statuses ([0461afe](https://github.com/newrelic/nr1-groundskeeper/commit/0461afe3932e580c64a9cd4ea9aea06ff0ef0fc1))
+
 ## [2.1.1](https://github.com/newrelic/nr1-groundskeeper/compare/v2.1.0...v2.1.1) (2023-01-13)
 
 
