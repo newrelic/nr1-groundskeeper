@@ -216,8 +216,7 @@ const howOld = (recommendedVersion, currentVersion, releases) => {
   const { [recommendedVersion]: recVer, [currentVersion]: curVer } = releases;
   if (!recVer || !curVer) return {};
   const daysOld = Math.ceil(recVer - curVer) / MS_IN_DAY;
-  if (!daysOld || daysOld < 0)
-    return { days: daysOld && daysOld > 0 ? daysOld : 0, display: '' };
+  if (!daysOld || daysOld < 0) return { days: 0, display: '' };
   if (daysOld > 365) {
     const [years, plural] = [Math.trunc(daysOld / 365), daysOld % 365];
     return {
