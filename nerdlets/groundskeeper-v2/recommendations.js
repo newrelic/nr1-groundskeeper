@@ -213,9 +213,10 @@ const recommend = (
 };
 
 const howOld = (recommendedVersion, currentVersion, releases) => {
-  const daysOld =
-    (releases[recommendedVersion] - releases[currentVersion]) / MS_IN_DAY;
-  if (!daysOld) return { days: daysOld, display: '' };
+  const { [recommendedVersion]: recVer, [currentVersion]: curVer } = releases;
+  if (!recVer || !curVer) return {};
+  const daysOld = Math.ceil(recVer - curVer) / MS_IN_DAY;
+  if (!daysOld || daysOld < 0) return { days: 0, display: '' };
   if (daysOld > 365) {
     const [years, plural] = [Math.trunc(daysOld / 365), daysOld % 365];
     return {
