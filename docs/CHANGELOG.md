@@ -1,3 +1,11 @@
+## [2.1.3](https://github.com/newrelic/nr1-groundskeeper/compare/v2.1.2...v2.1.3) (2023-01-19)
+
+
+### Bug Fixes
+
+* hide age when installed is newer than recommended ([62d56ad](https://github.com/newrelic/nr1-groundskeeper/commit/62d56adc479f198fa603d147c30ca6ec5530209f))
+* return 0 for days old when not present ([af7a3b2](https://github.com/newrelic/nr1-groundskeeper/commit/af7a3b21ad88c8e7b50e51cd2f51ca5c90629d8f))
+
 ## [2.1.2](https://github.com/newrelic/nr1-groundskeeper/compare/v2.1.1...v2.1.2) (2023-01-18)
 
 
