@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { Button, Checkbox, EmptyState } from 'nr1';
@@ -11,26 +11,33 @@ import ProgressBar from './ProgressBar';
 import csv from '../csv';
 
 const Listing = ({
-  entities = [],
-  guids = [],
   entitiesDetails = {},
   setEntitiesDetails,
   agentReleases = {},
   latestReleases = {},
-  selectedIndex = -1
+  filtered = {},
+  entitiesLookup = {},
+  setShowFilters
 }) => {
-  const [isLoading, setIsLoading] = useState(true);
+  const [entities, setEntities] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [guidsToFetch, setGuidsToFetch] = useState([]);
   const [guidsFetched, setGuidsFetched] = useState(0);
   const [showNonReporting, setShowNonReporting] = useState(false);
   const { details } = useFetchEntitiesDetails({ guidsToFetch });
 
   useEffect(() => {
-    if (!guids?.length) return;
-    setIsLoading(true);
-    setGuidsFetched(0);
-    setGuidsToFetch(guids);
-  }, [selectedIndex]);
+    if (!filtered.guids.length) return;
+    const fetchGuids = filtered.guids.filter(
+      guid => !(guid in entitiesDetails)
+    );
+    if (fetchGuids.length) {
+      setIsLoading(true);
+      setGuidsFetched(0);
+      setGuidsToFetch(fetchGuids);
+    }
+    setEntities(filtered.guids.map(guid => entitiesLookup[guid]));
+  }, [filtered.id]);
 
   useEffect(() => {
     const entitiesReturned = Object.keys(details);
@@ -47,7 +54,7 @@ const Listing = ({
         deets
       )
     );
-    setGuidsFetched(guids.filter(guid => guid in details).length);
+    setGuidsFetched(filtered.guids.filter(guid => guid in details).length);
   }, [details]);
 
   const transitionHandler = () => setIsLoading(false);
@@ -55,83 +62,107 @@ const Listing = ({
   const checkHandler = ({ target: { checked } = {} } = {}) =>
     setShowNonReporting(checked);
 
-  const displayedEntities = () =>
-    entities.reduce(
-      (acc, { guid, reporting, ...entity }) =>
-        showNonReporting || reporting
-          ? [
-              ...acc,
-              {
-                ...entity,
-                runtimeVersions: entitiesDetails[guid]?.runtimeVersions,
-                recommend: recommend(
-                  entitiesDetails[guid],
-                  entity,
-                  latestReleases,
-                  agentReleases
-                ),
-                features: entitiesDetails[guid]?.features,
-                exposures: exposures(entity)
-              }
-            ]
-          : acc,
-      []
-    );
+  const displayedEntities = useMemo(
+    () =>
+      entities.reduce(
+        (acc, { guid, reporting, ...entity }) =>
+          showNonReporting || reporting
+            ? [
+                ...acc,
+                {
+                  ...entity,
+                  runtimeVersions: entitiesDetails[guid]?.runtimeVersions,
+                  recommend: recommend(
+                    entitiesDetails[guid],
+                    entity,
+                    latestReleases,
+                    agentReleases
+                  ),
+                  features: entitiesDetails[guid]?.features,
+                  exposures: exposures(entity)
+                }
+              ]
+            : acc,
+        []
+      ),
+    [entities, entitiesDetails]
+  );
 
-  return !entities || !entities.length ? (
-    <EmptyState
-      fullWidth
-      fullHeight
-      iconType={
-        EmptyState.ICON_TYPE.HARDWARE_AND_SOFTWARE__SOFTWARE__ALL_ENTITIES
-      }
-      title="Select a filter on the left to display entities"
-    />
-  ) : (
-    <>
-      <div className="head">
-        <div className="col">
-          <Checkbox
-            checked={showNonReporting}
-            onChange={checkHandler}
-            label="Show non-reporting"
-            info="Checking this option displays applications that are not currently reporting. Non-reporting applications cannot show upgrade recommendations."
-          />
-        </div>
+  return (
+    <div className="listing">
+      <div className="header">
         <div className="col">
           <Button
-            loading={isLoading}
-            type={Button.TYPE.TERTIARY}
-            onClick={() => csv.download(displayedEntities())}
+            type={Button.TYPE.PLAIN}
+            onClick={() => setShowFilters(true)}
+            sizeType={Button.SIZE_TYPE.SMALL}
+            iconType={Button.ICON_TYPE.INTERFACE__OPERATIONS__FILTER}
           >
-            Download
+            Filters
           </Button>
-          {isLoading ? (
-            <ProgressBar
-              max={guidsToFetch.length}
-              value={guidsFetched}
-              onEnd={transitionHandler}
-            />
-          ) : (
-            <span />
-          )}
         </div>
+        {entities.length ? (
+          <>
+            <div className="col right">
+              <Checkbox
+                checked={showNonReporting}
+                onChange={checkHandler}
+                label="Show non-reporting"
+                info="Checking this option displays applications that are not currently reporting. Non-reporting applications cannot show upgrade recommendations."
+              />
+            </div>
+            <div className="col">
+              <Button
+                loading={isLoading}
+                type={Button.TYPE.TERTIARY}
+                onClick={() => csv.download(displayedEntities)}
+              >
+                Download
+              </Button>
+              {isLoading ? (
+                <ProgressBar
+                  max={guidsToFetch.length}
+                  value={guidsFetched}
+                  onEnd={transitionHandler}
+                />
+              ) : (
+                <span />
+              )}
+            </div>
+          </>
+        ) : null}
       </div>
-      <div className="body">
-        <ListingTable displayedEntities={displayedEntities()} />
+      <div className="content">
+        {entities.length ? (
+          <ListingTable displayedEntities={displayedEntities} />
+        ) : (
+          <EmptyState
+            fullWidth
+            fullHeight
+            iconType={
+              EmptyState.ICON_TYPE.INTERFACE__SIGN__EXCLAMATION__V_ALTERNATE
+            }
+            title="No apps to display"
+            description="Either no apps were found or there are more apps than the limit. Use the filters to narrow down the list of apps."
+            action={{
+              label: 'Filters',
+              onClick: () => setShowFilters(true)
+            }}
+          />
+        )}
       </div>
-    </>
+    </div>
   );
 };
 
 Listing.propTypes = {
-  entities: PropTypes.array,
-  guids: PropTypes.array,
   entitiesDetails: PropTypes.object,
   setEntitiesDetails: PropTypes.func,
   agentReleases: PropTypes.object,
   latestReleases: PropTypes.object,
-  selectedIndex: PropTypes.number
+  filtered: PropTypes.object,
+  entitiesLookup: PropTypes.object,
+  setShowFilters: PropTypes.func
 };
 
 export default Listing;
