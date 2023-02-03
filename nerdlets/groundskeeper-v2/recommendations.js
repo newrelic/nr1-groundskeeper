@@ -4,6 +4,11 @@ import { AGENTS, RUNTIMES, STATUS } from './constants';
 const LATEST = 'LATEST';
 const MS_IN_DAY = 1000 * 60 * 60 * 24;
 
+const NO_SUPPORTED_AGENT_VERSION_STATUS = {
+  status: STATUS.CRITICAL,
+  message: 'No supported agent version'
+};
+
 const recommendations = {
   [AGENTS.DOTNET]: {
     [RUNTIMES.DOTNET_CORE.KEY]: [
@@ -41,7 +46,7 @@ const recommendations = {
       match: '<1.7',
       version: null,
       status: STATUS.CRITICAL,
-      message: 'Runtime not supported!'
+      message: 'Runtime not supported'
     },
     {
       match: '1.7 - 1.16',
@@ -66,8 +71,7 @@ const recommendations = {
     {
       match: '<=1.6.x',
       version: null,
-      status: STATUS.CRITICAL,
-      message: 'No supported agent version'
+      ...NO_SUPPORTED_AGENT_VERSION_STATUS
     },
     { match: '1.7.x', version: '6.5.4', status: STATUS.WARNING, message: '' },
     { match: '>1.7.x', version: LATEST, status: STATUS.WARNING, message: '' }
@@ -84,10 +88,15 @@ const recommendations = {
   ],
   [AGENTS.PHP]: [
     {
-      match: '<7.4',
+      match: '<5.5',
       version: null,
-      status: STATUS.CRITICAL,
-      message: 'No supported agent version'
+      ...NO_SUPPORTED_AGENT_VERSION_STATUS
+    },
+    {
+      match: '>=5.5 <7.4',
+      version: LATEST,
+      status: STATUS.WARNING,
+      message: 'Support for runtime version is deprecated'
     },
     { match: '>=7.4', version: LATEST, status: STATUS.WARNING, message: '' }
   ],
@@ -95,8 +104,7 @@ const recommendations = {
     {
       match: '<=2.6.x',
       version: null,
-      status: STATUS.CRITICAL,
-      message: 'No supported agent version'
+      ...NO_SUPPORTED_AGENT_VERSION_STATUS
     },
     {
       match: '2.6.x || 3.3',
@@ -134,8 +142,7 @@ const recommendations = {
       {
         match: '<2.0.x',
         version: null,
-        status: STATUS.CRITICAL,
-        message: 'No supported agent version'
+        ...NO_SUPPORTED_AGENT_VERSION_STATUS
       },
       {
         match: '2.0.x - 2.1.x',
@@ -154,8 +161,7 @@ const recommendations = {
       {
         match: '<9.0.x',
         version: null,
-        status: STATUS.CRITICAL,
-        message: 'No supported agent version'
+        ...NO_SUPPORTED_AGENT_VERSION_STATUS
       },
       {
         match: '>=9.0.x',
@@ -168,12 +174,22 @@ const recommendations = {
 };
 
 const recommend = (
-  { runtimeVersions: { default: runtimeVersion, type: runtimeType } = {} } = {},
+  {
+    runtimeVersions: {
+      default: runtimeVersion,
+      type: runtimeType,
+      osVersions
+    } = {}
+  } = {},
   { language, agentVersions: { default: currentVersion } = {} } = {},
   latestReleases,
   agentReleases
 ) => {
   if (!runtimeVersion || !language) return {};
+  if (language === AGENTS.PHP && !hasPHPAgent(osVersions))
+    return {
+      statuses: [NO_SUPPORTED_AGENT_VERSION_STATUS]
+    };
   let version;
   let age;
   const statuses = [];
@@ -196,13 +212,13 @@ const recommend = (
     if (latestReleases[language].version === currentVersion) {
       statuses.push({
         status: STATUS.OK,
-        message: 'Running latest version!'
+        message: 'Running latest version'
       });
     }
     if (version === currentVersion) {
       statuses.push({
         status: STATUS.OK,
-        message: 'Running recommended version!'
+        message: 'Running recommended version'
       });
     }
     const releases = agentReleases[language];
@@ -251,5 +267,10 @@ const runtimeKey = (language, runtimeType) => {
       return RUNTIMES.RUBY_JRUBY.KEY;
   }
 };
+
+const hasPHPAgent = (osVersions = []) =>
+  osVersions.every(
+    osVer => /Linux/.test(osVer) && /x86_64|amd64|aarch64|arm64/.test(osVer)
+  );
 
 export { recommend };

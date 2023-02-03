@@ -87,7 +87,12 @@ const useFetchEntitiesDetails = ({ guidsToFetch = [] }) => {
 };
 
 const entityDetails = (applicationInstances = [], language) => {
-  const { versions, runtimeTypes, features } = applicationInstances.reduce(
+  const {
+    versions,
+    runtimeTypes,
+    osVersions,
+    features
+  } = applicationInstances.reduce(
     (acc, applicationInstance) => {
       const {
         agentSettingsAttributes,
@@ -116,11 +121,20 @@ const entityDetails = (applicationInstances = [], language) => {
       if (runtimeType && acc.runtimeTypes.every(r => r !== runtimeType))
         acc.runtimeTypes.push(runtimeType);
 
+      const foundOSVersion = environmentAttributes.find(({ attribute }) =>
+        /OS/.test(attribute)
+      );
+      if (foundOSVersion) {
+        const osVer = foundOSVersion.value;
+        if (acc.osVersions.every(v => v !== osVer)) acc.osVersions.push(osVer);
+      }
+
       return acc;
     },
     {
       versions: [],
       runtimeTypes: [],
+      osVersions: [],
       features: { dtEnabled: false, infTraceHost: false, logEnabled: false }
     }
   );
@@ -134,6 +148,7 @@ const entityDetails = (applicationInstances = [], language) => {
       versions,
       display,
       type,
+      osVersions,
       default: versions.length === 1 ? versions[0] : null
     },
     features
