@@ -91,6 +91,7 @@ const entityDetails = (applicationInstances = [], language) => {
     versions,
     runtimeTypes,
     osVersions,
+    railsVersions,
     features
   } = applicationInstances.reduce(
     (acc, applicationInstance) => {
@@ -121,12 +122,24 @@ const entityDetails = (applicationInstances = [], language) => {
       if (runtimeType && acc.runtimeTypes.every(r => r !== runtimeType))
         acc.runtimeTypes.push(runtimeType);
 
-      const foundOSVersion = environmentAttributes.find(({ attribute }) =>
-        /OS/.test(attribute)
-      );
-      if (foundOSVersion) {
-        const osVer = foundOSVersion.value;
-        if (acc.osVersions.every(v => v !== osVer)) acc.osVersions.push(osVer);
+      if (language === AGENTS.PHP) {
+        const foundOSVersion = environmentAttributes.find(({ attribute }) =>
+          /OS version/.test(attribute)
+        );
+        if (foundOSVersion) {
+          const osVer = foundOSVersion.value;
+          if (acc.osVersions.every(v => v !== osVer))
+            acc.osVersions.push(osVer);
+        }
+      } else if (language === AGENTS.RUBY) {
+        const foundRailsVersion = environmentAttributes.find(({ attribute }) =>
+          /Rails version/.test(attribute)
+        );
+        if (foundRailsVersion) {
+          const railsVer = foundRailsVersion.value;
+          if (acc.railsVersions.every(v => v !== railsVer))
+            acc.railsVersions.push(railsVer);
+        }
       }
 
       return acc;
@@ -135,6 +148,7 @@ const entityDetails = (applicationInstances = [], language) => {
       versions: [],
       runtimeTypes: [],
       osVersions: [],
+      railsVersions: [],
       features: { dtEnabled: false, infTraceHost: false, logEnabled: false }
     }
   );
@@ -149,6 +163,7 @@ const entityDetails = (applicationInstances = [], language) => {
       display,
       type,
       osVersions,
+      railsVersions,
       default: versions.length === 1 ? versions[0] : null
     },
     features
@@ -160,10 +175,6 @@ const parseRuntimeType = (language, value) => {
     return value.match(RUNTIMES.DOTNET_CORE.MATCH)
       ? RUNTIMES.DOTNET_CORE.DISPLAY
       : RUNTIMES.DOTNET_FRAMEWORK.DISPLAY;
-  } else if (language === AGENTS.RUBY) {
-    return value.match(RUNTIMES.RUBY_JRUBY.MATCH)
-      ? RUNTIMES.RUBY_JRUBY.DISPLAY
-      : RUNTIMES.RUBY_CRUBY.DISPLAY;
   }
 };
 

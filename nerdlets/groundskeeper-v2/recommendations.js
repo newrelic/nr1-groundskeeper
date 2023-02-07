@@ -137,40 +137,48 @@ const recommendations = {
       message: ''
     }
   ],
-  [AGENTS.RUBY]: {
-    [RUNTIMES.RUBY_CRUBY.KEY]: [
-      {
-        match: '<2.0.x',
-        version: null,
-        ...NO_SUPPORTED_AGENT_VERSION_STATUS
-      },
-      {
-        match: '2.0.x - 2.1.x',
-        version: '6.15.0',
-        status: STATUS.WARNING,
-        message: ''
-      },
-      {
-        match: '>=2.2.x',
-        version: LATEST,
-        status: STATUS.WARNING,
-        message: ''
+  [AGENTS.RUBY]: [
+    {
+      match: '<2.0.x',
+      version: null,
+      ...NO_SUPPORTED_AGENT_VERSION_STATUS
+    },
+    {
+      match: '>=2.0.x <=2.1.x',
+      version: '6.15.0',
+      status: STATUS.WARNING,
+      message: ''
+    },
+    {
+      match: '>=2.2.x',
+      rails: {
+        none: {
+          version: LATEST,
+          status: STATUS.WARNING,
+          message: ''
+        },
+        versions: [
+          {
+            match: '<3.0',
+            version: null,
+            ...NO_SUPPORTED_AGENT_VERSION_STATUS
+          },
+          {
+            match: '3.0 || 3.1',
+            version: '7.2.0',
+            status: STATUS.WARNING,
+            message: ''
+          },
+          {
+            match: '>=3.2',
+            version: LATEST,
+            status: STATUS.WARNING,
+            message: ''
+          }
+        ]
       }
-    ],
-    [RUNTIMES.RUBY_JRUBY.KEY]: [
-      {
-        match: '<9.0.x',
-        version: null,
-        ...NO_SUPPORTED_AGENT_VERSION_STATUS
-      },
-      {
-        match: '>=9.0.x',
-        version: LATEST,
-        status: STATUS.WARNING,
-        message: ''
-      }
-    ]
-  }
+    }
+  ]
 };
 
 const recommend = (
@@ -178,7 +186,8 @@ const recommend = (
     runtimeVersions: {
       default: runtimeVersion,
       type: runtimeType,
-      osVersions
+      osVersions,
+      railsVersions
     } = {}
   } = {},
   { language, agentVersions: { default: currentVersion } = {} } = {},
@@ -199,11 +208,10 @@ const recommend = (
   if (agentRecommendations && agentRecommendations.length) {
     agentRecommendations.some(recommendation => {
       if (semver.satisfies(runtimeVersion, recommendation.match)) {
-        version =
-          recommendation.version === LATEST
-            ? latestReleases[language].version
-            : recommendation.version;
-        const { status, message } = recommendation;
+        const { version: ver, status, message } = recommendation.rails
+          ? railsVersionRecommendation(railsVersions, recommendation.rails)
+          : recommendation;
+        version = ver === LATEST ? latestReleases[language].version : ver;
         statuses.push({ status, message });
         return true;
       }
@@ -260,12 +268,21 @@ const runtimeKey = (language, runtimeType) => {
       return RUNTIMES.DOTNET_CORE.KEY;
     if (runtimeType === RUNTIMES.DOTNET_FRAMEWORK.DISPLAY)
       return RUNTIMES.DOTNET_FRAMEWORK.KEY;
-  } else if (language === AGENTS.RUBY) {
-    if (runtimeType === RUNTIMES.RUBY_CRUBY.DISPLAY)
-      return RUNTIMES.RUBY_CRUBY.KEY;
-    if (runtimeType === RUNTIMES.RUBY_JRUBY.DISPLAY)
-      return RUNTIMES.RUBY_JRUBY.KEY;
   }
+};
+
+const railsVersionRecommendation = (railsVersions = [], rails) => {
+  if (!railsVersions.length) return rails.none;
+  const lowestRailsVer = railsVersions.reduce((acc, cur) => {
+    if (!acc) return cur;
+    return semver.lt(cur, acc) ? cur : acc;
+  });
+  const rec = rails.versions.reduce((acc, cur) => {
+    if (acc) return acc;
+    if (semver.satisfies(lowestRailsVer, cur.match)) return cur;
+    return null;
+  });
+  return rec || {};
 };
 
 const hasPHPAgent = (osVersions = []) =>
