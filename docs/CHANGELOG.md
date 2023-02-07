@@ -1,3 +1,16 @@
+# [2.3.0](https://github.com/newrelic/nr1-groundskeeper/compare/v2.2.0...v2.3.0) (2023-02-07)
+
+
+### Bug Fixes
+
+* update logic for ruby recommendations ([0b3f4e8](https://github.com/newrelic/nr1-groundskeeper/commit/0b3f4e846254a0b018d7d8023bdab7773df09d64))
+* update php agent checks ([ce2f7be](https://github.com/newrelic/nr1-groundskeeper/commit/ce2f7be03e4b0f4af61e86bd0438d6fac2bf359c))
+
+
+### Features
+
+* set v2 as default nerdlet ([5ac103f](https://github.com/newrelic/nr1-groundskeeper/commit/5ac103f551910483854c208f005124cd2fbf863e))
+
 # [2.2.0](https://github.com/newrelic/nr1-groundskeeper/compare/v2.1.3...v2.2.0) (2023-01-24)
 
 
