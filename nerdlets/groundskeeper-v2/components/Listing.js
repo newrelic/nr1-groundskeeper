@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { Button, Checkbox, EmptyState } from 'nr1';
@@ -55,28 +55,31 @@ const Listing = ({
   const checkHandler = ({ target: { checked } = {} } = {}) =>
     setShowNonReporting(checked);
 
-  const displayedEntities = () =>
-    entities.reduce(
-      (acc, { guid, reporting, ...entity }) =>
-        showNonReporting || reporting
-          ? [
-              ...acc,
-              {
-                ...entity,
-                runtimeVersions: entitiesDetails[guid]?.runtimeVersions,
-                recommend: recommend(
-                  entitiesDetails[guid],
-                  entity,
-                  latestReleases,
-                  agentReleases
-                ),
-                features: entitiesDetails[guid]?.features,
-                exposures: exposures(entity)
-              }
-            ]
-          : acc,
-      []
-    );
+  const displayedEntities = useMemo(
+    () =>
+      entities.reduce(
+        (acc, { guid, reporting, ...entity }) =>
+          showNonReporting || reporting
+            ? [
+                ...acc,
+                {
+                  ...entity,
+                  runtimeVersions: entitiesDetails[guid]?.runtimeVersions,
+                  recommend: recommend(
+                    entitiesDetails[guid],
+                    entity,
+                    latestReleases,
+                    agentReleases
+                  ),
+                  features: entitiesDetails[guid]?.features,
+                  exposures: exposures(entity)
+                }
+              ]
+            : acc,
+        []
+      ),
+    [entities, entitiesDetails]
+  );
 
   return !entities || !entities.length ? (
     <EmptyState
@@ -102,7 +105,7 @@ const Listing = ({
           <Button
             loading={isLoading}
             type={Button.TYPE.TERTIARY}
-            onClick={() => csv.download(displayedEntities())}
+            onClick={() => csv.download(displayedEntities)}
           >
             Download
           </Button>
@@ -118,7 +121,7 @@ const Listing = ({
         </div>
       </div>
       <div className="body">
-        <ListingTable displayedEntities={displayedEntities()} />
+        <ListingTable displayedEntities={displayedEntities} />
       </div>
     </>
   );
