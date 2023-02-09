@@ -4,6 +4,11 @@ import { AGENTS, RUNTIMES, STATUS } from './constants';
 const LATEST = 'LATEST';
 const MS_IN_DAY = 1000 * 60 * 60 * 24;
 
+const NO_SUPPORTED_AGENT_VERSION_STATUS = {
+  status: STATUS.CRITICAL,
+  message: 'No supported agent version'
+};
+
 const recommendations = {
   [AGENTS.DOTNET]: {
     [RUNTIMES.DOTNET_CORE.KEY]: [
@@ -41,7 +46,7 @@ const recommendations = {
       match: '<1.7',
       version: null,
       status: STATUS.CRITICAL,
-      message: 'Runtime not supported!'
+      message: 'Runtime not supported'
     },
     {
       match: '1.7 - 1.16',
@@ -66,8 +71,7 @@ const recommendations = {
     {
       match: '<=1.6.x',
       version: null,
-      status: STATUS.CRITICAL,
-      message: 'No supported agent version'
+      ...NO_SUPPORTED_AGENT_VERSION_STATUS
     },
     { match: '1.7.x', version: '6.5.4', status: STATUS.WARNING, message: '' },
     { match: '>1.7.x', version: LATEST, status: STATUS.WARNING, message: '' }
@@ -84,10 +88,15 @@ const recommendations = {
   ],
   [AGENTS.PHP]: [
     {
-      match: '<7.4',
+      match: '<5.5',
       version: null,
-      status: STATUS.CRITICAL,
-      message: 'No supported agent version'
+      ...NO_SUPPORTED_AGENT_VERSION_STATUS
+    },
+    {
+      match: '>=5.5 <7.4',
+      version: LATEST,
+      status: STATUS.WARNING,
+      message: 'Support for runtime version is deprecated'
     },
     { match: '>=7.4', version: LATEST, status: STATUS.WARNING, message: '' }
   ],
@@ -95,8 +104,7 @@ const recommendations = {
     {
       match: '<=2.6.x',
       version: null,
-      status: STATUS.CRITICAL,
-      message: 'No supported agent version'
+      ...NO_SUPPORTED_AGENT_VERSION_STATUS
     },
     {
       match: '2.6.x || 3.3',
@@ -129,51 +137,68 @@ const recommendations = {
       message: ''
     }
   ],
-  [AGENTS.RUBY]: {
-    [RUNTIMES.RUBY_CRUBY.KEY]: [
-      {
-        match: '<2.0.x',
-        version: null,
-        status: STATUS.CRITICAL,
-        message: 'No supported agent version'
-      },
-      {
-        match: '2.0.x - 2.1.x',
-        version: '6.15.0',
-        status: STATUS.WARNING,
-        message: ''
-      },
-      {
-        match: '>=2.2.x',
-        version: LATEST,
-        status: STATUS.WARNING,
-        message: ''
+  [AGENTS.RUBY]: [
+    {
+      match: '<2.0.x',
+      version: null,
+      ...NO_SUPPORTED_AGENT_VERSION_STATUS
+    },
+    {
+      match: '>=2.0.x <=2.1.x',
+      version: '6.15.0',
+      status: STATUS.WARNING,
+      message: ''
+    },
+    {
+      match: '>=2.2.x',
+      rails: {
+        none: {
+          version: LATEST,
+          status: STATUS.WARNING,
+          message: ''
+        },
+        versions: [
+          {
+            match: '<3.0',
+            version: null,
+            ...NO_SUPPORTED_AGENT_VERSION_STATUS
+          },
+          {
+            match: '3.0 || 3.1',
+            version: '7.2.0',
+            status: STATUS.WARNING,
+            message: ''
+          },
+          {
+            match: '>=3.2',
+            version: LATEST,
+            status: STATUS.WARNING,
+            message: ''
+          }
+        ]
       }
-    ],
-    [RUNTIMES.RUBY_JRUBY.KEY]: [
-      {
-        match: '<9.0.x',
-        version: null,
-        status: STATUS.CRITICAL,
-        message: 'No supported agent version'
-      },
-      {
-        match: '>=9.0.x',
-        version: LATEST,
-        status: STATUS.WARNING,
-        message: ''
-      }
-    ]
-  }
+    }
+  ]
 };
 
 const recommend = (
-  { runtimeVersions: { default: runtimeVersion, type: runtimeType } = {} } = {},
+  {
+    runtimeVersions: {
+      default: runtimeVersion,
+      type: runtimeType,
+      osVersions,
+      railsVersions
+    } = {}
+  } = {},
   { language, agentVersions: { default: currentVersion } = {} } = {},
   latestReleases,
   agentReleases
 ) => {
   if (!runtimeVersion || !language) return {};
+  if (language === AGENTS.PHP && !hasPHPAgent(osVersions))
+    return {
+      statuses: [NO_SUPPORTED_AGENT_VERSION_STATUS]
+    };
   let version;
   let age;
   const statuses = [];
@@ -183,11 +208,10 @@ const recommend = (
   if (agentRecommendations && agentRecommendations.length) {
     agentRecommendations.some(recommendation => {
       if (semver.satisfies(runtimeVersion, recommendation.match)) {
-        version =
-          recommendation.version === LATEST
-            ? latestReleases[language].version
-            : recommendation.version;
-        const { status, message } = recommendation;
+        const { version: ver, status, message } = recommendation.rails
+          ? railsVersionRecommendation(railsVersions, recommendation.rails)
+          : recommendation;
+        version = ver === LATEST ? latestReleases[language].version : ver;
         statuses.push({ status, message });
         return true;
       }
@@ -196,13 +220,13 @@ const recommend = (
     if (latestReleases[language].version === currentVersion) {
       statuses.push({
         status: STATUS.OK,
-        message: 'Running latest version!'
+        message: 'Running latest version'
       });
     }
     if (version === currentVersion) {
       statuses.push({
         status: STATUS.OK,
-        message: 'Running recommended version!'
+        message: 'Running recommended version'
       });
     }
     const releases = agentReleases[language];
@@ -244,12 +268,26 @@ const runtimeKey = (language, runtimeType) => {
       return RUNTIMES.DOTNET_CORE.KEY;
     if (runtimeType === RUNTIMES.DOTNET_FRAMEWORK.DISPLAY)
       return RUNTIMES.DOTNET_FRAMEWORK.KEY;
-  } else if (language === AGENTS.RUBY) {
-    if (runtimeType === RUNTIMES.RUBY_CRUBY.DISPLAY)
-      return RUNTIMES.RUBY_CRUBY.KEY;
-    if (runtimeType === RUNTIMES.RUBY_JRUBY.DISPLAY)
-      return RUNTIMES.RUBY_JRUBY.KEY;
   }
 };
+
+const railsVersionRecommendation = (railsVersions = [], rails) => {
+  if (!railsVersions.length) return rails.none;
+  const lowestRailsVer = railsVersions.reduce((acc, cur) => {
+    if (!acc) return cur;
+    return semver.lt(cur, acc) ? cur : acc;
+  });
+  const rec = rails.versions.reduce((acc, cur) => {
+    if (acc) return acc;
+    if (semver.satisfies(lowestRailsVer, cur.match)) return cur;
+    return null;
+  });
+  return rec || {};
+};
+
+const hasPHPAgent = (osVersions = []) =>
+  osVersions.every(
+    osVer => /Linux/.test(osVer) && /x86_64|amd64|aarch64|arm64/.test(osVer)
+  );
 
 export { recommend };
