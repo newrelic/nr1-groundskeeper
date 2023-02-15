@@ -11,9 +11,9 @@ const categorizedEntities = entities => {
         reporting
       } = entity;
       if (
-        reporting &&
-        acctId &&
-        language &&
+        !reporting ||
+        !acctId ||
+        !language ||
         !LANGUAGES.some(lang => lang === language)
       )
         return acc;
@@ -26,7 +26,6 @@ const categorizedEntities = entities => {
               ...acc.accounts,
               [acctId]: {
                 ...acc.accounts[acctId],
-                // count: acc.accounts[acctId].count + 1,
                 guids: [...acc.accounts[acctId].guids, guid]
               }
             }
@@ -35,7 +34,6 @@ const categorizedEntities = entities => {
               [acctId]: {
                 name: acctName,
                 text: `${acctId} - ${acctName}`,
-                // count: 1,
                 guids: [guid]
               }
             };
@@ -46,7 +44,6 @@ const categorizedEntities = entities => {
               ...acc.languages,
               [language]: {
                 ...acc.languages[language],
-                // count: acc.languages[language].count + 1,
                 guids: [...acc.languages[language].guids, guid]
               }
             }
@@ -54,7 +51,6 @@ const categorizedEntities = entities => {
               ...acc.languages,
               [language]: {
                 text: language,
-                // count: 1,
                 guids: [guid]
               }
             };
@@ -65,7 +61,6 @@ const categorizedEntities = entities => {
           const values = tags[tag];
           const valuesArray = Array.isArray(values) ? values : [values];
           valuesArray.forEach(value => {
-            // if (!(value in acc.tags[tag]))
             acc.tags = {
               ...acc.tags,
               [tag]: {
