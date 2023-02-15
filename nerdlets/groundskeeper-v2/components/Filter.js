@@ -1,8 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { Badge, Button, Icon, Modal, SectionMessage, Switch } from 'nr1';
-import { links, listTags } from '../filterer';
+import { Button, InlineMessage, Modal, Switch } from 'nr1';
+import { checks, listTags } from '../filterer';
+import AllOptionsList from './AllOptionsList';
+import Tag from './Tag';
 
 const Filter = ({
   filtered = {},
@@ -14,7 +16,6 @@ const Filter = ({
   setShowFilters
 }) => {
   const [filteredGuids, setFilteredGuids] = useState([]);
-  const [filterText, setFilterText] = useState('');
   const [showAll, setShowAll] = useState({
     modalHidden: true,
     type: null,
@@ -24,31 +25,33 @@ const Filter = ({
 
   const accountsSelections = useMemo(
     () =>
-      links(
+      checks(
         filtered.accounts,
-        5,
-        index => clickHandler('accounts', index),
+        7,
+        index => checkHandler('accounts', index),
         selections.accounts.selected,
         () => showAllHandler('accounts')
       ),
     [filtered.accounts, selections.accounts.counter]
   );
+
   const languagesSelections = useMemo(
     () =>
-      links(
+      checks(
         filtered.languages,
         7,
-        index => clickHandler('languages', index),
+        index => checkHandler('languages', index),
         selections.languages.selected
       ),
     [filtered.languages, selections.languages.counter]
   );
+
   const tagSelections = useMemo(
     () =>
       listTags(
         filtered.tags,
         3,
-        (index, tagIndex) => clickHandler('tags', index, tagIndex),
+        (index, tagIndex) => checkHandler('tags', index, tagIndex),
         selections.tags.selected,
         tagIndex => showAllHandler('tag', tagIndex)
       ),
@@ -57,7 +60,6 @@ const Filter = ({
 
   useEffect(() => {
     setStartupState({ selections, isAndOperator });
-
     return () => setStartupState({});
   }, []);
 
@@ -109,7 +111,7 @@ const Filter = ({
     []
   );
 
-  const clickHandler = (type, index, tagIndex) => {
+  const checkHandler = useCallback((type, index, tagIndex) => {
     const {
       [type]: { selected: typeSelections, counter: typeCounter }
     } = selections;
@@ -135,21 +137,20 @@ const Filter = ({
         counter: typeCounter + 1
       }
     }));
-  };
+  });
 
   const viewAppsHandler = useCallback(() => {
     updateFilteredGuids(filteredGuids);
   }, [filteredGuids]);
 
   const closeHandler = useCallback(() => {
-    if ('selections' in startupState) setSelections(startupState.selections);
-    if ('isAndOperator' in startupState)
-      setIsAndOperator(startupState.isAndOperator);
+    const { selections, isAndOperator } = startupState;
+    setSelections(selections);
+    setIsAndOperator(isAndOperator);
     setShowFilters(false);
-  }, []);
+  }, [startupState]);
 
   const hideModal = useCallback(() => {
-    setFilterText('');
     setShowAll({
       modalHidden: true,
       type: null,
@@ -176,30 +177,54 @@ const Filter = ({
           Object.keys(selections[category].selected[key]).forEach(tagIndex => {
             if (!selections[category].selected[key][tagIndex]) return;
             acc.push(
-              <Badge>{`${filtered[category][key].text}: ${filtered[category][key].values[tagIndex].text}`}</Badge>
+              <Tag
+                value={`${filtered[category][key].text}: ${filtered[category][key].values[tagIndex].text}`}
+                onRemove={() => checkHandler(category, key, tagIndex)}
+              />
             );
           });
         } else {
-          acc.push(<Badge>{filtered[category][key].text}</Badge>);
+          acc.push(
+            <Tag
+              value={filtered[category][key].text}
+              onRemove={() => checkHandler(category, key)}
+            />
+          );
         }
       });
       return acc;
     }, []);
   }, [selections]);
 
+  const colorClassByCompare = useCallback((comparator1, comparator2) => {
+    if (!comparator1) return '';
+    return comparator1 > comparator2 ? 'bad' : 'good';
+  });
+
   return (
     <>
       <div className="filters">
         <div className="header">
+          <div className="meta-bar">
+            <div className="message">
+              <InlineMessage label={messageText} />
+            </div>
+            <div className="close">
+              <Button
+                iconType={Button.ICON_TYPE.INTERFACE__OPERATIONS__CLOSE}
+                type={Button.TYPE.PLAIN}
+                sizeType={Button.SIZE_TYPE.SMALL}
+                onClick={closeHandler}
+              />
+            </div>
+          </div>
           <div className="top-bar">
             <div className="counter">
               <div
-                className={`count ${
-                  !filteredGuids.length ||
-                  filteredGuids.length > filtered.maxEntities
-                    ? 'bad'
-                    : 'good'
-                }`}
+                className={`count ${colorClassByCompare(
+                  filteredGuids.length,
+                  filtered.maxEntities
+                )}`}
               >
                 {filteredGuids.length}
               </div>
@@ -227,25 +252,20 @@ const Filter = ({
               >
                 View apps
               </Button>
-              {filtered.guids.length <= filtered.maxEntities ||
-              filtered.allGuids.length <= filtered.maxEntities ? (
-                <a onClick={closeHandler}>Close</a>
-              ) : null}
             </div>
           </div>
           <div className="selections-list">{selectionsList}</div>
-          <div className="message">
-            <SectionMessage description={messageText} />
-          </div>
         </div>
         <div className="content">
-          <div className="category">
-            <div className="title">Accounts</div>
-            {accountsSelections.initial}
-          </div>
-          <div className="category">
-            <div className="title">Languages</div>
-            {languagesSelections.initial}
+          <div className="columns">
+            <div className="column">
+              <div className="title">Accounts</div>
+              {accountsSelections.initial}
+            </div>
+            <div className="column">
+              <div className="title">Languages</div>
+              {languagesSelections.initial}
+            </div>
           </div>
           <div className="category">
             <div className="title">Tags</div>
@@ -254,43 +274,18 @@ const Filter = ({
         </div>
       </div>
       <Modal hidden={showAll.modalHidden} onClose={hideModal}>
-        <div className="modal-container">
-          <div className="modal-content">
-            <div className="title">
-              Showing all{' '}
-              {showAll.type === 'accounts' ? (
-                <span className="values-for">accounts</span>
-              ) : (
-                <>
-                  values for{' '}
-                  <span className="values-for">{selectedTagText}</span> tag
-                </>
-              )}
-            </div>
-            <div className="filter">
-              <div className="tf-icon">
-                <Icon type={Icon.TYPE.INTERFACE__OPERATIONS__SEARCH} />
-              </div>
-              <input
-                placeholder="Search..."
-                autoComplete="off"
-                autoCorrect="off"
-                autoCapitalize="off"
-                spellCheck="false"
-                value={filterText}
-                onChange={({ target: { value = '' } = {} } = {}) =>
-                  setFilterText(value)
-                }
-                style={{ backgroundColor: '#fff' }}
-              />
-            </div>
-            <div className="values">
-              {showAll.type === 'accounts'
+        {!showAll.modalHidden ? (
+          <AllOptionsList
+            optionsFor={showAll.type === 'accounts' ? '' : selectedTagText}
+            optionsList={
+              showAll.type === 'accounts'
                 ? accountsSelections.all
-                : tagSelections.all[showAll.tagIndex]}
-            </div>
-          </div>
-        </div>
+                : tagSelections.all[showAll.tagIndex]
+            }
+            filterText={null}
+            setFilterText={null}
+          />
+        ) : null}
       </Modal>
     </>
   );
