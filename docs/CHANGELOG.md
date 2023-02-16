@@ -1,3 +1,16 @@
+# [2.4.0](https://github.com/newrelic/nr1-groundskeeper/compare/v2.3.0...v2.4.0) (2023-02-16)
+
+
+### Bug Fixes
+
+* counting of unreported apps ([40d9209](https://github.com/newrelic/nr1-groundskeeper/commit/40d92099381efdd9fa961bf14445a1b2e6cc0337))
+
+
+### Features
+
+* updated filtering ([e181341](https://github.com/newrelic/nr1-groundskeeper/commit/e181341fd776ccfdc095936dba6aaf111b809395))
+* updated filtering (WIP) ([28e2c4e](https://github.com/newrelic/nr1-groundskeeper/commit/28e2c4e1a85f68badff2c6540805fc0392054e16))
+
 # [2.3.0](https://github.com/newrelic/nr1-groundskeeper/compare/v2.2.0...v2.3.0) (2023-02-07)
 
 
