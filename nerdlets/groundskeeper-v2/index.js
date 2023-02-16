@@ -1,92 +1,108 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import useFetchEntities from './hooks/useFetchEntities';
-import categorizeEntities from './categorize';
 import Listing from './components/Listing';
-import Sidebar from './components/Sidebar';
 import Loader from './components/Loader';
 import Redirector from './components/Redirector';
+import Filter from './components/Filter';
+import categorizedEntities from './categorize';
+
+const MAX_ENTITIES_CAN_FETCH = 1000;
 
 const GroundskeeperV2Nerdlet = () => {
-  const [guids, setGuids] = useState([]);
-  const [shownEntities, setShownEntities] = useState([]);
   const [entitiesDetails, setEntitiesDetails] = useState({});
-  const [sidebarItems, setSidebarItems] = useState([]);
   const [loaderIsDone, setLoaderIsDone] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [filtered, setFiltered] = useState({
+    guids: [],
+    accounts: [],
+    languages: [],
+    tags: [],
+    allGuids: [],
+    maxEntities: MAX_ENTITIES_CAN_FETCH,
+    id: 0
+  });
+  const [showFilters, setShowFilters] = useState(false);
+  const [selections, setSelections] = useState({
+    accounts: {
+      selected: {},
+      counter: 0
+    },
+    languages: {
+      selected: {},
+      counter: 0
+    },
+    tags: {
+      selected: {},
+      counter: 0
+    }
+  });
+  const [isAndOperator, setIsAndOperator] = useState(true);
+  const entitiesLookup = useRef({});
   const { count, entities, agentReleases, latestReleases } = useFetchEntities();
-
-  // console.log(`Summarized ${entities.length} of ${count} entities`)
 
   useEffect(() => {
     if (!loaderIsDone) return;
+    const { all, accounts, languages, tags, lookup } = categorizedEntities(
+      entities
+    );
+    entitiesLookup.current = lookup;
 
-    const {
-      entitiesByAccount,
-      accountsCount,
-      entitiesByLanguage,
-      languagesCount,
-      entitiesByTag,
-      tagsCount,
-      allEntities
-    } = categorizeEntities(entities);
-
-    setSidebarItems([
-      {
-        text: 'All entities',
-        count: allEntities.entities.length || 0,
-        type: 'button',
-        action: 'all',
-        guids: allEntities.guids,
-        entities: allEntities.entities
-      },
-      { text: 'Accounts', type: 'section', count: accountsCount },
-      ...entitiesByAccount,
-      { text: 'Languages', type: 'section', count: languagesCount },
-      ...entitiesByLanguage,
-      { text: 'Tags', type: 'section', count: tagsCount },
-      ...entitiesByTag
-    ]);
+    setFiltered(({ id }) => ({
+      guids: all.length > MAX_ENTITIES_CAN_FETCH ? [] : all,
+      accounts,
+      languages,
+      tags,
+      allGuids: all,
+      maxEntities: MAX_ENTITIES_CAN_FETCH,
+      id: id + 1
+    }));
   }, [entities.length, loaderIsDone]);
 
-  const changeSelection = (selection, index) => {
-    // setShownEntities((selection.guids || []).map(sel => entities.find(({guid}) => sel === guid)));
-    setShownEntities(selection.entities);
-    setGuids(
-      selection.guids.filter(
-        guid =>
-          !(
-            guid in entitiesDetails && Object.keys(entitiesDetails[guid]).length
-          )
-      )
+  useEffect(() => {
+    if (!filtered.id) return;
+    setShowFilters(
+      !filtered.guids.length || filtered.guids.length > filtered.maxEntities
     );
-    setSelectedIndex(index);
-  };
+  }, [filtered.id]);
+
+  const updateFilteredGuids = filteredGuids =>
+    setFiltered(fltrd => ({
+      ...fltrd,
+      guids: filteredGuids,
+      id: fltrd.id + 1
+    }));
 
   const loaderEndHandler = () => setLoaderIsDone(true);
 
+  if (showFilters)
+    return (
+      <div className="container">
+        <Redirector />
+        <Filter
+          filtered={filtered}
+          selections={selections}
+          isAndOperator={isAndOperator}
+          setSelections={setSelections}
+          setIsAndOperator={setIsAndOperator}
+          updateFilteredGuids={updateFilteredGuids}
+          setShowFilters={setShowFilters}
+        />
+      </div>
+    );
+
   return (
-    <>
+    <div className="container">
       <Redirector />
       {loaderIsDone ? (
-        <div className="container">
-          <aside className="sidebar-aside">
-            <Sidebar sidebarItems={sidebarItems} onSelect={changeSelection} />
-          </aside>
-          <section className="listing-section">
-            {count === entities.length ? (
-              <Listing
-                entities={shownEntities}
-                guids={guids}
-                entitiesDetails={entitiesDetails}
-                setEntitiesDetails={setEntitiesDetails}
-                agentReleases={agentReleases}
-                latestReleases={latestReleases}
-                selectedIndex={selectedIndex}
-              />
-            ) : null}
-          </section>
-        </div>
+        <Listing
+          entitiesDetails={entitiesDetails}
+          setEntitiesDetails={setEntitiesDetails}
+          agentReleases={agentReleases}
+          latestReleases={latestReleases}
+          filtered={filtered}
+          entitiesLookup={entitiesLookup.current}
+          setShowFilters={setShowFilters}
+        />
       ) : (
         <Loader
           count={count}
@@ -94,7 +110,7 @@ const GroundskeeperV2Nerdlet = () => {
           onEnd={loaderEndHandler}
         />
       )}
-    </>
+    </div>
   );
 };
 
