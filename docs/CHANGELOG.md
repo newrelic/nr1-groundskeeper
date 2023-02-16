@@ -1,3 +1,10 @@
+## [2.4.1](https://github.com/newrelic/nr1-groundskeeper/compare/v2.4.0...v2.4.1) (2023-02-16)
+
+
+### Bug Fixes
+
+* update catalog config ([91f2732](https://github.com/newrelic/nr1-groundskeeper/commit/91f2732dc4ba893ad65adfab95b6aa9fba0290c4))
+
 # [2.4.0](https://github.com/newrelic/nr1-groundskeeper/compare/v2.3.0...v2.4.0) (2023-02-16)
 
 
