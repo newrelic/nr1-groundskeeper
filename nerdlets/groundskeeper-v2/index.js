@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import useFetchEntities from './hooks/useFetchEntities';
 import Listing from './components/Listing';
@@ -6,6 +6,7 @@ import Loader from './components/Loader';
 import Redirector from './components/Redirector';
 import Filter from './components/Filter';
 import categorizedEntities from './categorize';
+import DTIngestEstimator from './components/DTIngestEstimator';
 
 const MAX_ENTITIES_CAN_FETCH = 1000;
 
@@ -22,6 +23,8 @@ const GroundskeeperV2Nerdlet = () => {
     id: 0
   });
   const [showFilters, setShowFilters] = useState(false);
+  const [showDTIE, setShowDTIE] = useState(false);
+  const [entitiesForDTIE, setEntitiesForDTIE] = useState([]);
   const [selections, setSelections] = useState({
     accounts: {
       selected: {},
@@ -74,6 +77,15 @@ const GroundskeeperV2Nerdlet = () => {
 
   const loaderEndHandler = () => setLoaderIsDone(true);
 
+  const openDTIEHandler = useCallback(forEntities => {
+    setEntitiesForDTIE(forEntities);
+    setShowDTIE(true);
+  });
+
+  const closeDTIEHandler = useCallback(() => {
+    setShowDTIE(false);
+  });
+
   if (showFilters)
     return (
       <div className="container">
@@ -90,6 +102,17 @@ const GroundskeeperV2Nerdlet = () => {
       </div>
     );
 
+  if (showDTIE)
+    return (
+      <div className="container">
+        <Redirector />
+        <DTIngestEstimator
+          entities={entitiesForDTIE}
+          onClose={closeDTIEHandler}
+        />
+      </div>
+    );
+
   return (
     <div className="container">
       <Redirector />
@@ -102,6 +125,7 @@ const GroundskeeperV2Nerdlet = () => {
           filtered={filtered}
           entitiesLookup={entitiesLookup.current}
           setShowFilters={setShowFilters}
+          onOpenDTIE={openDTIEHandler}
         />
       ) : (
         <Loader

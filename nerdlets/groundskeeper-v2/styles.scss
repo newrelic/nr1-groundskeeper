@@ -50,6 +50,7 @@
     .header {
       flex: 0 0 auto;
       display: flex;
+      flex-wrap: wrap;
       align-items: end;
       gap: 16px;
       padding: 8px;
@@ -63,6 +64,14 @@
         &.right {
           margin-left: auto
         }
+
+        &.with-info {
+          grid-template-columns: 1fr min-content;
+        }
+      }
+
+      .whole-row {
+        flex-basis: 100%;
       }
     }
 
