@@ -3,17 +3,21 @@ import PropTypes from 'prop-types';
 
 import {
   Button,
+  EmptyState,
+  Icon,
+  SectionMessage,
   Table,
   TableHeader,
   TableHeaderCell,
   TableRow,
   TableRowCell,
-  SectionMessage
+  Tooltip
 } from 'nr1';
 
 import { downloadDTIE } from '../csv';
 import useDTIngestEstimates from '../hooks/useDTIngestEstimates';
 import { formatInGB, monthlyGB } from '../formatter';
+import DatePicker from './DatePicker';
 
 const disclaimerText = `
   NEW RELIC (A) EXPRESSLY DISCLAIMS THE ACCURACY, ADEQUACY, OR 
@@ -25,7 +29,7 @@ const disclaimerText = `
 
 const DTIngestEstimator = ({ entities, onClose }) => {
   const [entityEstimates, setEntityEstimates] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(new Date('2023-02-14'));
+  const [selectedDate, setSelectedDate] = useState();
   const { ingestEstimatesBytes, loading } = useDTIngestEstimates({
     entities,
     selectedDate
@@ -74,7 +78,13 @@ const DTIngestEstimator = ({ entities, onClose }) => {
             Back
           </Button>
         </div>
-        <div className="col right">
+        <div className="col with-info right">
+          <DatePicker date={selectedDate} onChange={setSelectedDate} />
+          <Tooltip text="Pick a date">
+            <Icon type={Icon.TYPE.INTERFACE__INFO__INFO} />
+          </Tooltip>
+        </div>
+        <div className="col">
           <Button
             loading={loading}
             type={Button.TYPE.SECONDARY}
@@ -88,34 +98,52 @@ const DTIngestEstimator = ({ entities, onClose }) => {
         </div>
       </div>
       <div className="content">
-        <Table className="recommendations" items={entityEstimates} multivalue>
-          <TableHeader>
-            <TableHeaderCell>Account</TableHeaderCell>
-            <TableHeaderCell>App</TableHeaderCell>
-            <TableHeaderCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
-              Moderate (50th Percentile)
-            </TableHeaderCell>
-            <TableHeaderCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
-              High (70th Percentile)
-            </TableHeaderCell>
-            <TableHeaderCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
-              Very High (90th Percentile)
-            </TableHeaderCell>
-          </TableHeader>
-          {({ item }) => (
-            <TableRow>
-              <TableRowCell additionalValue={item.account?.name}>
-                {item.account?.id}
-              </TableRowCell>
-              <TableRowCell additionalValue={item.language}>
-                {item.name}
-              </TableRowCell>
-              {estimateCell(item.estimatesGigabytes[0])}
-              {estimateCell(item.estimatesGigabytes[1])}
-              {estimateCell(item.estimatesGigabytes[2])}
-            </TableRow>
-          )}
-        </Table>
+        {selectedDate && selectedDate instanceof Date ? (
+          <Table className="recommendations" items={entityEstimates} multivalue>
+            <TableHeader>
+              <TableHeaderCell>Account</TableHeaderCell>
+              <TableHeaderCell>App</TableHeaderCell>
+              <TableHeaderCell
+                alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}
+              >
+                Moderate (50th Percentile)
+              </TableHeaderCell>
+              <TableHeaderCell
+                alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}
+              >
+                High (70th Percentile)
+              </TableHeaderCell>
+              <TableHeaderCell
+                alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}
+              >
+                Very High (90th Percentile)
+              </TableHeaderCell>
+            </TableHeader>
+            {({ item }) => (
+              <TableRow>
+                <TableRowCell additionalValue={item.account?.name}>
+                  {item.account?.id}
+                </TableRowCell>
+                <TableRowCell additionalValue={item.language}>
+                  {item.name}
+                </TableRowCell>
+                {estimateCell(item.estimatesGigabytes[0])}
+                {estimateCell(item.estimatesGigabytes[1])}
+                {estimateCell(item.estimatesGigabytes[2])}
+              </TableRow>
+            )}
+          </Table>
+        ) : (
+          <EmptyState
+            fullWidth
+            fullHeight
+            iconType={
+              EmptyState.ICON_TYPE.INTERFACE__SIGN__EXCLAMATION__V_ALTERNATE
+            }
+            title="No date selected"
+            description="Pick a date from the date picker above to get started."
+          />
+        )}
       </div>
     </div>
   );

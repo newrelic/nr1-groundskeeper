@@ -416,3 +416,67 @@
     }
   }
 }
+
+.date-picker-text-field {
+  width: 96px;
+}
+
+.date-picker {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+
+  .cell {
+    display: inline-block;
+    width: 32px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: #293338;
+    user-select: none;
+
+    &.day {
+      font-size: 11px;
+    }
+
+    &.mo-yr {
+      font-size: 14px;
+      grid-column: 2 / 7;
+      white-space: nowrap;
+      justify-self: center;
+      width: 100%;
+    }
+
+    &.prev, &.next, &.date {
+      cursor: pointer;
+    }
+
+    &.selected {
+      border-radius: 3px;
+      background-color: #293338;
+      color: #fafbfb;
+    }
+
+    &.disabled {
+      color: #9ea5a9;
+      font-weight: 400;
+      cursor: auto;
+    }
+
+    &.date {
+      &:not(.selected):not(.disabled) {
+        &:hover {
+          color: #0c74df;
+        }
+      }
+    }
+
+    abbr {
+      text-decoration: none;
+    }
+  }
+
+  
+}
