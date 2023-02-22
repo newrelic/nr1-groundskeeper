@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNerdGraphQuery } from 'nr1';
 
 const QUERY_TIME_BUCKETS = [
@@ -9,6 +9,8 @@ const QUERY_TIME_BUCKETS = [
 ];
 
 const USER_ID_QUERY = '{actor{user{id}}}';
+
+const MAX_QUERIES_IN_BATCH = 99;
 
 const BYTES_PER_SPAN = {
   dotnet: [867, 1023, 1392],
@@ -36,8 +38,11 @@ const PERCENTILES = [50, 70, 90];
 
 const useDTIngestEstimates = ({ entities = [], selectedDate }) => {
   const [ingestEstimatesBytes, setIngestEstimatesBytes] = useState({});
+  const [nrqlQueriesBatches, setNrqlQueriesBatches] = useState([]);
+  const [entityResults, setEntityResults] = useState({});
   const [query, setQuery] = useState(USER_ID_QUERY);
   const [skip, setSkip] = useState(true);
+  const batchCursor = useRef(0);
   const { data, error, loading } = useNerdGraphQuery({ query, skip });
 
   useEffect(() => {
@@ -52,20 +57,37 @@ const useDTIngestEstimates = ({ entities = [], selectedDate }) => {
       dateStamp(selectedDate),
       dateStamp(new Date(selectedDate.getTime() + 86400000))
     ];
-    const queries = entities.reduce((acc, entity, i) => {
-      QUERY_TIME_BUCKETS.forEach((times, j) => {
-        const d1 = j > 2 ? dates[1] : dates[0];
-        const d2 = j > 1 ? dates[1] : dates[0];
-        const qry = nrql(entity.guid, d1, times[0], d2, times[1]);
-        const ql = `(accounts: ${entity.account.id}, query: "${qry}")`;
-        acc.push(`q${i}_${j}: nrql${ql} {
+
+    const queries = entities.reduce(
+      (acc, entity, i) => {
+        QUERY_TIME_BUCKETS.forEach((times, j) => {
+          const d1 = j > 2 ? dates[1] : dates[0];
+          const d2 = j > 1 ? dates[1] : dates[0];
+          const qry = nrql(entity.guid, d1, times[0], d2, times[1]);
+          const ql = `(accounts: ${entity.account.id}, query: "${qry}")`;
+          acc.queue.push(`q${i}_${j}: nrql${ql} {
           results
         }`);
-      });
-      return acc;
-    }, []);
-    setQuery(`{ actor { ${queries.join('\n')} } }`);
+          if (acc.queue.length === MAX_QUERIES_IN_BATCH) {
+            acc.batches.push(acc.queue);
+            acc.queue = [];
+          }
+        });
+        return acc;
+      },
+      { batches: [], queue: [] }
+    );
+    if (queries.queue.length) queries.batches.push(queries.queue);
+    setNrqlQueriesBatches(queries.batches);
   }, [entities, selectedDate]);
+
+  useEffect(() => {
+    if (!nrqlQueriesBatches.length) return;
+    setQuery(
+      `{ actor { ${nrqlQueriesBatches[batchCursor.current].join('\n')} } }`
+    );
+    batchCursor.current = batchCursor.current + 1;
+  }, [nrqlQueriesBatches]);
 
   useEffect(() => {
     if (query === USER_ID_QUERY) return;
@@ -74,55 +96,66 @@ const useDTIngestEstimates = ({ entities = [], selectedDate }) => {
 
   useEffect(() => {
     if (!data || loading) return;
-    const actor = data.actor;
-    if (!actor || !Object.keys(actor).length) return;
-    const dataTable = entities.reduce((acc, { guid, language }, i) => {
-      if (!(guid in acc)) acc[guid] = { rows: [], lookup: {}, language };
-      const { rows, lookup } = acc[guid];
-      ['0', '1', '2', '3'].forEach(j => {
-        const results = actor[`q${i}_${j}`]?.results;
-        if (results && results.length) {
+    setSkip(true);
+
+    setEntityResults(
+      Object.keys(data.actor).reduce(
+        (acc, cur) => {
+          const results = data.actor[cur]?.results;
+          if (!results || !results.length) return acc;
+          const [entityIndex] = cur
+            .slice(1)
+            .split('_')
+            .map(Number);
+          const { guid, language } = entities[entityIndex];
+          if (!(guid in acc)) acc[guid] = { language };
           results.forEach(({ WebTransaction, beginTimeSeconds, facet }) => {
-            const timeExistsInLookup = beginTimeSeconds in lookup;
-            let row;
-            if (timeExistsInLookup) {
-              row = lookup[beginTimeSeconds];
-            } else {
-              row = rows.length;
-              lookup[beginTimeSeconds] = row;
-              rows[row] = [beginTimeSeconds];
-            }
-            rows[row][
-              facet === 'WebTransactionTotalTime' ? 1 : 2
+            if (!(beginTimeSeconds in acc[guid]))
+              acc[guid][beginTimeSeconds] = [];
+            acc[guid][beginTimeSeconds][
+              +(facet === 'WebTransactionTotalTime')
             ] = WebTransaction;
           });
-        }
-      });
-      acc[guid] = { rows, lookup, language };
-      return acc;
-    }, {});
-
-    setIngestEstimatesBytes(
-      Object.keys(dataTable).reduce((acc, guid) => {
-        if (!(guid in acc)) acc[guid] = [];
-        const { rows, language } = dataTable[guid];
-        if (rows.length === 1440) {
-          acc[guid] = rows.reduce(
-            ([s1, s2, s3], row) => {
-              const [p1, p2, p3] = estimatedBytesByPercentile(
-                row[1] || 0,
-                row[2] || 0,
-                language
-              );
-              return [s1 + p1, s2 + p2, s3 + p3];
-            },
-            [0, 0, 0]
-          );
-        }
-        return acc;
-      }, {})
+          return acc;
+        },
+        { ...entityResults }
+      )
     );
   }, [data, loading]);
+
+  useEffect(() => {
+    if (!entityResults || !Object.keys(entityResults)) return;
+    if (batchCursor.current < nrqlQueriesBatches.length) {
+      setQuery(
+        `{ actor { ${nrqlQueriesBatches[batchCursor.current].join('\n')} } }`
+      );
+      batchCursor.current = batchCursor.current + 1;
+    } else {
+      setIngestEstimatesBytes(
+        Object.keys(entityResults).reduce((acc, entity) => {
+          const { language = 'go', ...times } = entityResults[entity];
+          const timesKeys = Object.keys(times);
+          if (timesKeys.length === 1440) {
+            acc[entity] = timesKeys.reduce(
+              ([t1, t2, t3], key) => {
+                const [instances, transactions] = times[key];
+                const [p1, p2, p3] = estimatedBytesByPercentile(
+                  transactions,
+                  instances,
+                  language
+                );
+                return [t1 + p1, t2 + p2, t3 + p3];
+              },
+              [0, 0, 0]
+            );
+          } else {
+            acc[entity] = [0, 0, 0];
+          }
+          return acc;
+        }, {})
+      );
+    }
+  }, [entityResults]);
 
   useEffect(() => {
     if (!error) return;
