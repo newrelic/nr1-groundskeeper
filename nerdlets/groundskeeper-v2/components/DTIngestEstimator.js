@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 
 import {
   Button,
-  EmptyState,
   Icon,
   SectionMessage,
   Table,
@@ -27,29 +26,35 @@ const disclaimerText = `
   OR FOR ANY ACTIONS TAKEN IN RELIANCE THEREON.
 `.replace(/\s/g, ' ');
 
+const toGigabytes = bytes => (bytes ? bytes / 1000000000 : 0);
+
 const DTIngestEstimator = ({ entities, onClose }) => {
-  const [entityEstimates, setEntityEstimates] = useState([]);
+  const [entityEstimates, setEntityEstimates] = useState({});
   const [selectedDate, setSelectedDate] = useState();
+  const [selectedEntities, setSelectedEntities] = useState({});
+  const [filteredEntities, setFilteredEntities] = useState([]);
   const { ingestEstimatesBytes, loading } = useDTIngestEstimates({
-    entities,
+    entities: filteredEntities,
     selectedDate
   });
 
   useEffect(() => {
     if (!ingestEstimatesBytes || !Object.keys(ingestEstimatesBytes).length)
       return;
-    setEntityEstimates(
-      entities.map(({ guid, account, name, language }) => ({
-        account,
-        name,
-        language,
-        estimatesGigabytes:
-          guid in ingestEstimatesBytes &&
-          ingestEstimatesBytes[guid].length === 3
-            ? ingestEstimatesBytes[guid].map(b => b / 1000000000)
-            : [0, 0, 0]
-      }))
-    );
+    setFilteredEntities([]);
+    setEntityEstimates({
+      ...entityEstimates,
+      ...Object.keys(ingestEstimatesBytes).reduce(
+        (acc, guid) => ({
+          ...acc,
+          [guid]:
+            ingestEstimatesBytes[guid].length === 3
+              ? ingestEstimatesBytes[guid].map(b => toGigabytes(b))
+              : [0, 0, 0]
+        }),
+        {}
+      )
+    });
   }, [ingestEstimatesBytes]);
 
   const estimateCell = useCallback(estimateGB => (
@@ -61,9 +66,29 @@ const DTIngestEstimator = ({ entities, onClose }) => {
     </TableRowCell>
   ));
 
-  const downloadHandler = useCallback(() => downloadDTIE(entityEstimates), [
-    entityEstimates
-  ]);
+  const downloadHandler = useCallback(
+    () =>
+      downloadDTIE(
+        entities
+          .filter(({ guid }) => selectedEntities[guid])
+          .map(({ guid, account, name, language }) => ({
+            account,
+            name,
+            language,
+            estimatesGigabytes:
+              guid in entityEstimates ? entityEstimates[guid] : [0, 0, 0]
+          }))
+      ),
+    [selectedEntities, entityEstimates]
+  );
+
+  const clickHandler = useCallback(() => {
+    setFilteredEntities(
+      entities.filter(
+        ({ guid }) => !(guid in entityEstimates) && selectedEntities[guid]
+      )
+    );
+  }, [selectedEntities, entityEstimates]);
 
   return (
     <div className="listing">
@@ -79,7 +104,28 @@ const DTIngestEstimator = ({ entities, onClose }) => {
           </Button>
         </div>
         <div className="col with-info right">
-          <DatePicker date={selectedDate} onChange={setSelectedDate} />
+          <div className="group-fields">
+            <DatePicker date={selectedDate} onChange={setSelectedDate} />
+            <Button
+              type={Button.TYPE.PLAIN}
+              onClick={clickHandler}
+              sizeType={Button.SIZE_TYPE.SMALL}
+              iconType={
+                Button.ICON_TYPE.HARDWARE_AND_SOFTWARE__SOFTWARE__TRACES
+              }
+              disabled={
+                !(
+                  selectedDate &&
+                  selectedDate instanceof Date &&
+                  Object.keys(selectedEntities).filter(
+                    guid => selectedEntities[guid]
+                  ).length
+                ) || loading
+              }
+            >
+              Calculate DT ingest estimates
+            </Button>
+          </div>
           <Tooltip text="Pick a date">
             <Icon type={Icon.TYPE.INTERFACE__INFO__INFO} />
           </Tooltip>
@@ -87,6 +133,11 @@ const DTIngestEstimator = ({ entities, onClose }) => {
         <div className="col">
           <Button
             loading={loading}
+            disabled={
+              !Object.keys(ingestEstimatesBytes).length ||
+              !Object.keys(selectedEntities).filter(e => selectedEntities[e])
+                .length
+            }
             type={Button.TYPE.SECONDARY}
             onClick={downloadHandler}
           >
@@ -98,52 +149,56 @@ const DTIngestEstimator = ({ entities, onClose }) => {
         </div>
       </div>
       <div className="content">
-        {selectedDate && selectedDate instanceof Date ? (
-          <Table className="recommendations" items={entityEstimates} multivalue>
-            <TableHeader>
-              <TableHeaderCell>Account</TableHeaderCell>
-              <TableHeaderCell>App</TableHeaderCell>
-              <TableHeaderCell
+        <Table
+          className="recommendations"
+          items={entities}
+          multivalue
+          selected={({ item: { guid } }) => selectedEntities[guid]}
+          onSelect={({ target: { checked } = {} }, { item: { guid } }) =>
+            setSelectedEntities({
+              ...selectedEntities,
+              [guid]: checked
+            })
+          }
+        >
+          <TableHeader>
+            <TableHeaderCell>Account</TableHeaderCell>
+            <TableHeaderCell>App</TableHeaderCell>
+            <TableHeaderCell>Agent version(s)</TableHeaderCell>
+            <TableHeaderCell>Runtime version(s)</TableHeaderCell>
+            <TableHeaderCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
+              Moderate (50th Percentile)
+            </TableHeaderCell>
+            <TableHeaderCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
+              High (70th Percentile)
+            </TableHeaderCell>
+            <TableHeaderCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
+              Very High (90th Percentile)
+            </TableHeaderCell>
+          </TableHeader>
+          {({ item }) => (
+            <TableRow>
+              <TableRowCell additionalValue={item.account?.name}>
+                {item.account?.id}
+              </TableRowCell>
+              <TableRowCell additionalValue={item.language}>
+                {item.name}
+              </TableRowCell>
+              <TableRowCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
+                {item.agentVersions?.display || ''}
+              </TableRowCell>
+              <TableRowCell
                 alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}
+                additionalValue={item.runtimeVersions?.type}
               >
-                Moderate (50th Percentile)
-              </TableHeaderCell>
-              <TableHeaderCell
-                alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}
-              >
-                High (70th Percentile)
-              </TableHeaderCell>
-              <TableHeaderCell
-                alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}
-              >
-                Very High (90th Percentile)
-              </TableHeaderCell>
-            </TableHeader>
-            {({ item }) => (
-              <TableRow>
-                <TableRowCell additionalValue={item.account?.name}>
-                  {item.account?.id}
-                </TableRowCell>
-                <TableRowCell additionalValue={item.language}>
-                  {item.name}
-                </TableRowCell>
-                {estimateCell(item.estimatesGigabytes[0])}
-                {estimateCell(item.estimatesGigabytes[1])}
-                {estimateCell(item.estimatesGigabytes[2])}
-              </TableRow>
-            )}
-          </Table>
-        ) : (
-          <EmptyState
-            fullWidth
-            fullHeight
-            iconType={
-              EmptyState.ICON_TYPE.INTERFACE__SIGN__EXCLAMATION__V_ALTERNATE
-            }
-            title="No date selected"
-            description="Pick a date from the date picker above to get started."
-          />
-        )}
+                {item.runtimeVersions?.display || ''}
+              </TableRowCell>
+              {estimateCell((entityEstimates[item.guid] || [])[0])}
+              {estimateCell((entityEstimates[item.guid] || [])[1])}
+              {estimateCell((entityEstimates[item.guid] || [])[2])}
+            </TableRow>
+          )}
+        </Table>
       </div>
     </div>
   );

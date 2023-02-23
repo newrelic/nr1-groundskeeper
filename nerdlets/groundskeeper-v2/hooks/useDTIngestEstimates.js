@@ -154,6 +154,8 @@ const useDTIngestEstimates = ({ entities = [], selectedDate }) => {
           return acc;
         }, {})
       );
+      setNrqlQueriesBatches([]);
+      batchCursor.current = 0;
     }
   }, [entityResults]);
 

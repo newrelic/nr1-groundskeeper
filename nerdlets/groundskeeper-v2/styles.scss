@@ -67,6 +67,10 @@
 
         &.with-info {
           grid-template-columns: 1fr min-content;
+
+          .group-fields {
+            display: inline-flex;
+          }
         }
       }
 
