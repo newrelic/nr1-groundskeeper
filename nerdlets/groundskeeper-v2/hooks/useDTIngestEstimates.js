@@ -79,6 +79,7 @@ const useDTIngestEstimates = ({ entities = [], selectedDate }) => {
     );
     if (queries.queue.length) queries.batches.push(queries.queue);
     setNrqlQueriesBatches(queries.batches);
+    setEntityResults({});
   }, [entities, selectedDate]);
 
   useEffect(() => {
@@ -95,7 +96,8 @@ const useDTIngestEstimates = ({ entities = [], selectedDate }) => {
   }, [query]);
 
   useEffect(() => {
-    if (!data || loading) return;
+    if (loading || !data || !data.actor || !Object.keys(data.actor).length)
+      return;
     setSkip(true);
 
     setEntityResults(
@@ -164,7 +166,7 @@ const useDTIngestEstimates = ({ entities = [], selectedDate }) => {
     console.log('ERROR', error); // eslint-disable-line no-console
   }, [error]);
 
-  return { ingestEstimatesBytes, loading };
+  return { ingestEstimatesBytes, loading, error };
 };
 
 const estimatedBytesByPercentile = (transactions, instances, lang) =>

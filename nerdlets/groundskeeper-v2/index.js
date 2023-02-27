@@ -25,6 +25,7 @@ const GroundskeeperV2Nerdlet = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [showDTIE, setShowDTIE] = useState(false);
   const [entitiesForDTIE, setEntitiesForDTIE] = useState([]);
+  const [hideDTIESplash, setHideDTIESplash] = useState(false);
   const [selections, setSelections] = useState({
     accounts: {
       selected: {},
@@ -109,6 +110,8 @@ const GroundskeeperV2Nerdlet = () => {
         <DTIngestEstimator
           entities={entitiesForDTIE}
           onClose={closeDTIEHandler}
+          hideSplash={hideDTIESplash}
+          closeSplash={setHideDTIESplash}
         />
       </div>
     );

@@ -70,6 +70,16 @@
 
           .group-fields {
             display: inline-flex;
+
+            input {
+              border-top-right-radius: 0;
+              border-bottom-right-radius: 0;
+            }
+
+            button {
+              border-top-left-radius: 0;
+              border-bottom-left-radius: 0;
+            }
           }
         }
       }
@@ -114,6 +124,23 @@
 
         .status-icon {
           margin-left: 4px;
+        }
+      }
+    }
+
+    &.splash {
+      justify-content: center;
+
+      div {
+        width: 50%;
+        margin: 8px auto;
+
+        ul, ol {
+          padding: 0 16px;
+        }
+
+        &.centered {
+          text-align: center;
         }
       }
     }

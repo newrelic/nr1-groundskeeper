@@ -4,36 +4,38 @@ import PropTypes from 'prop-types';
 import {
   Button,
   Icon,
-  SectionMessage,
   Table,
   TableHeader,
   TableHeaderCell,
   TableRow,
   TableRowCell,
+  Toast,
   Tooltip
 } from 'nr1';
 
-import { downloadDTIE } from '../csv';
 import useDTIngestEstimates from '../hooks/useDTIngestEstimates';
 import { formatInGB, monthlyGB } from '../formatter';
+import { downloadDTIE } from '../csv';
 import DatePicker from './DatePicker';
+import DTSplash from './DTSplash';
 
-const disclaimerText = `
-  NEW RELIC (A) EXPRESSLY DISCLAIMS THE ACCURACY, ADEQUACY, OR 
-  COMPLETENESS OF ANY ESTIMATES AND INFORMATION PROVIDED IN THIS 
-  APP, AND (B) SHALL NOT BE LIABLE FOR ANY ERRORS, OMISSIONS OR 
-  OTHER DEFECTS IN THIS APP, ESTIMATES AND INFORMATION PROVIDED, 
-  OR FOR ANY ACTIONS TAKEN IN RELIANCE THEREON.
+const SELECT_APPS_TEXT = ` application(s) that require Distributed Tracing `;
+
+const SELECT_DATE_TEXT = `
+a date in the last month that reflects the typical traffic pattern 
+and volume for the set of applications
 `.replace(/\s/g, ' ');
+
+const TOOLTIP_TEXT = `Select ${SELECT_APPS_TEXT} and ${SELECT_DATE_TEXT}`;
 
 const toGigabytes = bytes => (bytes ? bytes / 1000000000 : 0);
 
-const DTIngestEstimator = ({ entities, onClose }) => {
+const DTIngestEstimator = ({ entities, onClose, hideSplash, closeSplash }) => {
   const [entityEstimates, setEntityEstimates] = useState({});
   const [selectedDate, setSelectedDate] = useState();
   const [selectedEntities, setSelectedEntities] = useState({});
   const [filteredEntities, setFilteredEntities] = useState([]);
-  const { ingestEstimatesBytes, loading } = useDTIngestEstimates({
+  const { ingestEstimatesBytes, loading, error } = useDTIngestEstimates({
     entities: filteredEntities,
     selectedDate
   });
@@ -42,8 +44,8 @@ const DTIngestEstimator = ({ entities, onClose }) => {
     if (!ingestEstimatesBytes || !Object.keys(ingestEstimatesBytes).length)
       return;
     setFilteredEntities([]);
-    setEntityEstimates({
-      ...entityEstimates,
+    setEntityEstimates(ee => ({
+      ...ee,
       ...Object.keys(ingestEstimatesBytes).reduce(
         (acc, guid) => ({
           ...acc,
@@ -54,15 +56,24 @@ const DTIngestEstimator = ({ entities, onClose }) => {
         }),
         {}
       )
-    });
+    }));
   }, [ingestEstimatesBytes]);
+
+  useEffect(() => {
+    if (!error) return;
+    Toast.showToast({
+      title: 'Error',
+      description: 'There were error(s) retrieving the data.',
+      type: Toast.TYPE.CRITICAL
+    });
+  }, [error]);
 
   const estimateCell = useCallback(estimateGB => (
     <TableRowCell
       alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}
-      additionalValue={monthlyGB(estimateGB)}
+      additionalValue={estimateGB !== 0 ? monthlyGB(estimateGB) : '0'}
     >
-      {formatInGB(estimateGB)}
+      {estimateGB !== 0 ? formatInGB(estimateGB) : '0'}
     </TableRowCell>
   ));
 
@@ -83,12 +94,35 @@ const DTIngestEstimator = ({ entities, onClose }) => {
   );
 
   const clickHandler = useCallback(() => {
+    if (
+      !Object.keys(selectedEntities).filter(guid => selectedEntities[guid])
+        .length
+    ) {
+      Toast.showToast({
+        description: `Select ${SELECT_APPS_TEXT}`
+      });
+      return;
+    }
+    if (!(selectedDate && selectedDate instanceof Date)) {
+      Toast.showToast({
+        description: `Select ${SELECT_DATE_TEXT}`
+      });
+      return;
+    }
+
     setFilteredEntities(
       entities.filter(
         ({ guid }) => !(guid in entityEstimates) && selectedEntities[guid]
       )
     );
-  }, [selectedEntities, entityEstimates]);
+  }, [selectedEntities, entityEstimates, selectedDate]);
+
+  const dateChangeHandler = useCallback(dt => {
+    setSelectedDate(dt);
+    setEntityEstimates({});
+  });
+
+  if (!hideSplash) return <DTSplash closeHandler={() => closeSplash(true)} />;
 
   return (
     <div className="listing">
@@ -105,28 +139,20 @@ const DTIngestEstimator = ({ entities, onClose }) => {
         </div>
         <div className="col with-info right">
           <div className="group-fields">
-            <DatePicker date={selectedDate} onChange={setSelectedDate} />
+            <DatePicker date={selectedDate} onChange={dateChangeHandler} />
             <Button
-              type={Button.TYPE.PLAIN}
+              type={Button.TYPE.PRIMARY}
               onClick={clickHandler}
               sizeType={Button.SIZE_TYPE.SMALL}
               iconType={
                 Button.ICON_TYPE.HARDWARE_AND_SOFTWARE__SOFTWARE__TRACES
               }
-              disabled={
-                !(
-                  selectedDate &&
-                  selectedDate instanceof Date &&
-                  Object.keys(selectedEntities).filter(
-                    guid => selectedEntities[guid]
-                  ).length
-                ) || loading
-              }
+              loading={loading}
             >
               Calculate DT ingest estimates
             </Button>
           </div>
-          <Tooltip text="Pick a date">
+          <Tooltip text={TOOLTIP_TEXT}>
             <Icon type={Icon.TYPE.INTERFACE__INFO__INFO} />
           </Tooltip>
         </div>
@@ -144,9 +170,6 @@ const DTIngestEstimator = ({ entities, onClose }) => {
             Download
           </Button>
         </div>
-        <div className="whole-row">
-          <SectionMessage description={disclaimerText} />
-        </div>
       </div>
       <div className="content">
         <Table
@@ -155,10 +178,10 @@ const DTIngestEstimator = ({ entities, onClose }) => {
           multivalue
           selected={({ item: { guid } }) => selectedEntities[guid]}
           onSelect={({ target: { checked } = {} }, { item: { guid } }) =>
-            setSelectedEntities({
-              ...selectedEntities,
+            setSelectedEntities(se => ({
+              ...se,
               [guid]: checked
-            })
+            }))
           }
         >
           <TableHeader>
@@ -206,7 +229,9 @@ const DTIngestEstimator = ({ entities, onClose }) => {
 
 DTIngestEstimator.propTypes = {
   entities: PropTypes.array,
-  onClose: PropTypes.func
+  onClose: PropTypes.func,
+  hideSplash: PropTypes.bool,
+  closeSplash: PropTypes.func
 };
 
 export default DTIngestEstimator;
