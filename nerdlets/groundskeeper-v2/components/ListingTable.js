@@ -15,6 +15,7 @@ import {
 
 import FeatureIcon from './FeatureIcon';
 import { STATUS } from '../constants';
+import releaseNotes from '../release-notes.json';
 
 const colors = {
   [STATUS.OK]: '#01a76a',
@@ -79,7 +80,7 @@ const ListingTable = ({ displayedEntities = [] }) => {
             </List>
           </TableRowCell>
           <TableRowCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
-            {statusCell(item.recommend)}
+            {statusCell(item.recommend, item.language)}
           </TableRowCell>
         </TableRow>
       )}
@@ -87,9 +88,20 @@ const ListingTable = ({ displayedEntities = [] }) => {
   );
 };
 
-const statusCell = ({ version = '', statuses = [] } = {}) => (
+const statusCell = ({ version = '', statuses = [] } = {}, language) => (
   <>
-    {version}
+    {version && language && version in releaseNotes[language] ? (
+      <a
+        className="u-unstyledLink cell-link"
+        target="_blank"
+        rel="noreferrer"
+        href={releaseNotes[language][version]}
+      >
+        {version}
+      </a>
+    ) : (
+      version
+    )}
     {statuses.map(statusIcon)}
   </>
 );
