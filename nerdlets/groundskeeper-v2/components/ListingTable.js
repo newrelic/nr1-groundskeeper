@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import {
@@ -24,13 +24,65 @@ const colors = {
 };
 
 const ListingTable = ({ displayedEntities = [] }) => {
+  const [sortingTypes, setSortingTypes] = useState([
+    TableHeaderCell.SORTING_TYPE.NONE,
+    TableHeaderCell.SORTING_TYPE.NONE,
+    TableHeaderCell.SORTING_TYPE.NONE,
+    TableHeaderCell.SORTING_TYPE.NONE
+  ]);
+
+  const headerClickHandler = useCallback(
+    (_, { nextSortingType, sortingOrder }) =>
+      setSortingTypes(st =>
+        st.map((t, i) =>
+          i === sortingOrder
+            ? nextSortingType
+            : TableHeaderCell.SORTING_TYPE.NONE
+        )
+      )
+  );
+
   return (
     <Table className="recommendations" items={displayedEntities} multivalue>
       <TableHeader>
-        <TableHeaderCell>Account</TableHeaderCell>
-        <TableHeaderCell>App</TableHeaderCell>
+        <TableHeaderCell
+          value={({ item }) => item.account.name}
+          sortable
+          sortingType={sortingTypes[1]}
+          sortingOrder={1}
+          onClick={headerClickHandler}
+        >
+          Account
+        </TableHeaderCell>
+        <TableHeaderCell
+          value={({ item }) => item.name}
+          sortable
+          sortingType={sortingTypes[0]}
+          sortingOrder={0}
+          onClick={headerClickHandler}
+        >
+          App
+        </TableHeaderCell>
         <TableHeaderCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
           Agent version(s)
+        </TableHeaderCell>
+        <TableHeaderCell
+          value={({ item }) => item.recommend?.age?.days}
+          sortable
+          sortingType={sortingTypes[3]}
+          sortingOrder={3}
+          onClick={headerClickHandler}
+        >
+          How old?
+        </TableHeaderCell>
+        <TableHeaderCell
+          value={({ item }) => item.language}
+          sortable
+          sortingType={sortingTypes[2]}
+          sortingOrder={2}
+          onClick={headerClickHandler}
+        >
+          Language
         </TableHeaderCell>
         <TableHeaderCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
           Runtime version(s)
@@ -48,15 +100,12 @@ const ListingTable = ({ displayedEntities = [] }) => {
           <TableRowCell additionalValue={item.account.name}>
             {item.account.id}
           </TableRowCell>
-          <TableRowCell additionalValue={item.language}>
-            {item.name}
-          </TableRowCell>
-          <TableRowCell
-            alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}
-            additionalValue={item.recommend?.age?.display}
-          >
+          <TableRowCell>{item.name}</TableRowCell>
+          <TableRowCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
             {item.agentVersions?.display || ''}
           </TableRowCell>
+          <TableRowCell>{item.recommend?.age?.display}</TableRowCell>
+          <TableRowCell>{item.language}</TableRowCell>
           <TableRowCell
             alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}
             additionalValue={item.runtimeVersions?.type}
