@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
+import { nerdlet } from 'nr1';
+
 import useFetchEntities from './hooks/useFetchEntities';
 import Listing from './components/Listing';
 import Loader from './components/Loader';
@@ -45,6 +47,12 @@ const GroundskeeperV2Nerdlet = () => {
   const { count, entities, agentReleases, latestReleases } = useFetchEntities();
 
   useEffect(() => {
+    nerdlet.setConfig({
+      timePicker: false
+    });
+  }, []);
+
+  useEffect(() => {
     if (!loaderIsDone) return;
     const { all, accounts, languages, tags, lookup } = categorizedEntities(
       entities
@@ -87,6 +95,8 @@ const GroundskeeperV2Nerdlet = () => {
     setShowDTIE(false);
   });
 
+  const closeSplashHandler = useCallback(() => setHideDTIESplash(true));
+
   if (showFilters)
     return (
       <div className="container">
@@ -111,7 +121,7 @@ const GroundskeeperV2Nerdlet = () => {
           entities={entitiesForDTIE}
           onClose={closeDTIEHandler}
           hideSplash={hideDTIESplash}
-          closeSplash={setHideDTIESplash}
+          onHideSplash={closeSplashHandler}
         />
       </div>
     );

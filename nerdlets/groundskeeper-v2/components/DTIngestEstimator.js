@@ -1,16 +1,20 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 import PropTypes from 'prop-types';
 
 import {
   Button,
-  Icon,
   Table,
   TableHeader,
   TableHeaderCell,
   TableRow,
   TableRowCell,
-  Toast,
-  Tooltip
+  Toast
 } from 'nr1';
 
 import useDTIngestEstimates from '../hooks/useDTIngestEstimates';
@@ -18,27 +22,37 @@ import { formatInGB, monthlyGB } from '../formatter';
 import { downloadDTIE } from '../csv';
 import DatePicker from './DatePicker';
 import DTSplash from './DTSplash';
+import DTHelpPopover from './DTHelpPopover';
 
-const SELECT_APPS_TEXT = ` application(s) that require Distributed Tracing `;
+const SELECT_APPS_TEXT =
+  'Select application(s) that require Distributed Tracing';
 
-const SELECT_DATE_TEXT = `
-a date in the last month that reflects the typical traffic pattern 
-and volume for the set of applications
-`.replace(/\s/g, ' ');
+const SELECT_DATE_TEXT =
+  'Select a date in the last month that reflects the typical traffic pattern and volume for the set of applications';
 
-const TOOLTIP_TEXT = `Select ${SELECT_APPS_TEXT} and ${SELECT_DATE_TEXT}`;
+const COLUMNS = {
+  MODERATE: 'moderate',
+  HIGH: 'high',
+  VERY_HIGH: 'veryHigh'
+};
 
 const toGigabytes = bytes => (bytes ? bytes / 1000000000 : 0);
 
-const DTIngestEstimator = ({ entities, onClose, hideSplash, closeSplash }) => {
+const DTIngestEstimator = ({ entities, onClose, hideSplash, onHideSplash }) => {
   const [entityEstimates, setEntityEstimates] = useState({});
   const [selectedDate, setSelectedDate] = useState();
   const [selectedEntities, setSelectedEntities] = useState({});
   const [filteredEntities, setFilteredEntities] = useState([]);
+  const [sortingTypes, setSortingTypes] = useState([
+    TableHeaderCell.SORTING_TYPE.NONE,
+    TableHeaderCell.SORTING_TYPE.NONE,
+    TableHeaderCell.SORTING_TYPE.NONE
+  ]);
   const { ingestEstimatesBytes, loading, error } = useDTIngestEstimates({
     entities: filteredEntities,
     selectedDate
   });
+  const summaryCols = useRef({});
 
   useEffect(() => {
     if (!ingestEstimatesBytes || !Object.keys(ingestEstimatesBytes).length)
@@ -99,13 +113,13 @@ const DTIngestEstimator = ({ entities, onClose, hideSplash, closeSplash }) => {
         .length
     ) {
       Toast.showToast({
-        description: `Select ${SELECT_APPS_TEXT}`
+        description: SELECT_APPS_TEXT
       });
       return;
     }
     if (!(selectedDate && selectedDate instanceof Date)) {
       Toast.showToast({
-        description: `Select ${SELECT_DATE_TEXT}`
+        description: SELECT_DATE_TEXT
       });
       return;
     }
@@ -122,7 +136,53 @@ const DTIngestEstimator = ({ entities, onClose, hideSplash, closeSplash }) => {
     setEntityEstimates({});
   });
 
-  if (!hideSplash) return <DTSplash closeHandler={() => closeSplash(true)} />;
+  const headerClickHandler = useCallback(
+    (_, { nextSortingType, sortingOrder }) =>
+      setSortingTypes(st =>
+        st.map((t, i) =>
+          i === sortingOrder
+            ? nextSortingType
+            : TableHeaderCell.SORTING_TYPE.NONE
+        )
+      )
+  );
+
+  const summaryColHandler = useCallback(e => {
+    const { dataset: { col } = {} } = e || {};
+    const { left = 0, width = 0 } = e?.getBoundingClientRect() || {};
+    if (col) {
+      summaryCols.current[col].style.width = `${width}px`;
+      summaryCols.current[col].style.left = `${left}px`;
+    }
+  });
+
+  const summary = useMemo(
+    () =>
+      entities.reduce(
+        (acc, { guid }) => {
+          if (selectedEntities[guid]) {
+            acc.count = acc.count + 1;
+            acc[COLUMNS.MODERATE] =
+              acc[COLUMNS.MODERATE] + ((entityEstimates[guid] || [])[0] || 0);
+            acc[COLUMNS.HIGH] =
+              acc[COLUMNS.HIGH] + ((entityEstimates[guid] || [])[1] || 0);
+            acc[COLUMNS.VERY_HIGH] =
+              acc[COLUMNS.VERY_HIGH] + ((entityEstimates[guid] || [])[2] || 0);
+          }
+          return acc;
+        },
+        {
+          count: 0,
+          [COLUMNS.MODERATE]: 0,
+          [COLUMNS.HIGH]: 0,
+          [COLUMNS.VERY_HIGH]: 0
+        }
+      ),
+    [entities, selectedEntities, entityEstimates, selectedDate]
+  );
+
+  if (!hideSplash)
+    return <DTSplash closeHandler={onHideSplash} cancelHandler={onClose} />;
 
   return (
     <div className="listing">
@@ -130,48 +190,51 @@ const DTIngestEstimator = ({ entities, onClose, hideSplash, closeSplash }) => {
         <div className="col">
           <Button
             type={Button.TYPE.PLAIN}
-            onClick={onClose}
             sizeType={Button.SIZE_TYPE.SMALL}
             iconType={Button.ICON_TYPE.INTERFACE__OPERATIONS__SKIP_BACK}
+            onClick={onClose}
           >
             Back
           </Button>
         </div>
-        <div className="col with-info right">
+        <div className="col right">
+          <span className="help">
+            <DTHelpPopover />
+          </span>
+        </div>
+        <div className="col">
           <div className="group-fields">
             <DatePicker date={selectedDate} onChange={dateChangeHandler} />
             <Button
               type={Button.TYPE.PRIMARY}
-              onClick={clickHandler}
               sizeType={Button.SIZE_TYPE.SMALL}
               iconType={
                 Button.ICON_TYPE.HARDWARE_AND_SOFTWARE__SOFTWARE__TRACES
               }
               loading={loading}
+              onClick={clickHandler}
             >
               Calculate DT ingest estimates
             </Button>
           </div>
-          <Tooltip text={TOOLTIP_TEXT}>
-            <Icon type={Icon.TYPE.INTERFACE__INFO__INFO} />
-          </Tooltip>
         </div>
         <div className="col">
           <Button
+            type={Button.TYPE.SECONDARY}
+            sizeType={Button.SIZE_TYPE.SMALL}
             loading={loading}
             disabled={
               !Object.keys(ingestEstimatesBytes).length ||
               !Object.keys(selectedEntities).filter(e => selectedEntities[e])
                 .length
             }
-            type={Button.TYPE.SECONDARY}
             onClick={downloadHandler}
           >
             Download
           </Button>
         </div>
       </div>
-      <div className="content">
+      <div className="content has-footer">
         <Table
           className="recommendations"
           items={entities}
@@ -185,18 +248,49 @@ const DTIngestEstimator = ({ entities, onClose, hideSplash, closeSplash }) => {
           }
         >
           <TableHeader>
-            <TableHeaderCell>Account</TableHeaderCell>
-            <TableHeaderCell>App</TableHeaderCell>
+            <TableHeaderCell
+              value={({ item }) => item.account?.name}
+              sortable
+              sortingType={sortingTypes[1]}
+              sortingOrder={1}
+              onClick={headerClickHandler}
+            >
+              Account
+            </TableHeaderCell>
+            <TableHeaderCell
+              value={({ item }) => item.name}
+              sortable
+              sortingType={sortingTypes[0]}
+              sortingOrder={0}
+              onClick={headerClickHandler}
+            >
+              App
+            </TableHeaderCell>
             <TableHeaderCell>Agent version(s)</TableHeaderCell>
+            <TableHeaderCell
+              value={({ item }) => item.language}
+              sortable
+              sortingType={sortingTypes[2]}
+              sortingOrder={2}
+              onClick={headerClickHandler}
+            >
+              Language
+            </TableHeaderCell>
             <TableHeaderCell>Runtime version(s)</TableHeaderCell>
             <TableHeaderCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
-              Moderate (50th Percentile)
+              <div data-col={COLUMNS.MODERATE} ref={summaryColHandler}>
+                Moderate (50th Percentile)
+              </div>
             </TableHeaderCell>
             <TableHeaderCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
-              High (70th Percentile)
+              <div data-col={COLUMNS.HIGH} ref={summaryColHandler}>
+                High (70th Percentile)
+              </div>
             </TableHeaderCell>
             <TableHeaderCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
-              Very High (90th Percentile)
+              <div data-col={COLUMNS.VERY_HIGH} ref={summaryColHandler}>
+                Very High (90th Percentile)
+              </div>
             </TableHeaderCell>
           </TableHeader>
           {({ item }) => (
@@ -204,12 +298,11 @@ const DTIngestEstimator = ({ entities, onClose, hideSplash, closeSplash }) => {
               <TableRowCell additionalValue={item.account?.name}>
                 {item.account?.id}
               </TableRowCell>
-              <TableRowCell additionalValue={item.language}>
-                {item.name}
-              </TableRowCell>
+              <TableRowCell>{item.name}</TableRowCell>
               <TableRowCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
                 {item.agentVersions?.display || ''}
               </TableRowCell>
+              <TableRowCell>{item.language}</TableRowCell>
               <TableRowCell
                 alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}
                 additionalValue={item.runtimeVersions?.type}
@@ -223,6 +316,33 @@ const DTIngestEstimator = ({ entities, onClose, hideSplash, closeSplash }) => {
           )}
         </Table>
       </div>
+      <div className="footer">
+        <div className="summary count">{`${summary.count} selected item(s)`}</div>
+        <div
+          className="summary moderate"
+          ref={e => (summaryCols.current[COLUMNS.MODERATE] = e)}
+        >
+          {summary[COLUMNS.MODERATE] !== 0
+            ? `${formatInGB(summary[COLUMNS.MODERATE])}/day`
+            : '0'}
+        </div>
+        <div
+          className="summary high"
+          ref={e => (summaryCols.current[COLUMNS.HIGH] = e)}
+        >
+          {summary[COLUMNS.HIGH] !== 0
+            ? `${formatInGB(summary[COLUMNS.HIGH])}/day`
+            : '0'}
+        </div>
+        <div
+          className="summary very-high"
+          ref={e => (summaryCols.current[COLUMNS.VERY_HIGH] = e)}
+        >
+          {summary[COLUMNS.VERY_HIGH] !== 0
+            ? `${formatInGB(summary[COLUMNS.VERY_HIGH])}/day`
+            : '0'}
+        </div>
+      </div>
     </div>
   );
 };
@@ -231,7 +351,7 @@ DTIngestEstimator.propTypes = {
   entities: PropTypes.array,
   onClose: PropTypes.func,
   hideSplash: PropTypes.bool,
-  closeSplash: PropTypes.func
+  onHideSplash: PropTypes.func
 };
 
 export default DTIngestEstimator;

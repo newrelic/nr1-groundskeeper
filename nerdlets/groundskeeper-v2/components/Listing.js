@@ -105,9 +105,9 @@ const Listing = ({
         <div className="col">
           <Button
             type={Button.TYPE.PLAIN}
-            onClick={() => setShowFilters(true)}
             sizeType={Button.SIZE_TYPE.SMALL}
             iconType={Button.ICON_TYPE.INTERFACE__OPERATIONS__FILTER}
+            onClick={() => setShowFilters(true)}
           >
             Filters
           </Button>
@@ -125,6 +125,7 @@ const Listing = ({
             <div className="col with-info">
               <Button
                 type={Button.TYPE.TERTIARY}
+                sizeType={Button.SIZE_TYPE.SMALL}
                 disabled={isLoading || !entitiesNoDT.length}
                 onClick={() => onOpenDTIE(entitiesNoDT)}
               >
@@ -136,8 +137,9 @@ const Listing = ({
             </div>
             <div className="col">
               <Button
-                loading={isLoading}
                 type={Button.TYPE.SECONDARY}
+                sizeType={Button.SIZE_TYPE.SMALL}
+                loading={isLoading}
                 onClick={downloadHandler}
               >
                 Download

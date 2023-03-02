@@ -2,27 +2,19 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { BlockText, Button } from 'nr1';
+import DTInstructions from './DTInstructions';
 
-const DTSplash = ({ closeHandler }) => {
+const DTSplash = ({ closeHandler, cancelHandler }) => {
   return (
     <div className="listing splash">
       <BlockText>
-        The DT ingest estimator is used to estimate the amount of data ingested
-        per month if Distributed Tracing was enabled for one or more
-        applications.
+        The <strong>DT ingest estimator</strong> is used to estimate the amount
+        of data ingested per month if Distributed Tracing was enabled for one or
+        more applications.
       </BlockText>
       <BlockText>To use the estimator:</BlockText>
       <BlockText>
-        <ol>
-          <li>
-            Select all the related applications that require Distributed Tracing
-          </li>
-          <li>
-            Select a date in the last month that reflects the typical traffic
-            pattern and volume for the set of applications
-          </li>
-          <li>Three estimates are produced for each application selected</li>
-        </ol>
+        <DTInstructions />
       </BlockText>
       <BlockText>
         The estimates are divided into moderate, high and very high. These
@@ -37,7 +29,9 @@ const DTSplash = ({ closeHandler }) => {
         If you have reason to believe your case is special use the very high
         estimate.
       </BlockText>
-      <BlockText>Considerations:</BlockText>
+      <BlockText>
+        <strong>Considerations</strong>
+      </BlockText>
       <BlockText>
         <ul>
           <li>
@@ -77,7 +71,15 @@ const DTSplash = ({ closeHandler }) => {
         application, estimates and information provided, or for any actions
         taken in reliance thereon.
       </BlockText>
-      <div className="centered">
+      <div className="controls">
+        <Button
+          type={Button.TYPE.PLAIN}
+          sizeType={Button.SIZE_TYPE.SMALL}
+          iconType={Button.ICON_TYPE.INTERFACE__OPERATIONS__SKIP_BACK}
+          onClick={cancelHandler}
+        >
+          Back
+        </Button>
         <Button
           type={Button.TYPE.PRIMARY}
           sizeType={Button.SIZE_TYPE.SMALL}
@@ -91,7 +93,8 @@ const DTSplash = ({ closeHandler }) => {
 };
 
 DTSplash.propTypes = {
-  closeHandler: PropTypes.func
+  closeHandler: PropTypes.func,
+  cancelHandler: PropTypes.func
 };
 
 export default DTSplash;

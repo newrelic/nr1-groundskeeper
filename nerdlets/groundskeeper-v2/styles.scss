@@ -67,18 +67,29 @@
 
         &.with-info {
           grid-template-columns: 1fr min-content;
+        }
 
-          .group-fields {
-            display: inline-flex;
+        .group-fields {
+          display: inline-flex;
 
-            input {
-              border-top-right-radius: 0;
-              border-bottom-right-radius: 0;
-            }
+          input {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+          }
 
-            button {
-              border-top-left-radius: 0;
-              border-bottom-left-radius: 0;
+          button {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+          }
+        }
+
+        .help {
+          padding: 4px 8px;
+          cursor: help;
+
+          div {
+            span {
+              margin-right: 4px;
             }
           }
         }
@@ -126,6 +137,33 @@
           margin-left: 4px;
         }
       }
+
+      &.has-footer {
+        margin-bottom: 32px;
+      }
+    }
+
+    .footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      min-height: 16px;
+      background-color: #fff;
+      box-shadow: inset 0 1px 0 0 #dedede;
+      padding: 8px;
+      padding-left: 20px;
+      display: flex;
+
+      .summary {
+        position: absolute;
+        top: 0px;
+        padding: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #535E65;
+        line-height: 16px;
+      }
     }
 
     &.splash {
@@ -139,8 +177,10 @@
           padding: 0 16px;
         }
 
-        &.centered {
-          text-align: center;
+        &.controls {
+          display: flex;
+          justify-content: center;
+          gap: 16px;
         }
       }
     }
@@ -510,4 +550,13 @@
   }
 
   
+}
+
+.help-card {
+  width: 250px;
+  padding: 0 8px;
+}
+
+.help-footer {
+  text-align: right;
 }
