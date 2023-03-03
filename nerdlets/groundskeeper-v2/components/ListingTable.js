@@ -28,6 +28,7 @@ const ListingTable = ({ displayedEntities = [] }) => {
     TableHeaderCell.SORTING_TYPE.NONE,
     TableHeaderCell.SORTING_TYPE.NONE,
     TableHeaderCell.SORTING_TYPE.NONE,
+    TableHeaderCell.SORTING_TYPE.NONE,
     TableHeaderCell.SORTING_TYPE.NONE
   ]);
 
@@ -90,7 +91,15 @@ const ListingTable = ({ displayedEntities = [] }) => {
         <TableHeaderCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
           Features enabled
         </TableHeaderCell>
-        <TableHeaderCell>Exposures</TableHeaderCell>
+        <TableHeaderCell
+          value={({ item }) => item.exposures?.list?.length || 0}
+          sortable
+          sortingType={sortingTypes[4]}
+          sortingOrder={4}
+          onClick={headerClickHandler}
+        >
+          Exposures
+        </TableHeaderCell>
         <TableHeaderCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
           Recommended version
         </TableHeaderCell>
