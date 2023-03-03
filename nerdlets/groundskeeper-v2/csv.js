@@ -1,4 +1,4 @@
-import { formatInGB, monthlyGB } from './formatter';
+import { formatNum } from './formatter';
 
 const header = 'data:text/csv;charset=utf-8,';
 
@@ -51,12 +51,12 @@ const downloadDTIE = (entityEstimates = []) => {
     'Account name',
     'App name',
     'Language',
-    'Moderate (50th Percentile) per day',
-    'Moderate (50th Percentile) per month',
-    'High (70th Percentile) per day',
-    'High (70th Percentile) per month',
-    'Very High (90th Percentile) per day',
-    'Very High (90th Percentile) per month'
+    'Moderate (50th Percentile) GB/day',
+    'Moderate (50th Percentile) GB/month',
+    'High (70th Percentile) GB/day',
+    'High (70th Percentile) GB/month',
+    'Very High (90th Percentile) GB/day',
+    'Very High (90th Percentile) GB/month'
   ].join(',');
 
   const body = [
@@ -79,8 +79,8 @@ const allEntityEstimatesDayAndMonth = (estimatesGB = []) =>
   estimatesGB.reduce(
     (acc, cur) => [
       ...acc,
-      formatInGB(cur).replaceAll(',', ''),
-      monthlyGB(cur).replaceAll(',', '')
+      formatNum(cur).replaceAll(',', ''),
+      formatNum(cur * 30).replaceAll(',', '')
     ],
     []
   );

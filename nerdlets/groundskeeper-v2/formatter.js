@@ -13,6 +13,8 @@ const monthYearFormatter = new Intl.DateTimeFormat('default', {
   month: 'long'
 });
 
+const formatNum = num => (num ? numFormatter.format(num) : '');
+
 const formatInGB = num => (num ? `${numFormatter.format(num)} GB` : '');
 
 const monthlyGB = num => (num ? `${formatInGB(num * 30)}/month` : '');
@@ -23,4 +25,10 @@ const formattedDateField = dt =>
 const formattedMonthYear = dt =>
   dt && dt instanceof Date ? monthYearFormatter.format(dt) : '';
 
-export { formatInGB, monthlyGB, formattedDateField, formattedMonthYear };
+export {
+  formatNum,
+  formatInGB,
+  monthlyGB,
+  formattedDateField,
+  formattedMonthYear
+};

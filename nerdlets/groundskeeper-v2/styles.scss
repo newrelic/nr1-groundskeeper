@@ -1,7 +1,7 @@
 .container {
   display: flex;
   height: 100%;
-  background-color: #F3F4F4;
+  background-color: #f3f4f4;
   gap: 8px;
   flex-direction: column;
 
@@ -62,7 +62,7 @@
         align-items: end;
 
         &.right {
-          margin-left: auto
+          margin-left: auto;
         }
 
         &.with-info {
@@ -110,13 +110,13 @@
         .cell-link {
           background: none;
           border: 0;
-          color: #0C74DF;
+          color: #0c74df;
           cursor: pointer;
           padding: 0;
           text-decoration: none;
 
           &:focus {
-            background-color: #DBEDFE;
+            background-color: #dbedfe;
             text-decoration: underline;
           }
 
@@ -139,7 +139,7 @@
       }
 
       &.has-footer {
-        margin-bottom: 32px;
+        margin-bottom: 64px;
       }
     }
 
@@ -147,12 +147,12 @@
       position: fixed;
       bottom: 0;
       width: 100%;
-      min-height: 16px;
+      min-height: 48px;
       background-color: #fff;
-      box-shadow: inset 0 1px 0 0 #dedede;
       padding: 8px;
       padding-left: 20px;
       display: flex;
+      box-shadow: 0 -10px 20px rgb(0 0 0 / 19%), 0 -6px 6px rgb(0 0 0 / 23%);
 
       .summary {
         position: absolute;
@@ -161,19 +161,31 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #535E65;
         line-height: 16px;
+        flex-direction: column;
+        color: #293338;
+
+        div {
+          margin-top: 4px;
+          padding-bottom: 4px;
+        }
       }
     }
 
     &.splash {
       justify-content: center;
+      padding: 8px 16px 16px;
 
       div {
-        width: 50%;
+        width: 100%;
         margin: 8px auto;
+        font-size: 16px;
+        font-family: Sohne, system-ui, sans-serif;
+        color: #293338;
+        line-height: 1.5;
 
-        ul, ol {
+        ul,
+        ol {
           padding: 0 16px;
         }
 
@@ -181,6 +193,7 @@
           display: flex;
           justify-content: center;
           gap: 16px;
+          padding-top: 8px;
         }
       }
     }
@@ -197,7 +210,7 @@
       flex: 0 0 auto;
       display: flex;
       flex-direction: column;
-      
+
       .meta-bar {
         padding: 8px;
         display: flex;
@@ -226,25 +239,26 @@
           color: #0b6acb;
           margin-right: 8px;
           margin-bottom: 4px;
-  
+
           .text {
             flex: none;
             order: 0;
             flex-grow: 0;
           }
-  
+
           .remove {
             margin-left: 4px;
             cursor: pointer;
           }
         }
       }
-      
-      .top-bar{
+
+      .top-bar {
         padding: 8px;
         display: flex;
-  
-        .counter, .action {
+
+        .counter,
+        .action {
           width: 50%;
           display: flex;
           flex-direction: column;
@@ -253,21 +267,20 @@
           padding: 8px;
           gap: 4px;
         }
-  
+
         .counter {
-  
           .count {
             font-size: 32px;
             line-height: 40px;
             font-weight: 600;
             color: #6b757b;
-  
+
             &.good {
               color: #026747;
             }
-  
+
             &.bad {
-              color: #B00F0A;
+              color: #b00f0a;
             }
           }
         }
@@ -294,7 +307,6 @@
         padding: 8px;
 
         .column {
-
           .title {
             font-size: 14px;
             line-height: 20px;
@@ -305,25 +317,25 @@
             display: flex;
             align-items: start;
             margin-bottom: 4px;
-  
-            input[type=checkbox] {
+
+            input[type='checkbox'] {
               align-self: start;
             }
-  
+
             label {
               padding-right: 4px;
             }
-  
+
             .count {
               line-height: 16px;
               color: #6b757b;
             }
-  
+
             &.show-all {
               text-align: center;
-              color: #0C74DF;
+              color: #0c74df;
               cursor: pointer;
-    
+
               &:hover {
                 text-decoration: underline;
               }
@@ -338,7 +350,7 @@
         padding: 8px;
         padding-top: 16px;
         gap: 8px;
-    
+
         .title {
           grid-column: 1 / 6;
           font-size: 14px;
@@ -349,7 +361,7 @@
           display: flex;
           align-items: start;
 
-          input[type=checkbox] {
+          input[type='checkbox'] {
             align-self: start;
           }
 
@@ -364,18 +376,18 @@
 
           &.show-all {
             text-align: center;
-            color: #0C74DF;
+            color: #0c74df;
             cursor: pointer;
-  
+
             &:hover {
               text-decoration: underline;
             }
           }
         }
-  
+
         .tag {
           padding-bottom: 8px;
-  
+
           .title {
             color: #6b757b;
             font-size: 12px;
@@ -387,23 +399,23 @@
             margin-bottom: 4px;
           }
         }
-    
+
         .option {
           font-size: 12px;
           line-height: 16px;
           color: #293338;
           padding: 8px;
-  
+
           .tag {
             color: #6b757b;
             font-size: 12px;
             line-height: 16px;
           }
-  
+
           input {
             align-self: start;
           }
-  
+
           &.show-all {
             justify-self: center;
             align-self: start;
@@ -443,7 +455,6 @@
   display: flex;
 
   .modal-content {
-
     .title {
       padding-bottom: 8px;
 
@@ -455,7 +466,7 @@
     .filter {
       display: inline-flex;
       width: 100%;
-      border: 1px solid #E7E9EA;
+      border: 1px solid #e7e9ea;
       border-radius: 4px;
       align-items: center;
       margin-bottom: 8px;
@@ -471,7 +482,7 @@
         align-items: start;
         margin-bottom: 4px;
 
-        input[type=checkbox] {
+        input[type='checkbox'] {
           align-self: start;
         }
 
@@ -520,7 +531,9 @@
       width: 100%;
     }
 
-    &.prev, &.next, &.date {
+    &.prev,
+    &.next,
+    &.date {
       cursor: pointer;
     }
 
@@ -548,8 +561,6 @@
       text-decoration: none;
     }
   }
-
-  
 }
 
 .help-card {

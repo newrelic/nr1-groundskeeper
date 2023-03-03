@@ -53,6 +53,8 @@ const DTIngestEstimator = ({ entities, onClose, hideSplash, onHideSplash }) => {
     selectedDate
   });
   const summaryCols = useRef({});
+  const listingDiv = useRef();
+  const headerDiv = useRef();
 
   useEffect(() => {
     if (!ingestEstimatesBytes || !Object.keys(ingestEstimatesBytes).length)
@@ -91,6 +93,13 @@ const DTIngestEstimator = ({ entities, onClose, hideSplash, onHideSplash }) => {
     </TableRowCell>
   ));
 
+  const summaryCell = useCallback(dailyTotalGB => (
+    <>
+      <div>{dailyTotalGB !== 0 ? `${formatInGB(dailyTotalGB)}/day` : '0'}</div>
+      <div>{dailyTotalGB !== 0 ? monthlyGB(dailyTotalGB) : '0'}</div>
+    </>
+  ));
+
   const downloadHandler = useCallback(
     () =>
       downloadDTIE(
@@ -108,18 +117,33 @@ const DTIngestEstimator = ({ entities, onClose, hideSplash, onHideSplash }) => {
   );
 
   const clickHandler = useCallback(() => {
+    const style = {};
+    if (listingDiv.current && headerDiv.current) {
+      const { bottom: listingBottom = 0 } =
+        listingDiv.current.getBoundingClientRect() || {};
+      const { bottom: headerBottom = 0 } =
+        headerDiv.current.getBoundingClientRect() || {};
+      if (listingBottom && headerBottom) {
+        style.marginBottom = listingBottom - headerBottom;
+      }
+    }
+
     if (
       !Object.keys(selectedEntities).filter(guid => selectedEntities[guid])
         .length
     ) {
+      style.marginBottom = style.marginBottom - 100;
       Toast.showToast({
-        description: SELECT_APPS_TEXT
+        description: SELECT_APPS_TEXT,
+        style
       });
       return;
     }
     if (!(selectedDate && selectedDate instanceof Date)) {
+      style.marginBottom = style.marginBottom - 180;
       Toast.showToast({
-        description: SELECT_DATE_TEXT
+        description: SELECT_DATE_TEXT,
+        style
       });
       return;
     }
@@ -185,8 +209,8 @@ const DTIngestEstimator = ({ entities, onClose, hideSplash, onHideSplash }) => {
     return <DTSplash closeHandler={onHideSplash} cancelHandler={onClose} />;
 
   return (
-    <div className="listing">
-      <div className="header">
+    <div className="listing" ref={listingDiv}>
+      <div className="header" ref={headerDiv}>
         <div className="col">
           <Button
             type={Button.TYPE.PLAIN}
@@ -317,30 +341,26 @@ const DTIngestEstimator = ({ entities, onClose, hideSplash, onHideSplash }) => {
         </Table>
       </div>
       <div className="footer">
-        <div className="summary count">{`${summary.count} selected item(s)`}</div>
+        <div className="summary count">
+          <div>{`${summary.count} selected item(s)`}</div>
+        </div>
         <div
           className="summary moderate"
           ref={e => (summaryCols.current[COLUMNS.MODERATE] = e)}
         >
-          {summary[COLUMNS.MODERATE] !== 0
-            ? `${formatInGB(summary[COLUMNS.MODERATE])}/day`
-            : '0'}
+          {summaryCell(summary[COLUMNS.MODERATE])}
         </div>
         <div
           className="summary high"
           ref={e => (summaryCols.current[COLUMNS.HIGH] = e)}
         >
-          {summary[COLUMNS.HIGH] !== 0
-            ? `${formatInGB(summary[COLUMNS.HIGH])}/day`
-            : '0'}
+          {summaryCell(summary[COLUMNS.HIGH])}
         </div>
         <div
           className="summary very-high"
           ref={e => (summaryCols.current[COLUMNS.VERY_HIGH] = e)}
         >
-          {summary[COLUMNS.VERY_HIGH] !== 0
-            ? `${formatInGB(summary[COLUMNS.VERY_HIGH])}/day`
-            : '0'}
+          {summaryCell(summary[COLUMNS.VERY_HIGH])}
         </div>
       </div>
     </div>
