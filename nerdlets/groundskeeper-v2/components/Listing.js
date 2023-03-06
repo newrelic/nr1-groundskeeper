@@ -1,14 +1,14 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { Button, Checkbox, EmptyState } from 'nr1';
+import { Button, Checkbox, EmptyState, Icon, Tooltip } from 'nr1';
 
 import useFetchEntitiesDetails from '../hooks/useFetchEntitiesDetails';
 import { exposures } from '../cve';
 import { recommend } from '../recommendations';
 import ListingTable from './ListingTable';
 import ProgressBar from './ProgressBar';
-import csv from '../csv';
+import { download } from '../csv';
 
 const Listing = ({
   entitiesDetails = {},
@@ -17,7 +17,8 @@ const Listing = ({
   latestReleases = {},
   filtered = {},
   entitiesLookup = {},
-  setShowFilters
+  setShowFilters,
+  onOpenDTIE
 }) => {
   const [entities, setEntities] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -71,6 +72,7 @@ const Listing = ({
                 ...acc,
                 {
                   ...entity,
+                  guid,
                   runtimeVersions: entitiesDetails[guid]?.runtimeVersions,
                   recommend: recommend(
                     entitiesDetails[guid],
@@ -88,15 +90,24 @@ const Listing = ({
     [entities, entitiesDetails]
   );
 
+  const entitiesNoDT = useMemo(
+    () => displayedEntities.filter(e => !e.features?.dtEnabled),
+    [displayedEntities]
+  );
+
+  const downloadHandler = useCallback(() => download(displayedEntities), [
+    displayedEntities
+  ]);
+
   return (
     <div className="listing">
       <div className="header">
         <div className="col">
           <Button
             type={Button.TYPE.PLAIN}
-            onClick={() => setShowFilters(true)}
             sizeType={Button.SIZE_TYPE.SMALL}
             iconType={Button.ICON_TYPE.INTERFACE__OPERATIONS__FILTER}
+            onClick={() => setShowFilters(true)}
           >
             Filters
           </Button>
@@ -111,11 +122,25 @@ const Listing = ({
                 info="Checking this option displays applications that are not currently reporting. Non-reporting applications cannot show upgrade recommendations."
               />
             </div>
+            <div className="col with-info">
+              <Button
+                type={Button.TYPE.TERTIARY}
+                sizeType={Button.SIZE_TYPE.SMALL}
+                disabled={isLoading || !entitiesNoDT.length}
+                onClick={() => onOpenDTIE(entitiesNoDT)}
+              >
+                DT ingest estimator
+              </Button>
+              <Tooltip text="For apps that don't have Distributed Tracing enabled, use the Distributed Tracing Ingest Estimator to get projected ingest when Distributed Tracing is turned on.">
+                <Icon type={Icon.TYPE.INTERFACE__INFO__INFO} />
+              </Tooltip>
+            </div>
             <div className="col">
               <Button
+                type={Button.TYPE.SECONDARY}
+                sizeType={Button.SIZE_TYPE.SMALL}
                 loading={isLoading}
-                type={Button.TYPE.TERTIARY}
-                onClick={() => csv.download(displayedEntities)}
+                onClick={downloadHandler}
               >
                 Download
               </Button>
@@ -162,7 +187,8 @@ Listing.propTypes = {
   latestReleases: PropTypes.object,
   filtered: PropTypes.object,
   entitiesLookup: PropTypes.object,
-  setShowFilters: PropTypes.func
+  setShowFilters: PropTypes.func,
+  onOpenDTIE: PropTypes.func
 };
 
 export default Listing;
