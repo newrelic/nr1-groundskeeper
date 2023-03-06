@@ -10,9 +10,9 @@ import {
   PopoverTrigger
 } from 'nr1';
 
-import DTInstructions from './DTInstructions';
+import DTIEInstructions from './DTIEInstructions';
 
-const DTHelpPopover = () => {
+const DTIEHelpPopover = () => {
   return (
     <Popover openOnHover>
       <PopoverTrigger>
@@ -25,7 +25,7 @@ const DTHelpPopover = () => {
         <Card className="help-card">
           <CardBody>
             <BlockText>
-              <DTInstructions />
+              <DTIEInstructions />
             </BlockText>
           </CardBody>
         </Card>
@@ -34,4 +34,4 @@ const DTHelpPopover = () => {
   );
 };
 
-export default DTHelpPopover;
+export default DTIEHelpPopover;

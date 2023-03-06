@@ -2,9 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { BlockText, Button } from 'nr1';
-import DTInstructions from './DTInstructions';
+import DTIEInstructions from './DTIEInstructions';
 
-const DTSplash = ({ closeHandler, cancelHandler }) => {
+const DTIESplash = ({ closeHandler, cancelHandler }) => {
   return (
     <div className="listing splash">
       <BlockText>
@@ -12,9 +12,27 @@ const DTSplash = ({ closeHandler, cancelHandler }) => {
         of data ingested per month if Distributed Tracing was enabled for one or
         more applications.
       </BlockText>
+      <BlockText>How is the estimate derived?</BlockText>
+      <BlockText>
+        The estimate is derived from a model developed by New Relic using
+        statistical modelling techniques. The model first estimates the expected
+        number of Distributed Tracing span events seen per application based on
+        the applications web transaction volumes on the chosen day. It then
+        applies the default language agents span limit per agent instance to cap
+        the number of spans sent to New Relic per minute per instance. The
+        chosen days per minute web transaction pattern determine how frequent
+        these caps are applied over the 1,440 minutes analyzed. The sum of span
+        events sent on a per minute basis is then multiplied by the size of a
+        span event. The size of a span event is another model coefficient that
+        varies by language agent. In addition, each model coefficient is
+        represented by the 50th, 70th and 90th percentiles to accomodate
+        variance in the population sample used to derive the model. Once a daily
+        estimate is derived this is multiplied by 30 to produce the monthly
+        estimate.
+      </BlockText>
       <BlockText>To use the estimator:</BlockText>
       <BlockText>
-        <DTInstructions />
+        <DTIEInstructions />
       </BlockText>
       <BlockText>
         The estimates are divided into moderate, high and very high. These
@@ -62,6 +80,12 @@ const DTSplash = ({ closeHandler, cancelHandler }) => {
             Estimates are subject to variance and corner cases and should only
             be used as a guide.
           </li>
+          <li>
+            The estimator uses web transactions to derive the estimate. If the
+            application is not emitting web transaction the estimate will return
+            zero values. We hope to add support for non-web transactions in a
+            future version.
+          </li>
         </ul>
       </BlockText>
       <BlockText>
@@ -92,9 +116,9 @@ const DTSplash = ({ closeHandler, cancelHandler }) => {
   );
 };
 
-DTSplash.propTypes = {
+DTIESplash.propTypes = {
   closeHandler: PropTypes.func,
   cancelHandler: PropTypes.func
 };
 
-export default DTSplash;
+export default DTIESplash;
