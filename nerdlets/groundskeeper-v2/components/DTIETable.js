@@ -99,7 +99,9 @@ const DTIETable = ({
         >
           App
         </TableHeaderCell>
-        <TableHeaderCell>Agent version(s)</TableHeaderCell>
+        <TableHeaderCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
+          Agent version(s)
+        </TableHeaderCell>
         <TableHeaderCell
           value={({ item }) => item.language}
           sortable
@@ -109,7 +111,9 @@ const DTIETable = ({
         >
           Language
         </TableHeaderCell>
-        <TableHeaderCell>Runtime version(s)</TableHeaderCell>
+        <TableHeaderCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
+          Runtime version(s)
+        </TableHeaderCell>
         <TableHeaderCell
           alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}
           value={({ item }) => estimate(item.guid, COL_IDX.MODERATE) || 0}

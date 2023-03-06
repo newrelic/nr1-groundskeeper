@@ -12,7 +12,9 @@ const DTIESplash = ({ closeHandler, cancelHandler }) => {
         of data ingested per month if Distributed Tracing was enabled for one or
         more applications.
       </BlockText>
-      <BlockText>How is the estimate derived?</BlockText>
+      <BlockText>
+        <strong>How is the estimate derived?</strong>
+      </BlockText>
       <BlockText>
         The estimate is derived from a model developed by New Relic using
         statistical modelling techniques. The model first estimates the expected
@@ -30,7 +32,9 @@ const DTIESplash = ({ closeHandler, cancelHandler }) => {
         estimate is derived this is multiplied by 30 to produce the monthly
         estimate.
       </BlockText>
-      <BlockText>To use the estimator:</BlockText>
+      <BlockText>
+        <strong>To use the estimator:</strong>
+      </BlockText>
       <BlockText>
         <DTIEInstructions />
       </BlockText>
