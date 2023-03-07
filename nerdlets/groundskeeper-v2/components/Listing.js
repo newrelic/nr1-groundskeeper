@@ -25,6 +25,7 @@ const Listing = ({
   const [guidsToFetch, setGuidsToFetch] = useState([]);
   const [guidsFetched, setGuidsFetched] = useState(0);
   const [showNonReporting, setShowNonReporting] = useState(false);
+  const [appNameFilterText, setAppNameFilterText] = useState('');
   const { details } = useFetchEntitiesDetails({ guidsToFetch });
 
   useEffect(() => {
@@ -58,16 +59,24 @@ const Listing = ({
     setGuidsFetched(filtered.guids.filter(guid => guid in details).length);
   }, [details]);
 
-  const transitionHandler = () => setIsLoading(false);
+  const transitionHandler = useCallback(() => setIsLoading(false));
 
-  const checkHandler = ({ target: { checked } = {} } = {}) =>
-    setShowNonReporting(checked);
+  const checkHandler = useCallback(({ target: { checked } = {} } = {}) =>
+    setShowNonReporting(checked)
+  );
+
+  const isMatchPattern = useCallback((pattern = '', string = '') => {
+    if (!pattern.trim()) return true;
+    const regexSafePattern = pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return new RegExp(regexSafePattern, 'i').test(string);
+  });
 
   const displayedEntities = useMemo(
     () =>
       entities.reduce(
         (acc, { guid, reporting, ...entity }) =>
-          showNonReporting || reporting
+          (showNonReporting || reporting) &&
+          isMatchPattern(appNameFilterText, entity.name)
             ? [
                 ...acc,
                 {
@@ -87,7 +96,7 @@ const Listing = ({
             : acc,
         []
       ),
-    [entities, entitiesDetails]
+    [entities, entitiesDetails, appNameFilterText]
   );
 
   const entitiesNoDT = useMemo(
@@ -114,6 +123,25 @@ const Listing = ({
         </div>
         {entities.length ? (
           <>
+            <div className="col">
+              <div className="app-name-filter">
+                <div className="tf-icon">
+                  <Icon type={Icon.TYPE.INTERFACE__OPERATIONS__SEARCH} />
+                </div>
+                <input
+                  placeholder="Filter by app name"
+                  autoComplete="off"
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck="false"
+                  value={appNameFilterText}
+                  onChange={({ target: { value = '' } = {} } = {}) =>
+                    setAppNameFilterText(value)
+                  }
+                  style={{ backgroundColor: '#fff' }}
+                />
+              </div>
+            </div>
             <div className="col right">
               <Checkbox
                 checked={showNonReporting}

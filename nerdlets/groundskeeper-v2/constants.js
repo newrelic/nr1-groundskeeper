@@ -49,4 +49,28 @@ const STATUS = {
   CRITICAL: 'critical'
 };
 
-export { AGENTS, AGENTS_REGEX_STRING, LANGUAGES, RUNTIMES, STATUS };
+const defaultReleaseNotes = {
+  [AGENTS.GO]:
+    'https://docs.newrelic.com/docs/release-notes/agent-release-notes/go-release-notes/',
+  [AGENTS.JAVA]:
+    'https://docs.newrelic.com/docs/release-notes/agent-release-notes/java-release-notes/',
+  [AGENTS.DOTNET]:
+    'https://docs.newrelic.com/docs/release-notes/agent-release-notes/net-release-notes/',
+  [AGENTS.NODEJS]:
+    'https://docs.newrelic.com/docs/release-notes/agent-release-notes/nodejs-release-notes/',
+  [AGENTS.PYTHON]:
+    'https://docs.newrelic.com/docs/release-notes/agent-release-notes/python-release-notes/',
+  [AGENTS.PHP]:
+    'https://docs.newrelic.com/docs/release-notes/agent-release-notes/php-release-notes/',
+  [AGENTS.RUBY]:
+    'https://docs.newrelic.com/docs/release-notes/agent-release-notes/ruby-release-notes/'
+};
+
+export {
+  AGENTS,
+  AGENTS_REGEX_STRING,
+  LANGUAGES,
+  RUNTIMES,
+  STATUS,
+  defaultReleaseNotes
+};

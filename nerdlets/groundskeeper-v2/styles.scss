@@ -318,7 +318,7 @@
             align-items: start;
             margin-bottom: 4px;
 
-            input[type='checkbox'] {
+            input[type="checkbox"] {
               align-self: start;
             }
 
@@ -361,7 +361,7 @@
           display: flex;
           align-items: start;
 
-          input[type='checkbox'] {
+          input[type="checkbox"] {
             align-self: start;
           }
 
@@ -482,7 +482,7 @@
         align-items: start;
         margin-bottom: 4px;
 
-        input[type='checkbox'] {
+        input[type="checkbox"] {
           align-self: start;
         }
 
@@ -570,4 +570,16 @@
 
 .help-footer {
   text-align: right;
+}
+
+.app-name-filter {
+  display: inline-flex;
+  width: 100%;
+  border: 1px solid #e7e9ea;
+  border-radius: 4px;
+  align-items: center;
+
+  .tf-icon {
+    margin-left: 4px;
+  }
 }
