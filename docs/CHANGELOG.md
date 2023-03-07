@@ -1,3 +1,18 @@
+# [2.5.0](https://github.com/newrelic/nr1-groundskeeper/compare/v2.4.1...v2.5.0) (2023-03-06)
+
+
+### Features
+
+* [wip] ability to select and additional columns in dt ingest estimator ([24142cb](https://github.com/newrelic/nr1-groundskeeper/commit/24142cbfb0d7ab4993d54bf72986badafac82369))
+* [wip] batch nrql queries for dt ingest estimator ([799a8f1](https://github.com/newrelic/nr1-groundskeeper/commit/799a8f126aeca2d4849002360e829e54ba9a0bfe))
+* [wip] date picker for dt ingest estimator ([150990f](https://github.com/newrelic/nr1-groundskeeper/commit/150990f7e950a95d6a533dc4d15625a922ec49c8))
+* [wip] dt ingest estimator ([666e427](https://github.com/newrelic/nr1-groundskeeper/commit/666e42700cefd83f6a3a1a6f78f31e3cd80b28e7))
+* [wip] monthly summary and other mods for dt ingest estimator ([8313753](https://github.com/newrelic/nr1-groundskeeper/commit/8313753781bdc2f0755a27cb6ae5afb6a70bd3a3))
+* [wip] splash screen and other fixes for dt ingest estimator ([c134505](https://github.com/newrelic/nr1-groundskeeper/commit/c134505ad9c97c401afa549385e0b3793f60db6b))
+* prepare dt ingest estimator for release ([8558c02](https://github.com/newrelic/nr1-groundskeeper/commit/8558c02ddbcb96d11f8978d0e1c9daf47bd6784c))
+* ready for launch ([4ff9cd4](https://github.com/newrelic/nr1-groundskeeper/commit/4ff9cd4db3a92b1073093deff13af0e3bffec995))
+* updated instructions and summary for dt ingest estimator ([341f67e](https://github.com/newrelic/nr1-groundskeeper/commit/341f67e4aa800d1bdcdcfb502ba621d7c08a43ee))
+
 ## [2.4.1](https://github.com/newrelic/nr1-groundskeeper/compare/v2.4.0...v2.4.1) (2023-02-16)
 
 

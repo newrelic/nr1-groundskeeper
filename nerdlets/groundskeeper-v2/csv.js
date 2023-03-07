@@ -1,5 +1,10 @@
+import { formatNum } from './formatter';
+
+const header = 'data:text/csv;charset=utf-8,';
+
+const response = data => window.open(encodeURI(`${header}${data}`));
+
 const download = (displayedEntities = []) => {
-  const header = 'data:text/csv;charset=utf-8,';
   const heading = [
     'Account id',
     'Account name',
@@ -37,8 +42,48 @@ const download = (displayedEntities = []) => {
     )
   ].join('\n');
 
-  if (body) window.open(encodeURI(`${header}${body}`));
+  if (body) response(body);
 };
+
+const downloadDTIE = (entityEstimates = []) => {
+  const heading = [
+    'Account id',
+    'Account name',
+    'App name',
+    'Language',
+    'Moderate (50th Percentile) GB/day',
+    'Moderate (50th Percentile) GB/month',
+    'High (70th Percentile) GB/day',
+    'High (70th Percentile) GB/month',
+    'Very High (90th Percentile) GB/day',
+    'Very High (90th Percentile) GB/month'
+  ].join(',');
+
+  const body = [
+    heading,
+    ...entityEstimates.map(entity =>
+      [
+        entity.account?.id || '',
+        entity.account?.name || '',
+        entity.name || '',
+        entity.language || '',
+        ...allEntityEstimatesDayAndMonth(entity.estimatesGigabytes)
+      ].join(',')
+    )
+  ].join('\n');
+
+  if (body) response(body);
+};
+
+const allEntityEstimatesDayAndMonth = (estimatesGB = []) =>
+  estimatesGB.reduce(
+    (acc, cur) => [
+      ...acc,
+      formatNum(cur).replaceAll(',', ''),
+      formatNum(cur * 30).replaceAll(',', '')
+    ],
+    []
+  );
 
 const pipeSeparated = (arr = [], key) =>
   arr
@@ -55,4 +100,4 @@ const runtimeStr = runtimeVersions => {
   return display ? `${display}${typeStr}` : '';
 };
 
-export default { download };
+export { download, downloadDTIE };
