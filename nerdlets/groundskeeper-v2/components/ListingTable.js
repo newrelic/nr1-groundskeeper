@@ -14,7 +14,7 @@ import {
 } from 'nr1';
 
 import FeatureIcon from './FeatureIcon';
-import { STATUS } from '../constants';
+import { defaultReleaseNotes, STATUS } from '../constants';
 import releaseNotes from '../release-notes.json';
 
 const colors = {
@@ -25,6 +25,7 @@ const colors = {
 
 const ListingTable = ({ displayedEntities = [] }) => {
   const [sortingTypes, setSortingTypes] = useState([
+    TableHeaderCell.SORTING_TYPE.NONE,
     TableHeaderCell.SORTING_TYPE.NONE,
     TableHeaderCell.SORTING_TYPE.NONE,
     TableHeaderCell.SORTING_TYPE.NONE,
@@ -90,7 +91,15 @@ const ListingTable = ({ displayedEntities = [] }) => {
         <TableHeaderCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
           Features enabled
         </TableHeaderCell>
-        <TableHeaderCell>Exposures</TableHeaderCell>
+        <TableHeaderCell
+          value={({ item }) => item.exposures?.list?.length || 0}
+          sortable
+          sortingType={sortingTypes[4]}
+          sortingOrder={4}
+          onClick={headerClickHandler}
+        >
+          Exposures
+        </TableHeaderCell>
         <TableHeaderCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
           Recommended version
         </TableHeaderCell>
@@ -139,18 +148,18 @@ const ListingTable = ({ displayedEntities = [] }) => {
 
 const statusCell = ({ version = '', statuses = [] } = {}, language) => (
   <>
-    {version && language && version in releaseNotes[language] ? (
-      <a
-        className="u-unstyledLink cell-link"
-        target="_blank"
-        rel="noreferrer"
-        href={releaseNotes[language][version]}
-      >
-        {version}
-      </a>
-    ) : (
-      version
-    )}
+    <a
+      className="u-unstyledLink cell-link"
+      target="_blank"
+      rel="noreferrer"
+      href={
+        version && language && version in releaseNotes[language]
+          ? releaseNotes[language][version]
+          : defaultReleaseNotes[language]
+      }
+    >
+      {version}
+    </a>
     {statuses.map(statusIcon)}
   </>
 );

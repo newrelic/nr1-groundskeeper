@@ -407,3 +407,15 @@
     }
   }
 }
+
+.app-name-filter {
+  display: inline-flex;
+  width: 100%;
+  border: 1px solid #e7e9ea;
+  border-radius: 4px;
+  align-items: center;
+
+  .tf-icon {
+    margin-left: 4px;
+  }
+}
