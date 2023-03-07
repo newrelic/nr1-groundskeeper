@@ -1,3 +1,14 @@
+# [2.6.0](https://github.com/newrelic/nr1-groundskeeper/compare/v2.5.0...v2.6.0) (2023-03-07)
+
+
+### Features
+
+* default links for release notes ([968e66a](https://github.com/newrelic/nr1-groundskeeper/commit/968e66a90df019e66b7ed4efd9f0049ab783b376))
+* filter app names text field ([42f6c64](https://github.com/newrelic/nr1-groundskeeper/commit/42f6c64e61bd44d37a0250a70a9cafd58461f9fd))
+* link to release notes for recommended version ([5fcf975](https://github.com/newrelic/nr1-groundskeeper/commit/5fcf97542f0195f6b387c58af39805426e847a92))
+* sorting for table columns ([1fbccc3](https://github.com/newrelic/nr1-groundskeeper/commit/1fbccc3d98c273a3a3292becd136052a48b0015d))
+* table sorting including exposures col ([14cfa34](https://github.com/newrelic/nr1-groundskeeper/commit/14cfa343cb70c672ea62d8266b67d39dc5096e62))
+
 # [2.5.0](https://github.com/newrelic/nr1-groundskeeper/compare/v2.4.1...v2.5.0) (2023-03-06)
 
 
