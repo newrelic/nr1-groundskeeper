@@ -14,7 +14,7 @@ import {
 } from 'nr1';
 
 import FeatureIcon from './FeatureIcon';
-import { STATUS } from '../constants';
+import { defaultReleaseNotes, STATUS } from '../constants';
 import releaseNotes from '../release-notes.json';
 
 const colors = {
@@ -148,18 +148,18 @@ const ListingTable = ({ displayedEntities = [] }) => {
 
 const statusCell = ({ version = '', statuses = [] } = {}, language) => (
   <>
-    {version && language && version in releaseNotes[language] ? (
-      <a
-        className="u-unstyledLink cell-link"
-        target="_blank"
-        rel="noreferrer"
-        href={releaseNotes[language][version]}
-      >
-        {version}
-      </a>
-    ) : (
-      version
-    )}
+    <a
+      className="u-unstyledLink cell-link"
+      target="_blank"
+      rel="noreferrer"
+      href={
+        version && language && version in releaseNotes[language]
+          ? releaseNotes[language][version]
+          : defaultReleaseNotes[language]
+      }
+    >
+      {version}
+    </a>
     {statuses.map(statusIcon)}
   </>
 );
