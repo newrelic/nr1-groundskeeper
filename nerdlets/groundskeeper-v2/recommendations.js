@@ -102,25 +102,19 @@ const recommendations = {
   ],
   [AGENTS.PYTHON]: [
     {
-      match: '<=2.6.x',
+      match: '2.7',
+      version: LATEST,
+      status: STATUS.WARNING,
+      message: ''
+    },
+    {
+      match: '<=3.4.x',
       version: null,
       ...NO_SUPPORTED_AGENT_VERSION_STATUS
     },
     {
-      match: '2.6.x || 3.3',
-      version: '3.4.0.95',
-      status: STATUS.WARNING,
-      message: ''
-    },
-    {
-      match: '3.4.x',
-      version: '4.20.0.120',
-      status: STATUS.WARNING,
-      message: ''
-    },
-    {
       match: '3.5.x',
-      version: '5.24.0.153',
+      version: '5.20.0.149',
       status: STATUS.WARNING,
       message: ''
     },
@@ -131,7 +125,7 @@ const recommendations = {
       message: ''
     },
     {
-      match: '2.7 || >=3.7.x',
+      match: '>=3.7.x',
       version: LATEST,
       status: STATUS.WARNING,
       message: ''
@@ -150,7 +144,13 @@ const recommendations = {
       message: ''
     },
     {
-      match: '>=2.2.x',
+      match: '>=2.2.x <=2.3.x',
+      version: '8.16.0',
+      status: STATUS.WARNING,
+      message: ''
+    },
+    {
+      match: '>2.3.x',
       rails: {
         none: {
           version: LATEST,
@@ -170,7 +170,13 @@ const recommendations = {
             message: ''
           },
           {
-            match: '>=3.2',
+            match: '3.2',
+            version: '8.16.0',
+            status: STATUS.WARNING,
+            message: ''
+          },
+          {
+            match: '>=4.0',
             version: LATEST,
             status: STATUS.WARNING,
             message: ''
@@ -187,7 +193,8 @@ const recommend = (
       default: runtimeVersion,
       type: runtimeType,
       osVersions,
-      railsVersions
+      rails: { versions: railsVersions } = {},
+      zts
     } = {}
   } = {},
   { language, agentVersions: { default: currentVersion } = {} } = {},
@@ -195,7 +202,7 @@ const recommend = (
   agentReleases
 ) => {
   if (!runtimeVersion || !language) return {};
-  if (language === AGENTS.PHP && !hasPHPAgent(osVersions))
+  if (language === AGENTS.PHP && !isPHPAgentExists(osVersions, zts))
     return {
       statuses: [NO_SUPPORTED_AGENT_VERSION_STATUS]
     };
@@ -271,13 +278,16 @@ const runtimeKey = (language, runtimeType) => {
   }
 };
 
-const railsVersionRecommendation = (railsVersions = [], rails) => {
-  if (!railsVersions.length) return rails.none;
+const railsVersionRecommendation = (
+  railsVersions = [],
+  railsRecommendations
+) => {
+  if (!railsVersions.length) return railsRecommendations.none;
   const lowestRailsVer = railsVersions.reduce((acc, cur) => {
     if (!acc) return cur;
     return semver.lt(cur, acc) ? cur : acc;
   });
-  const rec = rails.versions.reduce((acc, cur) => {
+  const rec = railsRecommendations.versions.reduce((acc, cur) => {
     if (acc) return acc;
     if (semver.satisfies(lowestRailsVer, cur.match)) return cur;
     return null;
@@ -285,7 +295,8 @@ const railsVersionRecommendation = (railsVersions = [], rails) => {
   return rec || {};
 };
 
-const hasPHPAgent = (osVersions = []) =>
+const isPHPAgentExists = (osVersions = [], zts) =>
+  !zts &&
   osVersions.every(
     osVer => /Linux/.test(osVer) && /x86_64|amd64|aarch64|arm64/.test(osVer)
   );
