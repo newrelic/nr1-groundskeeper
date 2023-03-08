@@ -15,5 +15,5 @@
       "url": "https://discuss.newrelic.com/t/groundskeeper-nerdpack/84168"
     }
   },
-  "whatsNew": "- Version 2.4: improved filtering\n- Version 2 released!"
+  "whatsNew": "- Version 2.6: DT ingest estimator\n- Version 2.4: improved filtering\n- Version 2 released!"
 }
