@@ -10,6 +10,8 @@ This application is maintained by the New Relic Labs team. Connect with us direc
 
 ## Usage
 
+**Note:** Version 2.6 with DT ingest estimator available now.
+
 **Note:** Version 2 available now! Find out [what's new](./v2-whats-new.md) in v2.
 
 Agent Groundskeeper allows you to see the latest agent versions, compared to the versions currently running based on your upgrade SLO.
