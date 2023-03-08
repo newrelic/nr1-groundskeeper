@@ -92,6 +92,7 @@ const entityDetails = (applicationInstances = [], language) => {
     runtimeTypes,
     osVersions,
     railsVersions,
+    zts,
     features
   } = applicationInstances.reduce(
     (acc, applicationInstance) => {
@@ -123,6 +124,7 @@ const entityDetails = (applicationInstances = [], language) => {
         acc.runtimeTypes.push(runtimeType);
 
       if (language === AGENTS.PHP) {
+        acc.zts = acc.zts || /z/i.test(foundVersion.value);
         const foundOSVersion = environmentAttributes.find(({ attribute }) =>
           /OS version/.test(attribute)
         );
@@ -149,6 +151,7 @@ const entityDetails = (applicationInstances = [], language) => {
       runtimeTypes: [],
       osVersions: [],
       railsVersions: [],
+      zts: false,
       features: { dtEnabled: false, infTraceHost: false, logEnabled: false }
     }
   );
@@ -156,6 +159,11 @@ const entityDetails = (applicationInstances = [], language) => {
   const display = versions.length === 1 ? versions[0] : versions.join(', ');
   const type =
     runtimeTypes.length === 1 ? runtimeTypes[0] : runtimeTypes.join(', ');
+  const rails = {
+    versions: railsVersions,
+    display:
+      railsVersions.length === 1 ? railsVersions[0] : railsVersions.join(', ')
+  };
 
   return {
     runtimeVersions: {
@@ -163,7 +171,8 @@ const entityDetails = (applicationInstances = [], language) => {
       display,
       type,
       osVersions,
-      railsVersions,
+      rails,
+      zts,
       default: versions.length === 1 ? versions[0] : null
     },
     features

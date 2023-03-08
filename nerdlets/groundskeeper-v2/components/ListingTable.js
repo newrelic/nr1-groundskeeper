@@ -14,7 +14,7 @@ import {
 } from 'nr1';
 
 import FeatureIcon from './FeatureIcon';
-import { defaultReleaseNotes, STATUS } from '../constants';
+import { AGENTS, defaultReleaseNotes, STATUS } from '../constants';
 import releaseNotes from '../release-notes.json';
 
 const colors = {
@@ -117,7 +117,10 @@ const ListingTable = ({ displayedEntities = [] }) => {
           <TableRowCell>{item.language}</TableRowCell>
           <TableRowCell
             alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}
-            additionalValue={item.runtimeVersions?.type}
+            additionalValue={runtimeDetails(
+              item.language,
+              item.runtimeVersions
+            )}
           >
             {item.runtimeVersions?.display || ''}
           </TableRowCell>
@@ -191,6 +194,16 @@ const exposuresCell = (exposure, index) => (
     </a>
   </ListItem>
 );
+
+const runtimeDetails = (language, runtimeVersions = {}) => {
+  if (language === AGENTS.DOTNET) return runtimeVersions.type || '';
+  if (language === AGENTS.PHP) return runtimeVersions.zts ? 'ZTS' : '';
+  if (language === AGENTS.RUBY)
+    return runtimeVersions.rails?.display
+      ? `Rails ${runtimeVersions.rails.display}`
+      : '';
+  return '';
+};
 
 ListingTable.propTypes = {
   displayedEntities: PropTypes.array
