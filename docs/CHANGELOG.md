@@ -1,3 +1,10 @@
+# [2.7.0](https://github.com/newrelic/nr1-groundskeeper/compare/v2.6.1...v2.7.0) (2023-03-08)
+
+
+### Features
+
+* update recommendations ([8471dc1](https://github.com/newrelic/nr1-groundskeeper/commit/8471dc190d4ea1ca63dbb7c01ab21525c416213b))
+
 ## [2.6.1](https://github.com/newrelic/nr1-groundskeeper/compare/v2.6.0...v2.6.1) (2023-03-08)
 
 
