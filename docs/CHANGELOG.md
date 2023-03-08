@@ -1,3 +1,10 @@
+## [2.7.2](https://github.com/newrelic/nr1-groundskeeper/compare/v2.7.1...v2.7.2) (2023-03-08)
+
+
+### Bug Fixes
+
+* updated readme ([0f318f4](https://github.com/newrelic/nr1-groundskeeper/commit/0f318f477ef239e42360d5b718e52f8ae0a648cb))
+
 ## [2.7.1](https://github.com/newrelic/nr1-groundskeeper/compare/v2.7.0...v2.7.1) (2023-03-08)
 
 
