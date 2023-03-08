@@ -27,7 +27,7 @@ const GroundskeeperV2Nerdlet = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [showDTIE, setShowDTIE] = useState(false);
   const [entitiesForDTIE, setEntitiesForDTIE] = useState([]);
-  const [hideDTIESplash, setHideDTIESplash] = useState(false);
+  const [showDTIESplash, setShowDTIESplash] = useState(true);
   const [selections, setSelections] = useState({
     accounts: {
       selected: {},
@@ -95,7 +95,7 @@ const GroundskeeperV2Nerdlet = () => {
     setShowDTIE(false);
   });
 
-  const closeSplashHandler = useCallback(() => setHideDTIESplash(true));
+  const closeSplashHandler = useCallback(() => setShowDTIESplash(false));
 
   if (showFilters)
     return (
@@ -119,8 +119,8 @@ const GroundskeeperV2Nerdlet = () => {
         <Redirector />
         <DTIngestEstimator
           entities={entitiesForDTIE}
-          onClose={closeDTIEHandler}
-          hideSplash={hideDTIESplash}
+          onBack={closeDTIEHandler}
+          showSplash={showDTIESplash}
           onHideSplash={closeSplashHandler}
         />
       </div>

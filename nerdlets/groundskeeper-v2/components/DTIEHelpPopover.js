@@ -1,18 +1,21 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import {
   BlockText,
+  Button,
   Card,
   CardBody,
   Icon,
   Popover,
   PopoverBody,
+  PopoverFooter,
   PopoverTrigger
 } from 'nr1';
 
 import DTIEInstructions from './DTIEInstructions';
 
-const DTIEHelpPopover = () => {
+const DTIEHelpPopover = ({ onShowMore }) => {
   return (
     <Popover openOnHover>
       <PopoverTrigger>
@@ -29,9 +32,23 @@ const DTIEHelpPopover = () => {
             </BlockText>
           </CardBody>
         </Card>
+        <PopoverFooter className="help-footer">
+          <Button
+            type={Button.TYPE.PLAIN}
+            sizeType={Button.SIZE_TYPE.SMALL}
+            iconType={Button.ICON_TYPE.INTERFACE__OPERATIONS__MORE}
+            onClick={onShowMore}
+          >
+            Show more
+          </Button>
+        </PopoverFooter>
       </PopoverBody>
     </Popover>
   );
+};
+
+DTIEHelpPopover.propTypes = {
+  onShowMore: PropTypes.func
 };
 
 export default DTIEHelpPopover;

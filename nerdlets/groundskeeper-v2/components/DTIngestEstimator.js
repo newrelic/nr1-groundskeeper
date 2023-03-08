@@ -26,7 +26,7 @@ export const COLUMNS = {
 
 const toGigabytes = bytes => (bytes ? bytes / 1000000000 : 0);
 
-const DTIngestEstimator = ({ entities, onClose, hideSplash, onHideSplash }) => {
+const DTIngestEstimator = ({ entities, onBack, showSplash, onHideSplash }) => {
   const [entityEstimates, setEntityEstimates] = useState({});
   const [selectedDate, setSelectedDate] = useState();
   const [selectedEntities, setSelectedEntities] = useState({});
@@ -35,6 +35,7 @@ const DTIngestEstimator = ({ entities, onClose, hideSplash, onHideSplash }) => {
     entities: filteredEntities,
     selectedDate
   });
+  const [backToSplash, setBackToSplash] = useState(false);
   const summaryCols = useRef({});
   const listingDiv = useRef();
   const headerDiv = useRef();
@@ -127,6 +128,10 @@ const DTIngestEstimator = ({ entities, onClose, hideSplash, onHideSplash }) => {
     setEntityEstimates({});
   });
 
+  const showSplashHandler = useCallback(() => setBackToSplash(true));
+
+  const closeSplashHandler = useCallback(() => setBackToSplash(false));
+
   const summary = useMemo(
     () =>
       entities.reduce(
@@ -152,8 +157,14 @@ const DTIngestEstimator = ({ entities, onClose, hideSplash, onHideSplash }) => {
     [entities, selectedEntities, entityEstimates, selectedDate]
   );
 
-  if (!hideSplash)
-    return <DTIESplash closeHandler={onHideSplash} cancelHandler={onClose} />;
+  if (showSplash || backToSplash)
+    return (
+      <DTIESplash
+        onStart={onHideSplash}
+        onCancel={onBack}
+        onClose={backToSplash ? closeSplashHandler : null}
+      />
+    );
 
   return (
     <div className="listing" ref={listingDiv}>
@@ -163,14 +174,14 @@ const DTIngestEstimator = ({ entities, onClose, hideSplash, onHideSplash }) => {
             type={Button.TYPE.PLAIN}
             sizeType={Button.SIZE_TYPE.SMALL}
             iconType={Button.ICON_TYPE.INTERFACE__OPERATIONS__SKIP_BACK}
-            onClick={onClose}
+            onClick={onBack}
           >
             Back
           </Button>
         </div>
         <div className="col right">
           <span className="help">
-            <DTIEHelpPopover />
+            <DTIEHelpPopover onShowMore={showSplashHandler} />
           </span>
         </div>
         <div className="col">
@@ -221,8 +232,8 @@ const DTIngestEstimator = ({ entities, onClose, hideSplash, onHideSplash }) => {
 
 DTIngestEstimator.propTypes = {
   entities: PropTypes.array,
-  onClose: PropTypes.func,
-  hideSplash: PropTypes.bool,
+  onBack: PropTypes.func,
+  showSplash: PropTypes.bool,
   onHideSplash: PropTypes.func
 };
 

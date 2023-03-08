@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { BlockText, Button } from 'nr1';
 import DTIEInstructions from './DTIEInstructions';
 
-const DTIESplash = ({ closeHandler, cancelHandler }) => {
+const DTIESplash = ({ onStart, onCancel, onClose }) => {
   return (
     <div className="listing splash">
       <BlockText>
@@ -70,11 +70,12 @@ const DTIESplash = ({ closeHandler, cancelHandler }) => {
             Estimates assume default settings will be used in the APM agent for
             Distributed Tracing and that a current version of the agent (as of
             Feb 2023) will be used. If the agents default span limits or harvest
-            cycles are modified the estimates do not apply.
+            cycles are modified the estimates do not apply. Similarly, the
+            estimates do not apply when infinite tracing is enabled.
           </li>
           <li>
-            Estimates only apply to Distributed Tracing used in New Relic APM
-            agents.
+            Estimates only apply to Distributed Tracing used in supported
+            versions of New Relic APM agents.
           </li>
           <li>
             Estimates have a limited life and do not apply if the applications
@@ -100,29 +101,43 @@ const DTIESplash = ({ closeHandler, cancelHandler }) => {
         taken in reliance thereon.
       </BlockText>
       <div className="controls">
-        <Button
-          type={Button.TYPE.PLAIN}
-          sizeType={Button.SIZE_TYPE.SMALL}
-          iconType={Button.ICON_TYPE.INTERFACE__OPERATIONS__SKIP_BACK}
-          onClick={cancelHandler}
-        >
-          Back
-        </Button>
-        <Button
-          type={Button.TYPE.PRIMARY}
-          sizeType={Button.SIZE_TYPE.SMALL}
-          onClick={closeHandler}
-        >
-          Get started
-        </Button>
+        {onClose ? (
+          <Button
+            type={Button.TYPE.PLAIN}
+            sizeType={Button.SIZE_TYPE.SMALL}
+            iconType={Button.ICON_TYPE.INTERFACE__OPERATIONS__CLOSE}
+            onClick={onClose}
+          >
+            Close
+          </Button>
+        ) : (
+          <>
+            <Button
+              type={Button.TYPE.PLAIN}
+              sizeType={Button.SIZE_TYPE.SMALL}
+              iconType={Button.ICON_TYPE.INTERFACE__OPERATIONS__SKIP_BACK}
+              onClick={onCancel}
+            >
+              Back
+            </Button>
+            <Button
+              type={Button.TYPE.PRIMARY}
+              sizeType={Button.SIZE_TYPE.SMALL}
+              onClick={onStart}
+            >
+              Get started
+            </Button>
+          </>
+        )}
       </div>
     </div>
   );
 };
 
 DTIESplash.propTypes = {
-  closeHandler: PropTypes.func,
-  cancelHandler: PropTypes.func
+  onStart: PropTypes.func,
+  onCancel: PropTypes.func,
+  onClose: PropTypes.func
 };
 
 export default DTIESplash;
