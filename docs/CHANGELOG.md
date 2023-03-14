@@ -1,3 +1,10 @@
+## [2.7.4](https://github.com/newrelic/nr1-groundskeeper/compare/v2.7.3...v2.7.4) (2023-03-14)
+
+
+### Bug Fixes
+
+* commas in csv fields ([5da1f48](https://github.com/newrelic/nr1-groundskeeper/commit/5da1f481ef23c5a408a961b27c37ca43009b9a3d))
+
 ## [2.7.3](https://github.com/newrelic/nr1-groundskeeper/compare/v2.7.2...v2.7.3) (2023-03-09)
 
 
