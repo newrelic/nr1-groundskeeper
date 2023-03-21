@@ -1,0 +1,28 @@
+.logger {
+  max-width: 100%;
+
+  .header {
+    flex: 0 0 auto;
+    padding: 0 8px;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: max-content;
+    grid-gap: 8px;
+    justify-content: end;
+
+    .col {
+      padding: 8px;
+    }
+  }
+  .instances {
+    flex: 0 0 auto;
+    max-height: 40%;
+    padding: 0 8px;
+    display: flex;
+    overflow-y: scroll;
+  }
+  .raw {
+    flex: 1 1 auto;
+    padding: 0 8px 8px;
+  }
+}

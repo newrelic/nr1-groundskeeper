@@ -5,6 +5,7 @@ import {
   Icon,
   List,
   ListItem,
+  navigation,
   Table,
   TableHeader,
   TableHeaderCell,
@@ -41,6 +42,13 @@ const ListingTable = ({ displayedEntities = [] }) => {
             : TableHeaderCell.SORTING_TYPE.NONE
         )
       )
+  );
+
+  const openLogger = useCallback(guid =>
+    navigation.openStackedNerdlet({
+      id: 'groundskeeper-logger',
+      urlState: { guid }
+    })
   );
 
   return (
@@ -109,7 +117,9 @@ const ListingTable = ({ displayedEntities = [] }) => {
           <TableRowCell additionalValue={item.account.name}>
             {item.account.id}
           </TableRowCell>
-          <TableRowCell>{item.name}</TableRowCell>
+          <TableRowCell onClick={() => openLogger(item.guid)}>
+            {item.name}
+          </TableRowCell>
           <TableRowCell alignmentType={TableRowCell.ALIGNMENT_TYPE.CENTER}>
             {item.agentVersions?.display || ''}
           </TableRowCell>
