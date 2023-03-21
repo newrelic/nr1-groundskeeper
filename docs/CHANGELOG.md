@@ -1,3 +1,10 @@
+# [2.8.0](https://github.com/newrelic/nr1-groundskeeper/compare/v2.7.4...v2.8.0) (2023-03-21)
+
+
+### Features
+
+* logging capability ([7ac5bd5](https://github.com/newrelic/nr1-groundskeeper/commit/7ac5bd5a354e940a4e504a9920c5339fc394355a))
+
 ## [2.7.4](https://github.com/newrelic/nr1-groundskeeper/compare/v2.7.3...v2.7.4) (2023-03-14)
 
 
