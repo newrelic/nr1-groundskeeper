@@ -90,17 +90,22 @@ const instanceDetails = (instances = [], language) => {
   return instances.map(inst => {
     const { agentSettingsAttributes, environmentAttributes } = inst;
     const runtime = {};
-    const features = Object.keys(featuresList).reduce(
-      (acc, feat) => ({
-        ...acc,
-        [feat]: (
-          agentSettingsAttributes.find(
-            ({ attribute }) => attribute && attribute === featuresList[feat]
-          ) || {}
-        ).value
-      }),
-      {}
-    );
+    const features = Object.keys(featuresList).reduce((acc, feat) => {
+      const foundASAttr = agentSettingsAttributes.find(
+        ({ attribute }) => attribute && attribute === featuresList[feat]
+      );
+      if (foundASAttr) {
+        acc[feat] = foundASAttr.value;
+      } else {
+        const foundEnvAttr = environmentAttributes.find(
+          ({ attribute }) => attribute && attribute === featuresList[feat]
+        );
+        if (foundEnvAttr) {
+          acc[feat] = foundEnvAttr.value;
+        }
+      }
+      return acc;
+    }, {});
 
     if (environmentAttributes && versionRegexString) {
       const foundVersion = environmentAttributes.find(({ attribute }) =>
