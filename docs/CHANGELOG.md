@@ -1,3 +1,12 @@
+## [2.8.1](https://github.com/newrelic/nr1-groundskeeper/compare/v2.8.0...v2.8.1) (2023-04-18)
+
+
+### Bug Fixes
+
+* adding back filter for agent settings attribs ([b8babe7](https://github.com/newrelic/nr1-groundskeeper/commit/b8babe7e703df940c9a952d622ebe3fa7435c8f3))
+* checking enabled features in env attributes too ([abe227a](https://github.com/newrelic/nr1-groundskeeper/commit/abe227ae5585c24da00be3a1c84f4c194684d74d))
+* setting defaults for app instances attributes ([26df8af](https://github.com/newrelic/nr1-groundskeeper/commit/26df8afd0d46ac453dbacd7a717e8b444cdd5a9b))
+
 # [2.8.0](https://github.com/newrelic/nr1-groundskeeper/compare/v2.7.4...v2.8.0) (2023-03-21)
 
 
