@@ -97,8 +97,8 @@ const entityDetails = (applicationInstances = [], language) => {
   } = applicationInstances.reduce(
     (acc, applicationInstance) => {
       const {
-        agentSettingsAttributes,
-        environmentAttributes
+        agentSettingsAttributes = [],
+        environmentAttributes = []
       } = applicationInstance;
       acc.features = Object.keys(featuresList).reduce((feats, feat) => {
         if (acc.features[feat]) return feats;
@@ -112,7 +112,7 @@ const entityDetails = (applicationInstances = [], language) => {
         if (envAttr) return { ...feats, [feat]: true };
         return feats;
       }, acc.features);
-      if (!environmentAttributes || !(language in AGENTS_REGEX_STRING))
+      if (!environmentAttributes.length || !(language in AGENTS_REGEX_STRING))
         return acc;
       const versionRegexString = AGENTS_REGEX_STRING[language];
       const foundVersion = environmentAttributes.find(({ attribute }) =>
