@@ -100,16 +100,18 @@ const entityDetails = (applicationInstances = [], language) => {
         agentSettingsAttributes,
         environmentAttributes
       } = applicationInstance;
-      acc.features = Object.keys(featuresList).reduce(
-        (fo, feat) =>
-          !acc.features[feat] &&
-          agentSettingsAttributes.find(
-            ({ attribute }) => attribute && attribute === featuresList[feat]
-          )
-            ? { ...fo, [feat]: true }
-            : fo,
-        acc.features
-      );
+      acc.features = Object.keys(featuresList).reduce((feats, feat) => {
+        if (acc.features[feat]) return feats;
+        const agAttr = agentSettingsAttributes.find(
+          ({ attribute }) => attribute && attribute === featuresList[feat]
+        );
+        if (agAttr) return { ...feats, [feat]: true };
+        const envAttr = environmentAttributes.find(
+          ({ attribute }) => attribute && attribute === featuresList[feat]
+        );
+        if (envAttr) return { ...feats, [feat]: true };
+        return feats;
+      }, acc.features);
       if (!environmentAttributes || !(language in AGENTS_REGEX_STRING))
         return acc;
       const versionRegexString = AGENTS_REGEX_STRING[language];
