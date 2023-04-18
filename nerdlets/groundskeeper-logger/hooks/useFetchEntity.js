@@ -23,7 +23,7 @@ query AppsDetail($guids: [EntityGuid]) {
           name
         }
         applicationInstances {
-          agentSettingsAttributes {
+          agentSettingsAttributes(filter: {contains: "newrelic."}) {
             attribute
             value
           }
