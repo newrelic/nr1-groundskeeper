@@ -1,3 +1,10 @@
+## [2.8.2](https://github.com/newrelic/nr1-groundskeeper/compare/v2.8.1...v2.8.2) (2023-05-05)
+
+
+### Bug Fixes
+
+* add check before calling fetchMore for entities ([53d8776](https://github.com/newrelic/nr1-groundskeeper/commit/53d8776dc7275735a68622d66dea63fdef6df412))
+
 ## [2.8.1](https://github.com/newrelic/nr1-groundskeeper/compare/v2.8.0...v2.8.1) (2023-04-18)
 
 
