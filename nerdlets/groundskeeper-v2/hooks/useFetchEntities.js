@@ -32,8 +32,9 @@ const useFetchEntities = () => {
   });
 
   useEffect(() => {
-    if (!listingLoading && listingFetchMore) listingFetchMore();
-  }, [listingFetchMore]);
+    if (entities.length < count && !listingLoading && listingFetchMore)
+      listingFetchMore();
+  }, [entities, count, listingLoading, listingFetchMore]);
 
   useEffect(() => {
     /* eslint-disable no-console */
