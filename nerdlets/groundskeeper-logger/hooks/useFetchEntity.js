@@ -92,13 +92,13 @@ const instanceDetails = (instances = [], language) => {
     const runtime = {};
     const features = Object.keys(featuresList).reduce((acc, feat) => {
       const foundASAttr = agentSettingsAttributes.find(
-        ({ attribute }) => attribute && attribute === featuresList[feat]
+        (attr) => featuresValue(attr, feat)
       );
       if (foundASAttr) {
         acc[feat] = foundASAttr.value;
       } else {
         const foundEnvAttr = environmentAttributes.find(
-          ({ attribute }) => attribute && attribute === featuresList[feat]
+          (attr) => featuresValue(attr, feat)
         );
         if (foundEnvAttr) {
           acc[feat] = foundEnvAttr.value;
@@ -141,6 +141,12 @@ const parseRuntimeType = (language, value) => {
       ? RUNTIMES.DOTNET_CORE.DISPLAY
       : RUNTIMES.DOTNET_FRAMEWORK.DISPLAY;
   }
+};
+
+const featuresValue = ({attribute = '', value = ''}, feature = '') => {
+  if (attribute !== featuresList[feature] || !value) return false;
+  const val = value.toLowerCase();
+  return val !== 'false' && val !== 'none' && value !== '0';
 };
 
 export default useFetchEntity;
