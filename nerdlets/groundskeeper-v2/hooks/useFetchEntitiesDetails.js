@@ -102,12 +102,12 @@ const entityDetails = (applicationInstances = [], language) => {
       } = applicationInstance;
       acc.features = Object.keys(featuresList).reduce((feats, feat) => {
         if (acc.features[feat]) return feats;
-        const agAttr = agentSettingsAttributes.find(
-          (attr) => featuresValue(attr, feat)
+        const agAttr = agentSettingsAttributes.find(attr =>
+          featuresCheck(attr, feat)
         );
         if (agAttr) return { ...feats, [feat]: true };
-        const envAttr = environmentAttributes.find(
-          (attr) => featuresValue(attr, feat)
+        const envAttr = environmentAttributes.find(attr =>
+          featuresCheck(attr, feat)
         );
         if (envAttr) return { ...feats, [feat]: true };
         return feats;
@@ -189,7 +189,7 @@ const parseRuntimeType = (language, value) => {
   }
 };
 
-const featuresValue = ({attribute = '', value = ''}, feature = '') => {
+const featuresCheck = ({ attribute = '', value = '' }, feature = '') => {
   if (attribute !== featuresList[feature] || !value) return false;
   const val = value.toLowerCase();
   return val !== 'false' && val !== 'none' && value !== '0';
