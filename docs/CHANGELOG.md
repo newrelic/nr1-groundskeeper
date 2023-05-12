@@ -1,3 +1,10 @@
+## [2.8.3](https://github.com/newrelic/nr1-groundskeeper/compare/v2.8.2...v2.8.3) (2023-05-12)
+
+
+### Bug Fixes
+
+* check attribute values for feature detection ([35a60c4](https://github.com/newrelic/nr1-groundskeeper/commit/35a60c47a5aeb9852ed5a2a30b079e6672f5d42f))
+
 ## [2.8.2](https://github.com/newrelic/nr1-groundskeeper/compare/v2.8.1...v2.8.2) (2023-05-05)
 
 
