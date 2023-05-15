@@ -285,7 +285,12 @@ const railsVersionRecommendation = (
   if (!railsVersions.length) return railsRecommendations.none;
   const lowestRailsVer = railsVersions.reduce((acc, cur) => {
     if (!acc) return cur;
-    return semver.lt(cur, acc) ? cur : acc;
+    return semver.lt(
+      semver.coerce(cur, { rtl: true }),
+      semver.coerce(acc, { rtl: true })
+    )
+      ? cur
+      : acc;
   });
   const rec = railsRecommendations.versions.reduce((acc, cur) => {
     if (acc) return acc;
