@@ -283,20 +283,19 @@ const railsVersionRecommendation = (
   railsRecommendations
 ) => {
   if (!railsVersions.length) return railsRecommendations.none;
-  const lowestRailsVer = railsVersions.reduce((acc, cur) => {
+  const lowestRailsVer = semver.coerce(railsVersions.reduce((acc, cur) => {
     if (!acc) return cur;
     return semver.lt(
-      semver.coerce(cur, { rtl: true }),
-      semver.coerce(acc, { rtl: true })
+      semver.coerce(cur),
+      semver.coerce(acc)
     )
       ? cur
       : acc;
-  });
+  })).version;
   const rec = railsRecommendations.versions.reduce((acc, cur) => {
     if (acc) return acc;
-    if (semver.satisfies(lowestRailsVer, cur.match)) return cur;
-    return null;
-  });
+    return semver.satisfies(lowestRailsVer, cur.match) ? cur : null;
+  }, null);
   return rec || {};
 };
 
