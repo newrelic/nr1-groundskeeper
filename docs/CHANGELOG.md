@@ -1,3 +1,11 @@
+## [2.8.4](https://github.com/newrelic/nr1-groundskeeper/compare/v2.8.3...v2.8.4) (2023-05-16)
+
+
+### Bug Fixes
+
+* ruby recommendations not working ([80e2e5d](https://github.com/newrelic/nr1-groundskeeper/commit/80e2e5dbfa4a174f7fc52b96109bf8905fef5b11))
+* temporary fix for rails version compare ([ba8d5f8](https://github.com/newrelic/nr1-groundskeeper/commit/ba8d5f89cbb57e8dbeba703a92bffae51078cd75))
+
 ## [2.8.3](https://github.com/newrelic/nr1-groundskeeper/compare/v2.8.2...v2.8.3) (2023-05-12)
 
 
