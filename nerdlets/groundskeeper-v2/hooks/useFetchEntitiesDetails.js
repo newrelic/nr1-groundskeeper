@@ -5,11 +5,24 @@ import { APPS_DETAILS } from '../queries';
 import { AGENTS, AGENTS_REGEX_STRING, RUNTIMES } from '../constants';
 
 const MAX_ENTITIES_IN_SET = 10;
+
+distributedTracingEnabledValuesByLanguage = {
+  "go":"DistributedTracer.Enabled",
+  "java":"distributed_tracing.enabled",
+  "dotnet":"distributed_tracing.enabled",
+  "nodejs":"distributed_tracing.enabled",
+  "php":"newrelic.distributed_tracing_enabled",
+  "python":"distributed_tracing.enabled",
+  "ruby":"distributed_tracing.enabled"
+};
+//I'm sure there is a clever way we can read the above in to the dtEnabled key below, but it's late and I'm not very clever - also is it dropping the newrelic. and that's why PHP isn't working and everything else but Go is?
 const featuresList = {
-  dtEnabled: 'newrelic.distributed_tracing.enabled',
+  dtEnabled: ['newrelic.distributed_tracing.enabled', 'DistributedTracer.Enabled'],
   infTraceHost: 'newrelic.infinite_tracing.trace_observer_host',
   logEnabled: 'newrelic.application_logging.enabled'
 };
+
+
 
 const useFetchEntitiesDetails = ({ guidsToFetch = [] }) => {
   const [details, setDetails] = useState({});
