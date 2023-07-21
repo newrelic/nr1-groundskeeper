@@ -5,11 +5,32 @@ import { APPS_DETAILS } from '../queries';
 import { AGENTS, AGENTS_REGEX_STRING, RUNTIMES } from '../constants';
 
 const MAX_ENTITIES_IN_SET = 10;
+
+/*distributedTracingEnabledValuesByLanguage = {
+  "go":"DistributedTracer.Enabled",
+  "java":"distributed_tracing.enabled",
+  "dotnet":"distributed_tracing.enabled",
+  "nodejs":"distributed_tracing.enabled",
+  "php":"newrelic.distributed_tracing_enabled",
+  "python":"distributed_tracing.enabled",
+  "ruby":"distributed_tracing.enabled"
+};
+logsInContextEnabledValuesByLanguage = {
+  "go":"ApplicationLogging.Enabled",
+  "java":"distributed_tracing.enabled",
+  "dotnet":"distributed_tracing.enabled",
+  "nodejs":"distributed_tracing.enabled",
+  "php":"newrelic.distributed_tracing_enabled",
+  "python":"distributed_tracing.enabled",
+  "ruby":"distributed_tracing.enabled"
+*/
 const featuresList = {
-  dtEnabled: 'newrelic.distributed_tracing.enabled',
+  dtEnabled: ['newrelic.distributed_tracing.enabled', 'newrelic.newrelic.distributed_tracing_enabled', 'newrelic.DistributedTracer.Enabled'],
   infTraceHost: 'newrelic.infinite_tracing.trace_observer_host',
   logEnabled: 'newrelic.application_logging.enabled'
 };
+
+
 
 const useFetchEntitiesDetails = ({ guidsToFetch = [] }) => {
   const [details, setDetails] = useState({});
@@ -189,10 +210,23 @@ const parseRuntimeType = (language, value) => {
   }
 };
 
-const featuresCheck = ({ attribute = '', value = '' }, feature = '') => {
-  if (attribute !== featuresList[feature] || !value) return false;
-  const val = value.toLowerCase();
-  return val !== 'false' && val !== 'none' && value !== '0';
-};
+  const featuresCheck = ({ attribute = '', value = '' }, feature = '') => {
+    const featureValue = featuresList[feature];
+  
+    if (Array.isArray(featureValue)) {
+      for (const item of featureValue) {
+        if (attribute === item && value) {
+          const val = value.toLowerCase();
+          return val !== 'false' && val !== 'none' && value !== '0';
+        }
+      }
+      return false;
+    } else {
+      if (attribute !== featureValue || !value) return false;
+      const val = value.toLowerCase();
+      return val !== 'false' && val !== 'none' && value !== '0';
+    }
+  };
+  
 
 export default useFetchEntitiesDetails;
