@@ -5,11 +5,35 @@ import { APPS_DETAILS } from '../queries';
 import { AGENTS, AGENTS_REGEX_STRING, RUNTIMES } from '../constants';
 
 const MAX_ENTITIES_IN_SET = 10;
-const featuresList = {
-  dtEnabled: 'newrelic.distributed_tracing.enabled',
-  infTraceHost: 'newrelic.infinite_tracing.trace_observer_host',
-  logEnabled: 'newrelic.application_logging.enabled'
+
+/*distributedTracingEnabledValuesByLanguage = {
+  "go":"DistributedTracer.Enabled",
+  "java":"distributed_tracing.enabled",
+  "dotnet":"distributed_tracing.enabled",
+  "nodejs":"distributed_tracing.enabled",
+  "php":"newrelic.distributed_tracing_enabled",
+  "python":"distributed_tracing.enabled",
+  "ruby":"distributed_tracing.enabled"
 };
+//NOTE: The below only indicates that application logging is enabled, it DOES NOT indicate logs are being forwarded to new relic, which is another setting generally application_logging.forwarding.enabled
+/*logsInContextEnabledValuesByLanguage = {
+  "go":"ApplicationLogging.Enabled",
+  "java":"application_logging.enabled",
+  "dotnet":"application_logging.enabled",
+  "nodejs":"application_logging.enabled",
+  "php":"newrelic.application_logging.enabled",
+  "python":"application_logging.enabled",
+  "ruby":"application_logging.enabled"
+*/
+
+
+const featuresList = {
+  dtEnabled: ['newrelic.distributed_tracing.enabled', 'newrelic.newrelic.distributed_tracing_enabled', 'newrelic.DistributedTracer.Enabled'],
+  infTraceHost: ['newrelic.infinite_tracing.trace_observer_host', 'newrelic.newrelic.infinite_tracing.trace_observer_host'],
+  logEnabled: ['newrelic.application_logging.enabled', 'newrelic.newrelic.application_logging.enabled', 'newrelic.ApplicationLogging.Enabled']
+};
+
+
 
 const useFetchEntitiesDetails = ({ guidsToFetch = [] }) => {
   const [details, setDetails] = useState({});
@@ -189,10 +213,17 @@ const parseRuntimeType = (language, value) => {
   }
 };
 
-const featuresCheck = ({ attribute = '', value = '' }, feature = '') => {
-  if (attribute !== featuresList[feature] || !value) return false;
-  const val = value.toLowerCase();
-  return val !== 'false' && val !== 'none' && value !== '0';
-};
+  const featuresCheck = ({ attribute = '', value = '' }, feature = '') => {
+    const featureValue = featuresList[feature];
+  
+      for (const item of featureValue) {
+        if (attribute === item && value) {
+          const val = value.toLowerCase();
+          return val !== 'false' && val !== 'none' && value !== '0';
+        }
+      }
+      return false;
+  };
+  
 
 export default useFetchEntitiesDetails;
