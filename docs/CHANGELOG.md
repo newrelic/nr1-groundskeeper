@@ -1,3 +1,11 @@
+## [2.8.5](https://github.com/newrelic/nr1-groundskeeper/compare/v2.8.4...v2.8.5) (2023-09-13)
+
+
+### Bug Fixes
+
+* clean up logging ([a80324b](https://github.com/newrelic/nr1-groundskeeper/commit/a80324be8754b1383c78c2a5c991059fe95ddcab))
+* remove ngq hook ([6195c5c](https://github.com/newrelic/nr1-groundskeeper/commit/6195c5cc8e293e9ba076548103567ebe9997ebe3))
+
 ## [2.8.4](https://github.com/newrelic/nr1-groundskeeper/compare/v2.8.3...v2.8.4) (2023-05-16)
 
 
