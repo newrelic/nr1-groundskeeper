@@ -23,7 +23,10 @@ const useFetchEntitiesDetails = ({ guidsToFetch = [] }) => {
     const guidsDiff = guidsToFetch.filter(
       gu => !lastPropsGuids.current.some(lpg => lpg === gu)
     );
-    console.log('fetch details', guidsToFetch?.length, guidsDiff.length); // eslint-disable-line no-console
+    // eslint-disable-next-line no-console
+    console.log(
+      `fetch details for ${guidsToFetch?.length} apps (${guidsDiff.length} uniques)`
+    );
     if (guidsDiff.length) {
       setGuidsQueue(gq => [...gq, ...guidsDiff]);
       lastPropsGuids.current = guidsToFetch;
@@ -48,12 +51,11 @@ const useFetchEntitiesDetails = ({ guidsToFetch = [] }) => {
         variables: { guids }
       });
       performance.mark('fetch-details-query:end');
-      const perf = performance.measure(
+      const { duration } = performance.measure(
         'fetch-details-query:measure',
         'fetch-details-query:start',
         'fetch-details-query:end'
       );
-      const { duration } = perf;
       if (error) console.error('Error fetching entity details', error, guids); // eslint-disable-line no-console
       setLoading(isQueryLoading);
       if (!isQueryLoading && data) {
@@ -67,11 +69,14 @@ const useFetchEntitiesDetails = ({ guidsToFetch = [] }) => {
           }),
           {}
         );
-        console.log('fetch details query', entitiesDetails?.length, duration); // eslint-disable-line no-console
+        // eslint-disable-next-line no-console
+        console.log(
+          `details query results: ${entitiesDetails?.length} entities in ${duration}`
+        );
         setDetails(deets => ({ ...deets, ...detailsObject }));
         fetchSet();
       } else {
-        console.log('fetch details query', null, duration); // eslint-disable-line no-console
+        console.log(`details query with no data in ${duration}`); // eslint-disable-line no-console
       }
     })();
   }, [guids]);
@@ -85,7 +90,7 @@ const useFetchEntitiesDetails = ({ guidsToFetch = [] }) => {
       );
       const nextSetMarker = curIndex + guidsList.length;
       indexMarker.current = nextSetMarker;
-      console.log('fetch details set', curIndex, nextSetMarker); // eslint-disable-line no-console
+      console.log(`fetch details batch ${curIndex} - ${nextSetMarker}`); // eslint-disable-line no-console
       setGuids([...guidsList]);
     }
   };
