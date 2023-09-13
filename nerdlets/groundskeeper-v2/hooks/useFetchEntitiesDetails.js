@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNerdGraphQuery } from 'nr1';
+import { NerdGraphQuery } from 'nr1';
 import semver from 'semver';
 import { APPS_DETAILS } from '../queries';
 import { AGENTS, AGENTS_REGEX_STRING, RUNTIMES } from '../constants';
@@ -15,22 +15,17 @@ const useFetchEntitiesDetails = ({ guidsToFetch = [] }) => {
   const [details, setDetails] = useState({});
   const [guidsQueue, setGuidsQueue] = useState([]);
   const [guids, setGuids] = useState([]);
-  const [skip, setSkip] = useState(true);
+  const [loading, setLoading] = useState(false);
   const indexMarker = useRef(0);
   const lastPropsGuids = useRef([]);
-  const {
-    data: detailsData,
-    error: detailsError,
-    loading: detailsLoading
-  } = useNerdGraphQuery({
-    query: APPS_DETAILS,
-    variables: { guids },
-    skip: skip
-  });
 
   useEffect(() => {
     const guidsDiff = guidsToFetch.filter(
       gu => !lastPropsGuids.current.some(lpg => lpg === gu)
+    );
+    // eslint-disable-next-line no-console
+    console.log(
+      `fetch details for ${guidsToFetch?.length} apps (${guidsDiff.length} uniques)`
     );
     if (guidsDiff.length) {
       setGuidsQueue(gq => [...gq, ...guidsDiff]);
@@ -39,47 +34,64 @@ const useFetchEntitiesDetails = ({ guidsToFetch = [] }) => {
   }, [guidsToFetch]);
 
   useEffect(() => {
-    if (!detailsLoading) fetchSet();
+    if (!loading) fetchSet();
   }, [guidsQueue]);
 
-  useEffect(() => {
+  useEffect(async () => {
     if (!guids || !guids.length) return;
-    setSkip(false);
+    (async () => {
+      setLoading(true);
+      performance.mark('fetch-details-query:start');
+      const {
+        data,
+        error,
+        loading: isQueryLoading
+      } = await NerdGraphQuery.query({
+        query: APPS_DETAILS,
+        variables: { guids }
+      });
+      performance.mark('fetch-details-query:end');
+      const { duration } = performance.measure(
+        'fetch-details-query:measure',
+        'fetch-details-query:start',
+        'fetch-details-query:end'
+      );
+      if (error) console.error('Error fetching entity details', error, guids); // eslint-disable-line no-console
+      setLoading(isQueryLoading);
+      if (!isQueryLoading && data) {
+        const { entities: entitiesDetails = [] } = data?.actor || {};
+        const detailsObject = entitiesDetails.reduce(
+          (acc, { guid, language, applicationInstances }) => ({
+            ...acc,
+            [guid]: applicationInstances
+              ? entityDetails(applicationInstances, language)
+              : {}
+          }),
+          {}
+        );
+        // eslint-disable-next-line no-console
+        console.log(
+          `details query results: ${entitiesDetails?.length} entities in ${duration}`
+        );
+        setDetails(deets => ({ ...deets, ...detailsObject }));
+        fetchSet();
+      } else {
+        console.log(`details query with no data in ${duration}`); // eslint-disable-line no-console
+      }
+    })();
   }, [guids]);
 
-  useEffect(() => {
-    if (!details || !Object.keys(details).length) return;
-    fetchSet();
-  }, [details]);
-
-  useEffect(() => {
-    if (detailsError)
-      console.error('Error fetching entity details', detailsError); // eslint-disable-line no-console
-  }, [detailsError]);
-
-  useEffect(() => {
-    if (detailsLoading || !detailsData || !Object.keys(detailsData).length)
-      return;
-    setSkip(true);
-    const { entities: entitiesDetails = [] } = detailsData.actor || {};
-    const detailsObject = entitiesDetails.reduce(
-      (acc, { guid, language, applicationInstances }) => ({
-        ...acc,
-        [guid]: applicationInstances
-          ? entityDetails(applicationInstances, language)
-          : {}
-      }),
-      {}
-    );
-    setDetails(deets => ({ ...deets, ...detailsObject }));
-  }, [detailsData]);
-
   const fetchSet = () => {
-    if (indexMarker.current < guidsQueue.length) {
-      const index = indexMarker.current;
-      const guidsList = guidsQueue.slice(index, index + MAX_ENTITIES_IN_SET);
-      indexMarker.current = index + guidsList.length;
-      setGuids(() => [...guidsList]);
+    const curIndex = indexMarker.current;
+    if (curIndex < guidsQueue.length) {
+      const guidsList = guidsQueue.slice(
+        curIndex,
+        curIndex + MAX_ENTITIES_IN_SET
+      );
+      const nextSetMarker = curIndex + guidsList.length;
+      indexMarker.current = nextSetMarker;
+      console.log(`fetch details batch ${curIndex} - ${nextSetMarker}`); // eslint-disable-line no-console
+      setGuids([...guidsList]);
     }
   };
 
