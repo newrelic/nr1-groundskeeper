@@ -1,3 +1,10 @@
+# [2.9.0](https://github.com/newrelic/nr1-groundskeeper/compare/v2.8.5...v2.9.0) (2023-10-10)
+
+
+### Features
+
+* additional attribute values to detect features ([bccf8d9](https://github.com/newrelic/nr1-groundskeeper/commit/bccf8d91f11b8361bab2e322ef5973bc976ef31e))
+
 ## [2.8.5](https://github.com/newrelic/nr1-groundskeeper/compare/v2.8.4...v2.8.5) (2023-09-13)
 
 
