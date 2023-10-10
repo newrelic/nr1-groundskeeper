@@ -5,10 +5,21 @@ import { APPS_DETAILS } from '../queries';
 import { AGENTS, AGENTS_REGEX_STRING, RUNTIMES } from '../constants';
 
 const MAX_ENTITIES_IN_SET = 10;
-const featuresList = {
-  dtEnabled: 'newrelic.distributed_tracing.enabled',
-  infTraceHost: 'newrelic.infinite_tracing.trace_observer_host',
-  logEnabled: 'newrelic.application_logging.enabled'
+const featuresAttributes = {
+  dtEnabled: [
+    'newrelic.distributed_tracing.enabled',
+    'newrelic.newrelic.distributed_tracing_enabled',
+    'newrelic.DistributedTracer.Enabled'
+  ],
+  infTraceHost: [
+    'newrelic.infinite_tracing.trace_observer_host',
+    'newrelic.newrelic.infinite_tracing.trace_observer_host'
+  ],
+  logEnabled: [
+    'newrelic.application_logging.enabled',
+    'newrelic.newrelic.application_logging.enabled',
+    'newrelic.ApplicationLogging.Enabled'
+  ]
 };
 
 const useFetchEntitiesDetails = ({ guidsToFetch = [] }) => {
@@ -112,7 +123,7 @@ const entityDetails = (applicationInstances = [], language) => {
         agentSettingsAttributes = [],
         environmentAttributes = []
       } = applicationInstance;
-      acc.features = Object.keys(featuresList).reduce((feats, feat) => {
+      acc.features = Object.keys(featuresAttributes).reduce((feats, feat) => {
         if (acc.features[feat]) return feats;
         const agAttr = agentSettingsAttributes.find(attr =>
           featuresCheck(attr, feat)
@@ -202,9 +213,13 @@ const parseRuntimeType = (language, value) => {
 };
 
 const featuresCheck = ({ attribute = '', value = '' }, feature = '') => {
-  if (attribute !== featuresList[feature] || !value) return false;
-  const val = value.toLowerCase();
-  return val !== 'false' && val !== 'none' && value !== '0';
+  const attribs = featuresAttributes[feature] || [];
+
+  return attribs.some(attrib => {
+    if (attribute !== attrib || !value) return false;
+    const val = value.toLowerCase();
+    return val !== 'false' && val !== 'none' && value !== '0';
+  });
 };
 
 export default useFetchEntitiesDetails;
