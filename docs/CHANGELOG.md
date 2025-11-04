@@ -1,3 +1,11 @@
+## [2.9.1](https://github.com/newrelic/nr1-groundskeeper/compare/v2.9.0...v2.9.1) (2025-11-04)
+
+
+### Bug Fixes
+
+* managing paging in useFetchEntities ([b243330](https://github.com/newrelic/nr1-groundskeeper/commit/b2433302a80dda606290762b9075232b1c5a6f5f))
+* update release workflow to latest version used by pathpoint ([5451930](https://github.com/newrelic/nr1-groundskeeper/commit/5451930954f9abcb2e8adbf2183abef776272c90))
+
 # [2.9.0](https://github.com/newrelic/nr1-groundskeeper/compare/v2.8.5...v2.9.0) (2023-10-10)
 
 
