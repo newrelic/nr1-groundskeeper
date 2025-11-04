@@ -14,27 +14,35 @@ const entityFragmentExtension = ngql`
 `;
 
 const useFetchEntities = () => {
+  const [entities, setEntities] = useState([]);
   const [agentReleases, setAgentReleases] = useState({});
   const [latestReleases, setLatestReleases] = useState({});
   const { data: releaseData, error: releaseError } = useNerdGraphQuery({
     query: AGENT_RELEASES
   });
   const {
-    data: { count, entities } = {},
+    data: { count, entities: listingEntities } = {},
     error: listingError,
-    loading: listingLoading,
+    loading,
     fetchMore: listingFetchMore
   } = useEntitiesByDomainTypeQuery({
     entityDomain: 'APM',
     entityType: 'APPLICATION',
     includeTags: true,
+    limit: 200,
     entityFragmentExtension
   });
 
   useEffect(() => {
-    if (entities.length < count && !listingLoading && listingFetchMore)
-      listingFetchMore();
-  }, [entities, count, listingLoading, listingFetchMore]);
+    if (listingEntities.length) {
+      const sanitizedEntities = sanitize(listingEntities);
+      setEntities(ents => [...ents, ...sanitizedEntities]);
+    }
+  }, [listingEntities]);
+
+  useEffect(() => {
+    if (listingFetchMore) listingFetchMore();
+  }, [listingFetchMore]);
 
   useEffect(() => {
     /* eslint-disable no-console */
@@ -64,17 +72,10 @@ const useFetchEntities = () => {
     setLatestReleases(latest);
   }, [releaseData]);
 
-  // useEffect(() => {
-  //   console.log('entities', entities)
-  // }, [entities]);
-
-  // useEffect(() => {
-  //   console.log('releases', agentReleases, latestReleases)
-  // }, [agentReleases, latestReleases]);
-
   return {
     count,
-    entities: sanitize(entities),
+    entities,
+    loading,
     agentReleases,
     latestReleases
   };
