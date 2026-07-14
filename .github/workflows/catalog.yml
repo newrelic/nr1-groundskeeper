@@ -1,5 +1,7 @@
 name: Catalog
 
+permissions: {}
+
 on:
   workflow_dispatch:
     inputs:
