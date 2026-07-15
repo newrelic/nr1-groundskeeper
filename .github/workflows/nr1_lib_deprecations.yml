@@ -5,6 +5,9 @@ on: [push, workflow_dispatch]
 jobs:
   nr1_lib_deprecations:
     name: Run NR1 Library Deprecation Checks
+    permissions:
+      contents: read
+      issues: write
     runs-on: ubuntu-latest
     steps:
       - name: Test Default Branch
