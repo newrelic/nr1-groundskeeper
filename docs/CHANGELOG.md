@@ -1,3 +1,10 @@
+## [2.9.2](https://github.com/newrelic/nr1-groundskeeper/compare/v2.9.1...v2.9.2) (2026-07-15)
+
+
+### Bug Fixes
+
+* issues in workflows ([e1488f5](https://github.com/newrelic/nr1-groundskeeper/commit/e1488f57e5707675fa968bf11722ea1d61b5494e))
+
 ## [2.9.1](https://github.com/newrelic/nr1-groundskeeper/compare/v2.9.0...v2.9.1) (2025-11-04)
 
 
