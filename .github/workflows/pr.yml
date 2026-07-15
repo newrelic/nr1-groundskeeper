@@ -2,7 +2,6 @@ name: Pull Request
 
 permissions:
   contents: read
-  pull-requests: write
 
 on:
   pull_request:
@@ -50,6 +49,10 @@ jobs:
     name: eslint
     needs: checkout-and-build-pr
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      checks: write
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
