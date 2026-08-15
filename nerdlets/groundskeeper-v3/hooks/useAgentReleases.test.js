@@ -27,14 +27,20 @@ describe('useAgentReleases', () => {
               date: '2023-01-01',
               eolDate: null,
               features: 'x',
-              security: false
+              security: false,
+              bugs: 'bug-x',
+              slug:
+                'docs/release-notes/agent-release-notes/java-release-notes/java-agent-740'
             },
             {
               version: '8.21.1',
               date: '2024-06-01',
               eolDate: '2025-06-01',
               features: 'y',
-              security: true
+              security: true,
+              bugs: 'bug-y',
+              slug:
+                'docs/release-notes/agent-release-notes/java-release-notes/java-agent-8211'
             }
           ]
         }
@@ -47,13 +53,19 @@ describe('useAgentReleases', () => {
       date: new Date('2023-01-01T00:00:00Z'),
       eolDate: null,
       features: 'x',
-      security: false
+      security: false,
+      bugs: 'bug-x',
+      slug:
+        'docs/release-notes/agent-release-notes/java-release-notes/java-agent-740'
     });
     expect(result.current.releases.java['8.21.1']).toEqual({
       date: new Date('2024-06-01T00:00:00Z'),
       eolDate: new Date('2025-06-01T00:00:00Z'),
       features: 'y',
-      security: true
+      security: true,
+      bugs: 'bug-y',
+      slug:
+        'docs/release-notes/agent-release-notes/java-release-notes/java-agent-8211'
     });
   });
 

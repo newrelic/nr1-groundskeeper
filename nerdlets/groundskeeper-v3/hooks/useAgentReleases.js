@@ -8,9 +8,11 @@ import { AGENT_RELEASES } from '../queries';
 const parseDate = dateStr =>
   dateStr ? new Date(`${dateStr}T00:00:00Z`) : null;
 
-// Returns releases keyed by entity.language -> version -> { date, eolDate, features, security }.
-// `eolDate` feeds utils/status.js's EOL check; `features`/`security` aren't used yet
-// but are already fetched for the CVE-highlighting follow-up.
+// Returns releases keyed by entity.language -> version -> { date, eolDate, features, security, bugs, slug }.
+// `eolDate` feeds utils/status.js's EOL check; `features`/`security`/`bugs` aren't used yet
+// but are already fetched for the CVE-highlighting follow-up. `slug` is the docs-website
+// path for the release note (see ~/Downloads/docs-callout.md) -- combine with
+// docs.newrelic.com to build a link once that follow-up lands.
 const useAgentReleases = () => {
   const { data, error, loading } = useNerdGraphQuery({ query: AGENT_RELEASES });
 
@@ -18,13 +20,18 @@ const useAgentReleases = () => {
     if (!data?.docs) return {};
     return Object.values(AGENTS).reduce((acc, language) => {
       const byVersion = (data.docs[language] || []).reduce(
-        (versions, { version, date, eolDate, features, security }) => ({
+        (
+          versions,
+          { version, date, eolDate, features, security, bugs, slug }
+        ) => ({
           ...versions,
           [version]: {
             date: parseDate(date),
             eolDate: parseDate(eolDate),
             features,
-            security
+            security,
+            bugs,
+            slug
           }
         }),
         {}

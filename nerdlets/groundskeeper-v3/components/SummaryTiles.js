@@ -2,24 +2,30 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { STATUS } from '../constants';
 
-// CVE exposed always reads 0 for now -- CVE detection is the next step, not this one.
+// `securityFixes` isn't a STATUS key (see utils/status.js summarize()) -- a row can
+// be BEHIND or EOL *and* have a security fix in its reasons, so it's tallied and
+// displayed independently rather than as a mutually-exclusive status.
 const TILES = [
-  { status: STATUS.CURRENT, label: 'Up to date' },
-  { status: STATUS.BEHIND, label: 'Behind' },
-  { status: STATUS.CVE, label: 'CVE exposed' },
-  { status: STATUS.EOL, label: 'Stale / EOL' }
+  { key: STATUS.CURRENT, label: 'Current' },
+  { key: STATUS.BEHIND, label: 'Behind', variant: 'warning' },
+  { key: 'securityFixes', label: 'Security fixes', variant: 'critical' },
+  { key: STATUS.EOL, label: 'Past EOL', variant: 'critical' }
 ];
 
 const SummaryTiles = ({ counts }) => (
   <div className="summary-tiles">
-    {TILES.map(({ status, label }) => (
+    {TILES.map(({ key, label, variant }) => (
       <div
-        key={status}
-        className={`summary-tiles__tile summary-tiles__tile--${status}`}
+        key={key}
+        className={
+          variant
+            ? `summary-tiles__tile summary-tiles__tile--${variant}`
+            : 'summary-tiles__tile'
+        }
       >
         <div className="summary-tiles__label">{label}</div>
         <div className="summary-tiles__value">
-          {(counts[status] || 0).toLocaleString()}
+          {(counts[key] || 0).toLocaleString()}
         </div>
       </div>
     ))}

@@ -21,12 +21,4 @@ const versionAge = (currentVersion, recommendedVersion, releaseDates = {}) => {
   return `${daysOld} day${daysOld > 1 ? 's' : ''} old`;
 };
 
-// "synced HH:MM" in the header -- just when the page rendered, not a real sync
-// timestamp from the server (there isn't one; the data is live on every render).
-const formatSyncTime = (date = new Date()) =>
-  new Intl.DateTimeFormat('default', {
-    hour: '2-digit',
-    minute: '2-digit'
-  }).format(date);
-
-export { versionAge, formatSyncTime };
+export { versionAge };

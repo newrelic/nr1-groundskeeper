@@ -19,6 +19,12 @@ describe('AGENT_RELEASES', () => {
     });
   });
 
+  test('requests bugs/slug for the upcoming release note link/callout', () => {
+    ['bugs', 'slug'].forEach(field => {
+      expect(AGENT_RELEASES).toContain(field);
+    });
+  });
+
   test('is nested under docs', () => {
     expect(AGENT_RELEASES).toMatch(/docs\s*{/);
   });

@@ -71,15 +71,4 @@ describe('DetailPanel', () => {
 
     expect(onClose).toHaveBeenCalledTimes(1);
   });
-
-  test('always renders the CVE placeholder, never a real finding', () => {
-    const { container } = renderComponent(
-      <DetailPanel entity={{ name: 'checkout-api', version: '8.21.1' }} />
-    );
-
-    expect(
-      container.querySelector('.detail-panel__exposures-placeholder')
-        .textContent
-    ).toBe('CVE detection coming soon.');
-  });
 });

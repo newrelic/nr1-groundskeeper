@@ -1,4 +1,4 @@
-import { formatSyncTime, versionAge } from './format';
+import { versionAge } from './format';
 
 describe('versionAge', () => {
   const dates = {
@@ -29,19 +29,5 @@ describe('versionAge', () => {
 
   test('formats a gap over a year as years', () => {
     expect(versionAge('7.4.0', '8.21.1', dates)).toBe('over 1 year old');
-  });
-});
-
-describe('formatSyncTime', () => {
-  test('formats a given date as hours:minutes', () => {
-    const formatted = formatSyncTime(new Date('2024-06-01T14:22:00Z'));
-
-    // Avoid asserting on a specific timezone-rendered string; just confirm it's
-    // hour:minute shaped and doesn't blow up.
-    expect(formatted).toMatch(/^\d{1,2}:\d{2}(\s?[AP]M)?$/i);
-  });
-
-  test('defaults to the current time when no date is given', () => {
-    expect(() => formatSyncTime()).not.toThrow();
   });
 });

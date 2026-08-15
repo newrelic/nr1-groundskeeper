@@ -43,12 +43,6 @@ const DetailPanel = ({ entity, onClose }) => {
           <div className="detail-panel__age">{age}</div>
         ) : null}
       </div>
-      {/* Deliberately a placeholder, not real logic -- CVE detection is the next
-          step after this pass, see constants/status.js. */}
-      <div className="detail-panel__exposures-label">Exposures</div>
-      <div className="detail-panel__exposures-placeholder">
-        CVE detection coming soon.
-      </div>
     </div>
   );
 };

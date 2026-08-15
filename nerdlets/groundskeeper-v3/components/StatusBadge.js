@@ -1,14 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Badge } from 'nr1';
 import { STATUS, STATUS_LABEL } from '../constants';
 
-// Coloring is driven entirely by the `status-badge--<status>` class in styles.scss,
-// keyed off the same STATUS values utils/status.js computes -- so a new status only
-// needs a label here and a color rule in the stylesheet.
+// Single place mapping our STATUS values to nr1's Badge type, keyed off the same
+// STATUS values utils/status.js computes -- so a new status only needs a label in
+// constants/status.js and a Badge type here.
+const BADGE_TYPE = {
+  [STATUS.CURRENT]: Badge.TYPE.SUCCESS,
+  [STATUS.BEHIND]: Badge.TYPE.WARNING,
+  [STATUS.EOL]: Badge.TYPE.CRITICAL
+};
+
 const StatusBadge = ({ status }) => (
-  <span className={`status-badge status-badge--${status}`}>
-    {STATUS_LABEL[status] || status}
-  </span>
+  <Badge type={BADGE_TYPE[status]}>{STATUS_LABEL[status] || status}</Badge>
 );
 
 StatusBadge.propTypes = {

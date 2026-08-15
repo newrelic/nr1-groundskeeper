@@ -32,19 +32,68 @@ export const useNerdGraphQuery = jest.fn(() => ({
 export const AutoSizer = ({ children }) =>
   children({ width: 800, height: 600 });
 
-export const DataTable = ({ children }) => (
-  <div className="mock-data-table">{children}</div>
+// The real DataTable passes `items` down to its DataTableBody, which calls its
+// render-prop child once per item -- mirror that here by cloning DataTableBody
+// with `items` injected, since nothing else in this mock threads props through
+// plain `children`.
+export const DataTable = ({ children, items = [] }) => (
+  <div className="mock-data-table">
+    {React.Children.map(children, child =>
+      child?.type === DataTableBody
+        ? React.cloneElement(child, { items })
+        : child
+    )}
+  </div>
 );
 DataTable.SELECTION_TYPE = { SINGLE: 'single', MULTIPLE: 'multiple' };
 
+export const DataTableToolbar = ({ children }) => <div>{children}</div>;
+export const DataTableToolbarContent = ({ title, description, children }) => (
+  <div>
+    {title ? <span className="mock-toolbar-title">{title}</span> : null}
+    {description ? (
+      <span className="mock-toolbar-description">{description}</span>
+    ) : null}
+    {children}
+  </div>
+);
 export const DataTableHeader = ({ children }) => <div>{children}</div>;
 export const DataTableHeaderCell = ({ children }) => <div>{children}</div>;
-export const DataTableBody = ({ children }) => <div>{children}</div>;
+// `children` is the real DataTableBody render-prop function; call it once per item
+// (as the real component does) instead of trying to render the function itself.
+export const DataTableBody = ({ children, items = [] }) => (
+  <div>
+    {items.map((item, index) => (
+      <React.Fragment key={item.guid || index}>
+        {children({ item, index, items })}
+      </React.Fragment>
+    ))}
+  </div>
+);
 export const DataTableRow = ({ children }) => <div>{children}</div>;
-// The real DataTableRowCell only accepts a function (it calls this to render) as
-// children, not raw content -- mirror that here instead of just displaying it.
-export const DataTableRowCell = ({ children }) => (
-  <div>{typeof children === 'function' ? children() : children}</div>
+// The real DataTableRowCell only accepts a function (it calls this to render),
+// optionally alongside a DataTableAdditionalValueCell element, as children -- not
+// raw content. Mirror that here: call any function child, render any element
+// child as-is, instead of just displaying whatever was passed.
+export const DataTableRowCell = ({ children }) => {
+  const items = Array.isArray(children) ? children : [children];
+  return (
+    <div>
+      {items.map((child, index) => (
+        <React.Fragment key={index}>
+          {typeof child === 'function' ? child() : child}
+        </React.Fragment>
+      ))}
+    </div>
+  );
+};
+// The real DataTableAdditionalValueCell only accepts a function as children, same
+// as DataTableRowCell -- used to render a muted secondary line under a cell's main
+// value (e.g. an account name under an app name).
+export const DataTableAdditionalValueCell = ({ children }) => (
+  <div className="mock-additional-value">
+    {typeof children === 'function' ? children() : children}
+  </div>
 );
 
 // Strip nr1-only props before spreading the rest onto a real DOM button, or React
@@ -55,5 +104,62 @@ export const Button = ({ children, sizeType, ...props }) => (
   </button>
 );
 Button.SIZE_TYPE = { SMALL: 'small', MEDIUM: 'medium', LARGE: 'large' };
+
+export const Badge = ({ children, type }) => (
+  <span className="mock-badge" data-type={type}>
+    {children}
+  </span>
+);
+Badge.TYPE = {
+  INFO: 'info',
+  SUCCESS: 'success',
+  WARNING: 'warning',
+  CRITICAL: 'critical',
+  SEVERE: 'severe'
+};
+
+export const InlineMessage = ({ type, label, description, action }) => (
+  <div className="mock-inline-message" data-type={type}>
+    <span className="mock-inline-message__label">{label}</span>
+    <span className="mock-inline-message__description">{description}</span>
+    {action ? (
+      <button type="button" onClick={action.onClick}>
+        {action.label}
+      </button>
+    ) : null}
+  </div>
+);
+InlineMessage.TYPE = {
+  INFO: 'info',
+  SUCCESS: 'success',
+  WARNING: 'warning',
+  CRITICAL: 'critical'
+};
+
+export const Switch = ({ checked, label, loading, onChange, className }) => (
+  <label className={['mock-switch', className].filter(Boolean).join(' ')}>
+    <input
+      type="checkbox"
+      checked={checked}
+      disabled={loading}
+      onChange={onChange}
+    />
+    {label}
+  </label>
+);
+
+export const Icon = ({ type, color, ...props }) => (
+  <i
+    className="mock-icon"
+    data-type={type}
+    style={color ? { color } : undefined}
+    {...props}
+  />
+);
+Icon.TYPE = {
+  PROFILES__EVENTS__FAVORITE: 'PROFILES__EVENTS__FAVORITE',
+  PROFILES__EVENTS__FAVORITE__WEIGHT_BOLD:
+    'PROFILES__EVENTS__FAVORITE__WEIGHT_BOLD'
+};
 
 export default {};

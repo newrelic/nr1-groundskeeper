@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   AutoSizer,
@@ -7,23 +7,48 @@ import {
   DataTableHeader,
   DataTableHeaderCell,
   DataTableRow,
-  DataTableRowCell
+  DataTableRowCell,
+  DataTableToolbar,
+  DataTableToolbarContent,
+  InlineMessage,
+  Switch
 } from 'nr1';
 
 import StatusBadge from './StatusBadge';
+import { STATUS } from '../constants';
+import {
+  DEFAULT_SORTING,
+  describeReasons,
+  hasSecurityFix,
+  sortRows
+} from '../utils';
 
 // `rows` are pre-enriched entities from utils/status.js enrichEntity() (already
-// carrying recommendedVersion/status/age) -- this component just renders them and
-// reports which one was clicked; it doesn't fetch or derive anything itself.
+// carrying recommendedVersion/status/age/reasons) -- this component just renders
+// them and reports which one was clicked; it doesn't fetch or derive anything
+// itself, other than picking the InlineMessage type for the Target column and
+// sorting (via utils/status.js sortRows(), since Status needs severity order, not
+// alphabetical).
 // `count` (the search's total) vs `rows.length` (what's loaded so far) is what
 // drives DataTable's own infinite-scroll "loading N-M of count..." placeholder rows.
+// `hideCurrent`/`onToggleHideCurrent` are lifted from index.js (that's where the
+// filtering it drives actually happens) and just rendered here, in the toolbar.
 const EntitiesTable = ({
   count,
   fetchMore,
+  hideCurrent,
   onSelectRow,
+  onToggleHideCurrent,
   rows,
   selectedGuid
 }) => {
+  const [sorting, setSorting] = useState(DEFAULT_SORTING);
+  const [showAccountName, setShowAccountName] = useState(false);
+  const sortedRows = useMemo(
+    () => sortRows(rows, sorting, { showAccountName }),
+    [rows, sorting, showAccountName]
+  );
+
   const clickHandler = useCallback(
     (_event, { item } = {}) => item?.guid && onSelectRow(item.guid),
     [onSelectRow]
@@ -35,26 +60,59 @@ const EntitiesTable = ({
         {({ height }) => (
           <DataTable
             ariaLabel="APM applications"
-            items={rows}
+            items={sortedRows}
             itemCount={count}
             height={height}
+            sorting={sorting}
+            onSortingChange={setSorting}
             onLoadMoreItems={fetchMore}
             onClickTableRow={clickHandler}
           >
+            <DataTableToolbar>
+              <DataTableToolbarContent>
+                <Switch
+                  checked={hideCurrent}
+                  label="Hide current"
+                  onChange={onToggleHideCurrent}
+                />
+                <Switch
+                  checked={showAccountName}
+                  label="Show account name"
+                  onChange={() => setShowAccountName(value => !value)}
+                />
+              </DataTableToolbarContent>
+            </DataTableToolbar>
             <DataTableHeader>
-              <DataTableHeaderCell name="name" value="name">
+              <DataTableHeaderCell
+                name="name"
+                value={item => item.name}
+                sortable
+              >
                 Application
               </DataTableHeaderCell>
-              <DataTableHeaderCell name="version" value="version">
+              <DataTableHeaderCell
+                name="account"
+                value={item =>
+                  showAccountName ? item.tags?.account?.[0] : item.accountId
+                }
+                sortable
+              >
+                Account
+              </DataTableHeaderCell>
+              <DataTableHeaderCell name="language" value="language" sortable>
+                Language
+              </DataTableHeaderCell>
+              <DataTableHeaderCell name="version" value="version" sortable>
                 Version
               </DataTableHeaderCell>
               <DataTableHeaderCell
-                name="recommendedVersion"
+                name="target"
                 value="recommendedVersion"
+                sortable
               >
                 Recommended Version
               </DataTableHeaderCell>
-              <DataTableHeaderCell name="status" value="status">
+              <DataTableHeaderCell name="status" value="status" sortable>
                 Status
               </DataTableHeaderCell>
             </DataTableHeader>
@@ -67,19 +125,43 @@ const EntitiesTable = ({
                       : undefined
                   }
                 >
-                  {/* DataTableRowCell only accepts a function (optionally plus a
-                      DataTableAdditionalValueCell) as children, not raw JSX/text --
-                      it calls this to render, it doesn't just display it. */}
                   <DataTableRowCell>{() => item.name}</DataTableRowCell>
+                  <DataTableRowCell>
+                    {() =>
+                      (showAccountName
+                        ? item.tags?.account?.[0]
+                        : item.accountId) ?? '—'
+                    }
+                  </DataTableRowCell>
+                  <DataTableRowCell>
+                    {() => item.language || '—'}
+                  </DataTableRowCell>
                   <DataTableRowCell className="entities-table__mono">
                     {() => item.version || '—'}
                   </DataTableRowCell>
-                  <DataTableRowCell className="entities-table__mono entities-table__muted">
+                  <DataTableRowCell>
                     {() =>
-                      item.recommendedVersion &&
-                      item.recommendedVersion !== item.version
-                        ? item.recommendedVersion
-                        : '—'
+                      item.status === STATUS.CURRENT ? (
+                        '—'
+                      ) : (
+                        <InlineMessage
+                          type={
+                            item.status === STATUS.EOL ||
+                            hasSecurityFix(item.reasons)
+                              ? InlineMessage.TYPE.CRITICAL
+                              : InlineMessage.TYPE.WARNING
+                          }
+                          label={item.recommendedVersion}
+                          description={describeReasons(item.reasons)}
+                          action={{
+                            label: 'See details',
+                            // Placeholder until this links to a real details
+                            // destination.
+                            // eslint-disable-next-line no-console
+                            onClick: console.log
+                          }}
+                        />
+                      )
                     }
                   </DataTableRowCell>
                   <DataTableRowCell>
@@ -98,13 +180,20 @@ const EntitiesTable = ({
 EntitiesTable.propTypes = {
   count: PropTypes.number,
   fetchMore: PropTypes.func,
+  hideCurrent: PropTypes.bool,
   onSelectRow: PropTypes.func,
+  onToggleHideCurrent: PropTypes.func,
   rows: PropTypes.array,
   selectedGuid: PropTypes.string
 };
 
 EntitiesTable.defaultProps = {
   count: 0,
+  hideCurrent: false,
+  // A no-op default, not just documentation -- the Hide current Switch always
+  // needs an onChange to stay a controlled input (see its `checked` prop), even
+  // when a caller doesn't care to wire one up.
+  onToggleHideCurrent: () => {},
   rows: []
 };
 

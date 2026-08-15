@@ -2,14 +2,16 @@ import { useEffect, useRef, useState } from 'react';
 import { useNerdGraphQuery } from 'nr1';
 import { NOOP_QUERY, recommendedVersionQuery } from '../queries';
 
-// Looks up "Recommended Version" from the same source nr-groundskeeper-cli uses: the
-// `AgentUpdate` NRQL event New Relic agents self-report, rather than a hardcoded semver
-// table (see groundskeeper-v2/recommendations.js). As `entities` grows page by page
-// (via useApmEntities' fetchMore), this only queries guids we haven't resolved yet --
+// Looks up "Recommended Version" (and why it's recommended, via `reasons`) from the
+// same source nr-groundskeeper-cli uses: the `AgentUpdate` NRQL event New Relic
+// agents self-report, rather than a hardcoded semver table (see
+// groundskeeper-v2/recommendations.js). As `entities` grows page by page (via
+// useApmEntities' fetchMore), this only queries guids we haven't resolved yet --
 // re-querying the whole list on every page would make the FACET grow without bound and
 // re-fetch data we already have.
 const useRecommendedVersions = (entities = []) => {
   const [recommendedVersions, setRecommendedVersions] = useState({});
+  const [reasons, setReasons] = useState({});
   const [pendingQuery, setPendingQuery] = useState(null);
   // Ref, not state: we need to read/mutate this synchronously inside the effect below
   // without triggering a re-render or getting stale closures across renders.
@@ -39,8 +41,13 @@ const useRecommendedVersions = (entities = []) => {
   });
 
   useEffect(() => {
-    const results = data?.actor?.nrql?.results;
-    if (!Array.isArray(results) || !results.length) return;
+    // A guid batch larger than queries/recommendedVersion.js's GUIDS_PER_QUERY
+    // comes back as multiple aliased fields (nrql0, nrql1, ...) rather than a
+    // single `nrql` field -- gather results across all of them.
+    const results = Object.keys(data?.actor || {})
+      .filter(key => key.startsWith('nrql'))
+      .flatMap(key => data.actor[key]?.results || []);
+    if (!results.length) return;
     setRecommendedVersions(prev => {
       // Bail out (return the same `prev` reference) when nothing actually changed,
       // so React can skip the re-render. Without this, a `data` object that isn't
@@ -49,8 +56,9 @@ const useRecommendedVersions = (entities = []) => {
       // re-renders, which re-runs this effect... forever.
       let changed = false;
       const next = { ...prev };
-      // Single-dimension FACET results come back as { facet, recommendedVersion },
-      // where `facet` is the guid itself -- matches the CLI's own destructuring.
+      // Single-dimension FACET results come back as { facet, recommendedVersion,
+      // reasons }, where `facet` is the guid itself -- matches the CLI's own
+      // destructuring.
       results.forEach(({ facet, recommendedVersion }) => {
         if (facet && next[facet] !== recommendedVersion) {
           next[facet] = recommendedVersion;
@@ -59,9 +67,20 @@ const useRecommendedVersions = (entities = []) => {
       });
       return changed ? next : prev;
     });
+    setReasons(prev => {
+      let changed = false;
+      const next = { ...prev };
+      results.forEach(({ facet, reasons: facetReasons }) => {
+        if (facet && next[facet] !== facetReasons) {
+          next[facet] = facetReasons;
+          changed = true;
+        }
+      });
+      return changed ? next : prev;
+    });
   }, [data]);
 
-  return { recommendedVersions, error };
+  return { recommendedVersions, reasons, error };
 };
 
 export default useRecommendedVersions;

@@ -79,8 +79,14 @@ describe('useRecommendedVersions', () => {
         return {
           data: {
             actor: {
-              nrql: {
-                results: [{ facet: 'guid-1', recommendedVersion: '8.21.1' }]
+              nrql0: {
+                results: [
+                  {
+                    facet: 'guid-1',
+                    recommendedVersion: '8.21.1',
+                    reasons: 'SECURITY_VULNERABILITY_FIXES'
+                  }
+                ]
               }
             }
           }
@@ -90,8 +96,14 @@ describe('useRecommendedVersions', () => {
         return {
           data: {
             actor: {
-              nrql: {
-                results: [{ facet: 'guid-3', recommendedVersion: '2.1.0' }]
+              nrql0: {
+                results: [
+                  {
+                    facet: 'guid-3',
+                    recommendedVersion: '2.1.0',
+                    reasons: 'BUG_FIXES'
+                  }
+                ]
               }
             }
           }
@@ -104,6 +116,9 @@ describe('useRecommendedVersions', () => {
       { guid: 'guid-1', accountId: 111 }
     ]);
     expect(result.current.recommendedVersions).toEqual({ 'guid-1': '8.21.1' });
+    expect(result.current.reasons).toEqual({
+      'guid-1': 'SECURITY_VULNERABILITY_FIXES'
+    });
 
     rerender([
       { guid: 'guid-1', accountId: 111 },
@@ -113,6 +128,10 @@ describe('useRecommendedVersions', () => {
     expect(result.current.recommendedVersions).toEqual({
       'guid-1': '8.21.1',
       'guid-3': '2.1.0'
+    });
+    expect(result.current.reasons).toEqual({
+      'guid-1': 'SECURITY_VULNERABILITY_FIXES',
+      'guid-3': 'BUG_FIXES'
     });
   });
 
