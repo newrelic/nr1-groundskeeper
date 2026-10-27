@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import {
   AutoSizer,
@@ -25,20 +25,23 @@ import { DEFAULT_SORTING, sortRows } from '../utils';
 // severity order, not alphabetical).
 // `count` (the search's total) vs `rows.length` (what's loaded so far) is what
 // drives DataTable's own infinite-scroll "loading N-M of count..." placeholder rows.
-// `hideCurrent`/`onToggleHideCurrent` are lifted from index.js (that's where the
-// filtering it drives actually happens) and just rendered here, in the toolbar.
+// `hideCurrent` (index.js filters on it), `sorting` and `showAccountName` are all
+// held by the caller, since a saved view keeps them -- this just renders them
+// and reports changes.
 const EntitiesTable = ({
   count,
   fetchMore,
   hideCurrent,
   onSelectRow,
   onShowUpgradePath,
+  onSortingChange,
   onToggleHideCurrent,
+  onToggleShowAccountName,
   rows,
-  selectedGuid
+  selectedGuid,
+  showAccountName,
+  sorting
 }) => {
-  const [sorting, setSorting] = useState(DEFAULT_SORTING);
-  const [showAccountName, setShowAccountName] = useState(false);
   const sortedRows = useMemo(
     () => sortRows(rows, sorting, { showAccountName }),
     [rows, sorting, showAccountName]
@@ -59,7 +62,7 @@ const EntitiesTable = ({
             itemCount={count}
             height={height}
             sorting={sorting}
-            onSortingChange={setSorting}
+            onSortingChange={onSortingChange}
             onLoadMoreItems={fetchMore}
             onClickTableRow={clickHandler}
           >
@@ -73,7 +76,7 @@ const EntitiesTable = ({
                 <Switch
                   checked={showAccountName}
                   label="Show account name"
-                  onChange={() => setShowAccountName(value => !value)}
+                  onChange={onToggleShowAccountName}
                 />
               </DataTableToolbarContent>
             </DataTableToolbar>
@@ -165,9 +168,16 @@ EntitiesTable.propTypes = {
   hideCurrent: PropTypes.bool,
   onSelectRow: PropTypes.func,
   onShowUpgradePath: PropTypes.func,
+  onSortingChange: PropTypes.func,
   onToggleHideCurrent: PropTypes.func,
+  onToggleShowAccountName: PropTypes.func,
   rows: PropTypes.array,
-  selectedGuid: PropTypes.string
+  selectedGuid: PropTypes.string,
+  showAccountName: PropTypes.bool,
+  sorting: PropTypes.shape({
+    name: PropTypes.string,
+    direction: PropTypes.string
+  })
 };
 
 EntitiesTable.defaultProps = {
@@ -181,7 +191,11 @@ EntitiesTable.defaultProps = {
   // needs an onChange to stay a controlled input (see its `checked` prop), even
   // when a caller doesn't care to wire one up.
   onToggleHideCurrent: () => {},
-  rows: []
+  onSortingChange: () => {},
+  onToggleShowAccountName: () => {},
+  rows: [],
+  showAccountName: false,
+  sorting: DEFAULT_SORTING
 };
 
 export default EntitiesTable;

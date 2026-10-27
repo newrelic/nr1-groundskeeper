@@ -39,7 +39,7 @@ const RecommendedVersion = ({ item, onClick }) => {
     <Tooltip text={tooltip} placementType={Tooltip.PLACEMENT_TYPE.BOTTOM}>
       <button
         type="button"
-        className="u-unstyledButton recommended-version"
+        className="u-unstyledButton gk-unstyled-button recommended-version"
         aria-label={`${label}. ${tooltip} Show upgrade history.`}
         onClick={event => {
           // Opening the upgrade history is this cell's whole job -- don't also

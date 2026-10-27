@@ -105,15 +105,30 @@ export const Button = ({
   sizeType,
   variant,
   iconType,
+  loading,
   ...props
 }) => (
-  <button type="button" aria-label={ariaLabel} {...props}>
+  <button
+    type="button"
+    aria-label={ariaLabel}
+    data-variant={variant}
+    {...props}
+  >
     {children}
   </button>
 );
 Button.SIZE_TYPE = { SMALL: 'small', MEDIUM: 'medium', LARGE: 'large' };
-Button.VARIANT = { PRIMARY: 'primary', SECONDARY: 'secondary', TERTIARY: 'tertiary' };
-Button.ICON_TYPE = { INTERFACE__SIGN__CLOSE: 'INTERFACE__SIGN__CLOSE' };
+Button.VARIANT = {
+  PRIMARY: 'primary',
+  SECONDARY: 'secondary',
+  TERTIARY: 'tertiary'
+};
+Button.VARIANT.DESTRUCTIVE = 'destructive';
+Button.ICON_TYPE = {
+  INTERFACE__SIGN__CLOSE: 'INTERFACE__SIGN__CLOSE',
+  INTERFACE__SIGN__PLUS: 'INTERFACE__SIGN__PLUS',
+  INTERFACE__OPERATIONS__TRASH: 'INTERFACE__OPERATIONS__TRASH'
+};
 
 // The real Badge stringifies its children (an element inside it shows up as
 // "[object Object]"), so this does too -- a test then catches anything but a
@@ -131,7 +146,14 @@ Badge.TYPE = {
   SEVERE: 'severe'
 };
 
-export const Switch = ({ checked, label, loading, onChange, className }) => (
+export const Switch = ({
+  checked,
+  label,
+  description,
+  loading,
+  onChange,
+  className
+}) => (
   <label className={['mock-switch', className].filter(Boolean).join(' ')}>
     <input
       type="checkbox"
@@ -140,6 +162,9 @@ export const Switch = ({ checked, label, loading, onChange, className }) => (
       onChange={onChange}
     />
     {label}
+    {description ? (
+      <span className="mock-switch__description">{description}</span>
+    ) : null}
   </label>
 );
 
@@ -163,7 +188,8 @@ Icon.TYPE = {
   INTERFACE__INFO__HELP: 'INTERFACE__INFO__HELP',
   INTERFACE__STATE__LOADING: 'INTERFACE__STATE__LOADING',
   DATE_AND_TIME__DATE_AND_TIME__TIME: 'DATE_AND_TIME__DATE_AND_TIME__TIME',
-  INTERFACE__OPERATIONS__DOWNLOAD: 'INTERFACE__OPERATIONS__DOWNLOAD'
+  INTERFACE__OPERATIONS__DOWNLOAD: 'INTERFACE__OPERATIONS__DOWNLOAD',
+  INTERFACE__OPERATIONS__CONFIGURE: 'INTERFACE__OPERATIONS__CONFIGURE'
 };
 
 // The real Tooltip shows `text` on hover/focus of its children -- render it
@@ -180,5 +206,92 @@ Tooltip.PLACEMENT_TYPE = {
   LEFT: 'left',
   RIGHT: 'right'
 };
+
+// NerdStorage, URL state and the platform. The mutation hooks hand back the same
+// jest.fn every render (like the real, memoized ones), so a test can assert on
+// what was written: e.g. useAccountStorageMutation.write.mock.calls.
+const storageMutation = () => {
+  const fns = {
+    write: jest.fn(async () => ({ data: {}, error: null })),
+    remove: jest.fn(async () => ({ data: {}, error: null }))
+  };
+  const hook = jest.fn(({ actionType } = {}) => [
+    actionType === 'DELETE_DOCUMENT' ? fns.remove : fns.write,
+    { loading: false }
+  ]);
+  hook.ACTION_TYPE = {
+    WRITE_DOCUMENT: 'WRITE_DOCUMENT',
+    DELETE_DOCUMENT: 'DELETE_DOCUMENT'
+  };
+  hook.write = fns.write;
+  hook.remove = fns.remove;
+  return hook;
+};
+
+export const useAccountStorageQuery = jest.fn(() => ({
+  data: [],
+  loading: false,
+  error: undefined
+}));
+export const useAccountStorageMutation = storageMutation();
+export const useUserStorageQuery = jest.fn(() => ({
+  data: undefined,
+  loading: false,
+  error: undefined
+}));
+export const useUserStorageMutation = storageMutation();
+
+export const useUserQuery = jest.fn(() => ({
+  data: { id: 7, name: 'Pat Example', email: 'pat@example.com' },
+  loading: false
+}));
+
+// [state, setState], where setState is shared so tests can assert on it.
+export const setNerdletState = jest.fn();
+export const useNerdletState = jest.fn(() => [{}, setNerdletState]);
+
+export const PlatformStateContext = React.createContext({ accountId: 1 });
+
+export const nerdlet = { setConfig: jest.fn() };
+
+export const navigation = {
+  getOpenNerdletLocation: jest.fn(location => ({ mockLocation: location }))
+};
+
+export const Toast = { showToast: jest.fn() };
+Toast.TYPE = { NORMAL: 'normal', CRITICAL: 'critical' };
+
+export const EmptyState = ({ title, description, action, type }) => (
+  <div className="mock-empty-state" data-type={type}>
+    {title ? <span className="mock-empty-state__title">{title}</span> : null}
+    {description ? <span>{description}</span> : null}
+    {action ? (
+      <button type="button" onClick={action.onClick}>
+        {action.label}
+      </button>
+    ) : null}
+  </div>
+);
+EmptyState.TYPE = { ERROR: 'error', LOADING: 'loading' };
+
+export const Spinner = () => <span className="mock-spinner" />;
+
+export const HeadingText = ({ children }) => <h3>{children}</h3>;
+HeadingText.TYPE = { HEADING_3: 'heading-3' };
+
+export const TextField = ({ label, value, onChange, placeholder, type }) => (
+  <label className="mock-text-field" data-type={type}>
+    {label}
+    <input value={value} placeholder={placeholder} onChange={onChange} />
+  </label>
+);
+TextField.TYPE = { SEARCH: 'search' };
+
+export const MultilineTextField = ({ label, value, onChange, placeholder }) => (
+  <label className="mock-multiline-text-field">
+    {label}
+    <textarea value={value} placeholder={placeholder} onChange={onChange} />
+  </label>
+);
 
 export default {};

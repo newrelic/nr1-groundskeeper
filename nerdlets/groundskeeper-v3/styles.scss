@@ -46,6 +46,24 @@
   }
 }
 
+// A <button> that looks like its content: for clickable text and icons that
+// still need to be real buttons for keyboard and screen-reader users. Used with
+// nr1's u-unstyledButton, which keeps nr1's button styles off it but leaves the
+// browser's own (border, background, padding) -- this removes those.
+.gk-unstyled-button {
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+  text-align: inherit;
+  cursor: pointer;
+}
+
 // The app's own design tokens. NR1's --nr1--* custom properties are set by the
 // platform and can change or disappear without notice, so nothing here reads
 // them -- every color comes from these instead. Declared on the app root, so
@@ -53,7 +71,7 @@
 // descendant even though it renders in the top layer) inherits them. JS that
 // needs a color (constants/icons.js) uses these same names.
 .groundskeeper-v3 {
-  --gk-color-text-muted: var(--gk-color-text-muted);
+  --gk-color-text-muted: #6b7280;
   --gk-color-success: #0b7a3e;
   --gk-color-warning: #8e6806;
   --gk-color-warning-surface: #fdf2c4;
@@ -65,6 +83,10 @@
   --gk-color-favorite: #f0b400;
   --gk-color-filter-surface: #e1edff;
   --gk-color-filter-text: #074382;
+  --gk-color-text-secondary: #475059;
+  --gk-color-border: #e3e4e4;
+  --gk-color-border-strong: #c9cdcf;
+  --gk-color-hover-surface: #f0f1f3;
 
   display: flex;
   flex-direction: column;
@@ -72,73 +94,31 @@
   background: #fff;
   font-size: 13px;
 
-  .gs-header {
+  // The filters on the left, wrapping onto more lines as they grow, and the
+  // save buttons (once something's changed) top right.
+  .groundskeeper-v3__filters {
     display: flex;
-    align-items: center;
-    gap: 10px;
+    align-items: flex-start;
+    gap: 12px;
     padding: 10px 14px;
-    border-bottom: 1px solid #e3e4e4;
+    border-bottom: 1px solid var(--gk-color-border);
     flex: 0 0 auto;
-    font-size: 13px;
-
-    &__favorite {
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 0;
-      line-height: 1;
-      font-size: 17px;
-    }
-
-    &__view {
-      min-width: 0;
-    }
-
-    &__view-name {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-weight: 500;
-      font-size: 15px;
-    }
-
-    &__chevron {
-      width: 0;
-      height: 0;
-      border-left: 4px solid transparent;
-      border-right: 4px solid transparent;
-      border-top: 5px solid var(--gk-color-text-muted);
-    }
-
-    &__dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--gk-color-accent);
-      display: inline-block;
-    }
-
-    &__meta {
-      color: var(--gk-color-text-muted);
-      font-size: 11px;
-    }
-
-    &__actions {
-      margin-left: auto;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
   }
 
-  .groundskeeper-v3__filters {
+  .groundskeeper-v3__filter-bar {
+    flex: 1;
+    min-width: 0;
     display: flex;
     align-items: center;
     gap: 4px;
     flex-wrap: wrap;
-    padding: 10px 14px;
-    border-bottom: 1px solid #e3e4e4;
+  }
+
+  .groundskeeper-v3__save-actions {
     flex: 0 0 auto;
+    margin-left: auto;
+    display: flex;
+    gap: 8px;
   }
 
   .groundskeeper-v3__predefined-filter {
@@ -272,8 +252,6 @@
 
 // The Recommended Version cell (components/RecommendedVersion.js): one button
 // filling the cell, so a single click anywhere on it opens the upgrade history.
-// u-unstyledButton keeps NR1's own button styles off it; the reset is repeated
-// here for anywhere that class isn't defined.
 .recommended-version {
   display: inline-flex;
   align-items: center;
@@ -479,5 +457,275 @@ dialog.modal-dialog {
   // panel's background so entries don't show through.
   &__feed .viz-feed__chips {
     background: #fff;
+  }
+}
+
+// The listing (components/ViewsList.js): sections of view cards, modelled on
+// Nexus's boards listing.
+.views-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100%;
+  min-height: 0;
+  padding: 16px 14px 32px;
+  box-sizing: border-box;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    flex: 0 0 auto;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  &__section-title {
+    margin: 0 0 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--gk-color-text-muted);
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__empty,
+  &__loading {
+    margin: 0;
+    color: var(--gk-color-text-muted);
+    font-style: italic;
+  }
+
+  &__loading {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-style: normal;
+  }
+}
+
+.view-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px;
+  background: #fff;
+  border: 1px solid var(--gk-color-border);
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  cursor: pointer;
+  transition: border-color 120ms ease-out, box-shadow 120ms ease-out;
+
+  &:hover {
+    border-color: var(--gk-color-border-strong);
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+  }
+
+  &:focus-within {
+    border-color: var(--gk-color-focus);
+  }
+
+  &__header,
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  &__title {
+    flex: 1;
+    min-width: 0;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: left;
+    color: inherit;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: none;
+      text-decoration: underline;
+    }
+  }
+
+  &__favorite {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    color: var(--gk-color-text-muted);
+    cursor: pointer;
+
+    &:hover {
+      background: var(--gk-color-hover-surface);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--gk-color-focus);
+    }
+  }
+
+  &__description {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--gk-color-text-secondary);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  &__footer {
+    margin-top: auto;
+    font-size: 11px;
+  }
+
+  // One line each: the meta text gives way (with an ellipsis, and the full
+  // text as its title) so "Set as default" -- there even while it's hidden,
+  // so the card doesn't jump on hover -- never wraps.
+  &__meta {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--gk-color-text-muted);
+  }
+
+  &__default,
+  &__set-default {
+    flex: none;
+    white-space: nowrap;
+  }
+
+  &__default {
+    color: var(--gk-color-success);
+    font-weight: 600;
+  }
+
+  &__set-default {
+    color: var(--gk-color-info);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 120ms ease-out;
+
+    &:focus-visible {
+      opacity: 1;
+      outline: 2px solid var(--gk-color-focus);
+    }
+  }
+
+  &:hover &__set-default {
+    opacity: 1;
+  }
+}
+
+.view-modal {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+
+  &__header,
+  &__footer {
+    flex: 0 0 auto;
+    padding: 16px 24px;
+  }
+
+  // Room for the modal's close button, top right.
+  &__header {
+    padding-right: 56px;
+    border-bottom: 1px solid var(--gk-color-border);
+  }
+
+  // Scrolls when the fields don't fit. The content's auto margins centre it
+  // vertically when they do, and (unlike justify-content: center) never push
+  // its top out of reach when they don't.
+  &__body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+  }
+
+  &__content {
+    margin: auto 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  // Cancel (and, in a saved view's Settings, Delete) on the left; the
+  // primary action on the right.
+  &__footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    border-top: 1px solid var(--gk-color-border);
+  }
+
+  &__footer-start {
+    display: flex;
+    gap: 8px;
+  }
+
+  &__built-in {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    p {
+      margin: 0;
+    }
+  }
+
+  &__built-in-title {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+
+  &__note {
+    margin: 0;
+    font-size: 12px;
+    color: var(--gk-color-text-muted);
+  }
+
+  &__error {
+    color: var(--gk-color-critical);
   }
 }

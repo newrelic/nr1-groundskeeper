@@ -25,16 +25,45 @@ describe('EntitiesTable', () => {
     expect(container.textContent).not.toContain('Demogorgon Prod');
   });
 
-  test('switches the Account column to the account name when Show account name is checked', () => {
-    const { container } = renderComponent(<EntitiesTable rows={[baseRow]} />);
+  test('shows the account name instead of the id when showAccountName is set', () => {
+    const { container } = renderComponent(
+      <EntitiesTable rows={[baseRow]} showAccountName />
+    );
+
+    expect(container.textContent).toContain('Demogorgon Prod');
+    expect(container.textContent).not.toContain('1234567');
+  });
+
+  test('reports the Show account name switch to onToggleShowAccountName', () => {
+    const onToggleShowAccountName = jest.fn();
+    const { container } = renderComponent(
+      <EntitiesTable
+        rows={[baseRow]}
+        onToggleShowAccountName={onToggleShowAccountName}
+      />
+    );
 
     const showAccountName = Array.from(
       container.querySelectorAll('.mock-switch')
     ).find(el => el.textContent === 'Show account name');
     showAccountName.querySelector('input').click();
 
-    expect(container.textContent).toContain('Demogorgon Prod');
-    expect(container.textContent).not.toContain('1234567');
+    expect(onToggleShowAccountName).toHaveBeenCalledTimes(1);
+  });
+
+  test('sorts by the sorting prop', () => {
+    const a = { ...baseRow, guid: 'a', name: 'alpha' };
+    const b = { ...baseRow, guid: 'b', name: 'bravo' };
+    const { container } = renderComponent(
+      <EntitiesTable
+        rows={[a, b]}
+        sorting={{ name: 'name', direction: 'desc' }}
+      />
+    );
+
+    expect(container.textContent.indexOf('bravo')).toBeLessThan(
+      container.textContent.indexOf('alpha')
+    );
   });
 
   test('renders the toolbar Hide current switch from props and calls onToggleHideCurrent', () => {
