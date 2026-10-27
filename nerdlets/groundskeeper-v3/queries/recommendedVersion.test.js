@@ -17,13 +17,14 @@ describe('recommendedVersionQuery', () => {
     expect(query).toContain("entity.guid IN ('guid-1', 'guid-2')");
   });
 
-  test('facets by entity.guid, selects latest(recommendedVersion) and latest(reasons), and looks back 7 days', () => {
+  test('facets by entity.guid, selects latest(recommendedVersion), latest(reasons) and latest(versionDiff), and looks back 7 days', () => {
     const query = recommendedVersionQuery([1], ['guid-1']);
 
     expect(query).toContain(
       'SELECT latest(recommendedVersion) AS recommendedVersion'
     );
     expect(query).toContain('latest(reasons) AS reasons');
+    expect(query).toContain('latest(versionDiff) AS versionDiff');
     expect(query).toContain('SINCE 7 days ago');
     expect(query).toContain('FACET entity.guid');
     expect(query).toContain('FROM AgentUpdate');

@@ -10,25 +10,19 @@ import {
   DataTableRowCell,
   DataTableToolbar,
   DataTableToolbarContent,
-  InlineMessage,
   Switch
 } from 'nr1';
 
+import RecommendedVersion from './RecommendedVersion';
 import StatusBadge from './StatusBadge';
 import { STATUS } from '../constants';
-import {
-  DEFAULT_SORTING,
-  describeReasons,
-  hasSecurityFix,
-  sortRows
-} from '../utils';
+import { DEFAULT_SORTING, sortRows } from '../utils';
 
 // `rows` are pre-enriched entities from utils/status.js enrichEntity() (already
 // carrying recommendedVersion/status/age/reasons) -- this component just renders
 // them and reports which one was clicked; it doesn't fetch or derive anything
-// itself, other than picking the InlineMessage type for the Target column and
-// sorting (via utils/status.js sortRows(), since Status needs severity order, not
-// alphabetical).
+// itself, other than sorting (via utils/status.js sortRows(), since Status needs
+// severity order, not alphabetical).
 // `count` (the search's total) vs `rows.length` (what's loaded so far) is what
 // drives DataTable's own infinite-scroll "loading N-M of count..." placeholder rows.
 // `hideCurrent`/`onToggleHideCurrent` are lifted from index.js (that's where the
@@ -38,6 +32,7 @@ const EntitiesTable = ({
   fetchMore,
   hideCurrent,
   onSelectRow,
+  onShowUpgradePath,
   onToggleHideCurrent,
   rows,
   selectedGuid
@@ -144,22 +139,9 @@ const EntitiesTable = ({
                       item.status === STATUS.CURRENT ? (
                         '—'
                       ) : (
-                        <InlineMessage
-                          type={
-                            item.status === STATUS.EOL ||
-                            hasSecurityFix(item.reasons)
-                              ? InlineMessage.TYPE.CRITICAL
-                              : InlineMessage.TYPE.WARNING
-                          }
-                          label={item.recommendedVersion}
-                          description={describeReasons(item.reasons)}
-                          action={{
-                            label: 'See details',
-                            // Placeholder until this links to a real details
-                            // destination.
-                            // eslint-disable-next-line no-console
-                            onClick: console.log
-                          }}
+                        <RecommendedVersion
+                          item={item}
+                          onClick={onShowUpgradePath}
                         />
                       )
                     }
@@ -182,6 +164,7 @@ EntitiesTable.propTypes = {
   fetchMore: PropTypes.func,
   hideCurrent: PropTypes.bool,
   onSelectRow: PropTypes.func,
+  onShowUpgradePath: PropTypes.func,
   onToggleHideCurrent: PropTypes.func,
   rows: PropTypes.array,
   selectedGuid: PropTypes.string
@@ -190,6 +173,10 @@ EntitiesTable.propTypes = {
 EntitiesTable.defaultProps = {
   count: 0,
   hideCurrent: false,
+  // A no-op default so the Recommended Version cell's click always has
+  // something to call, even when a caller doesn't care to wire one up
+  // (same reasoning as onToggleHideCurrent's no-op default below).
+  onShowUpgradePath: () => {},
   // A no-op default, not just documentation -- the Hide current Switch always
   // needs an onChange to stay a controlled input (see its `checked` prop), even
   // when a caller doesn't care to wire one up.

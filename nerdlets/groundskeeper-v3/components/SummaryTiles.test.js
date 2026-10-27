@@ -1,6 +1,8 @@
 import React from 'react';
 
 import SummaryTiles from './SummaryTiles';
+import { Icon } from 'nr1';
+
 import { STATUS } from '../constants';
 import { renderComponent } from './testUtils';
 
@@ -48,5 +50,19 @@ describe('SummaryTiles', () => {
       container.querySelectorAll('.summary-tiles__value')
     ).map(el => el.textContent);
     expect(values).toEqual(['0', '0', '0', '0']);
+  });
+
+  test('gives each tile its own icon', () => {
+    const { container } = renderComponent(<SummaryTiles />);
+
+    const icons = Array.from(
+      container.querySelectorAll('.summary-tiles__label .mock-icon')
+    ).map(el => el.dataset.type);
+    expect(icons).toEqual([
+      Icon.TYPE.INTERFACE__SIGN__CHECKMARK,
+      Icon.TYPE.INTERFACE__STATE__WARNING,
+      Icon.TYPE.INTERFACE__OPERATIONS__SHIELD,
+      Icon.TYPE.INTERFACE__STATE__CRITICAL
+    ]);
   });
 });

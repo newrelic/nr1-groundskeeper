@@ -14,15 +14,17 @@ const rowStatus = ({ version, recommendedVersion, eolDate } = {}) => {
 
 // Single place where a normalized entity (utils/entities.js), its looked-up
 // recommendedVersion (hooks/useRecommendedVersions.js), its language's release
-// history (hooks/useAgentReleases.js), and its AgentUpdate.reasons (also from
-// hooks/useRecommendedVersions.js) come together into one row. Table, summary
+// history (hooks/useAgentReleases.js), and its AgentUpdate.reasons and
+// .versionDiff (also from hooks/useRecommendedVersions.js) come together into one
+// row. Table, summary
 // tiles, and detail panel all consume this so they can't disagree on a given app's
 // status/age.
 const enrichEntity = (
   entity,
   recommendedVersion,
   releasesForLanguage = {},
-  reasons
+  reasons,
+  versionDiff
 ) => {
   const eolDate = releasesForLanguage[entity.version]?.eolDate;
   const releaseDates = Object.keys(releasesForLanguage).reduce(
@@ -38,6 +40,7 @@ const enrichEntity = (
     ...entity,
     recommendedVersion,
     reasons,
+    versionDiff,
     status: rowStatus({
       version: entity.version,
       recommendedVersion,
@@ -60,8 +63,8 @@ const parseReasons = (reasons = '') =>
 const hasSecurityFix = reasons =>
   parseReasons(reasons).includes(REASON.SECURITY_VULNERABILITY_FIXES);
 
-// Turns an AgentUpdate.reasons string into the sentence InlineMessage's
-// `description` shows in the table's Target column, e.g. "Includes security fixes
+// Turns an AgentUpdate.reasons string into the sentence the Recommended Version
+// cell's tooltip shows (components/RecommendedVersion.js), e.g. "Includes security fixes
 // and bug fixes." Returns null when there's nothing to say (no reasons, or reasons
 // this UI doesn't have a label for).
 const describeReasons = reasons => {

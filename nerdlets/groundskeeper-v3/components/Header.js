@@ -41,11 +41,7 @@ const Header = ({ count, hasUnsavedChanges, saveDisabled }) => {
               ? Icon.TYPE.PROFILES__EVENTS__FAVORITE__WEIGHT_BOLD
               : Icon.TYPE.PROFILES__EVENTS__FAVORITE
           }
-          color={
-            favorited
-              ? 'var(--nr1--color--interactive--favorite, #F0B400)'
-              : undefined
-          }
+          color={favorited ? 'var(--gk-color-favorite)' : undefined}
         />
       </span>
       <div className="gs-header__view">

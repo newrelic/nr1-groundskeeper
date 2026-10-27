@@ -1,0 +1,219 @@
+// Copied from nr-labs-observability-pages (src/viz/feed.scss) with Feed; see
+// components/Feed/index.js.
+// The Feed (feed.js). Theme tokens with their default values as fallbacks,
+// so it looks the same in an app without them.
+
+.viz-feed {
+  box-sizing: border-box;
+  color: var(--text, #293338);
+  font-size: var(--font-size-body, 12px);
+  line-height: var(--line-height-body, 1.5);
+
+  &__chips {
+    position: sticky;
+    z-index: 1;
+    top: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs, 4px);
+    padding: 0 0 var(--space-sm, 8px);
+    background: var(--surface, #fff);
+  }
+
+  // Like the tags on the entries, so it's clear what they pick.
+  // u-unstyledButton keeps New Relic's own button styles off it (they make
+  // it 32 px tall); the size is set here too, for apps without them.
+  &__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs, 4px);
+    box-sizing: border-box;
+    height: 20px;
+    min-height: 0;
+    min-width: 0;
+    margin: 0;
+    appearance: none;
+    padding: 0 var(--space-sm, 8px) 0 6px;
+    border: 1px solid var(--border, rgba(55, 79, 87, 0.16));
+    border-radius: 10px;
+    background: var(--surface, #fff);
+    color: var(--text-secondary, rgba(60, 76, 82, 0.9));
+    font: inherit;
+    font-size: var(--font-size-caption, 12px);
+    font-weight: var(--font-weight-medium, 550);
+    line-height: 18px;
+    cursor: pointer;
+
+    &:hover {
+      border-color: var(--border-strong, rgba(55, 79, 87, 0.25));
+      color: var(--text, #293338);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--accent, #0c74df);
+      outline-offset: 1px;
+    }
+
+    &--on,
+    &--on:hover {
+      border-color: var(--text-secondary, rgba(60, 76, 82, 0.9));
+      background: var(--surface-sunken, #f7fafd);
+      color: var(--text, #293338);
+    }
+  }
+
+  &__chip-count {
+    opacity: 0.7;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__chip-dot {
+    flex: none;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--text-muted, rgba(60, 76, 82, 0.8));
+  }
+
+  &__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  // The rail with its dot, then the entry: label and time, tag, title.
+  &__entry {
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr);
+    column-gap: var(--space-sm, 8px);
+
+    &--clickable {
+      cursor: pointer;
+
+      &:hover .viz-feed__body {
+        background: var(--surface-hover, rgba(55, 79, 87, 0.05));
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--accent, #0c74df);
+        outline-offset: -2px;
+      }
+    }
+  }
+
+  // The label, time and tag on one line, wrapping between them.
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px var(--space-sm, 8px);
+    max-width: 100%;
+  }
+
+  &__label {
+    font-weight: var(--font-weight-bold, 600);
+    overflow-wrap: anywhere;
+  }
+
+  // Breaks between the date and the time of day, not inside them.
+  &__time {
+    color: var(--text-muted, rgba(60, 76, 82, 0.8));
+    font-size: var(--font-size-caption, 12px);
+  }
+
+  &__date,
+  &__clock {
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  // The line down the side, with each entry's dot on it.
+  &__rail {
+    position: relative;
+    display: flex;
+    justify-content: center;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 2px;
+      margin-left: -1px;
+      background: var(--border, rgba(55, 79, 87, 0.16));
+    }
+  }
+
+  // It starts at the first dot, and runs on past the last entry, as if the
+  // feed went on.
+  &__entry:first-child &__rail::before {
+    top: 8px;
+  }
+
+  &__dot {
+    position: relative;
+    box-sizing: border-box;
+    width: 12px;
+    height: 12px;
+    margin-top: 4px;
+    border: 2px solid var(--surface, #fff);
+    border-radius: 50%;
+    background: var(--text-muted, rgba(60, 76, 82, 0.8));
+    box-shadow: 0 0 0 1px var(--border, rgba(55, 79, 87, 0.16));
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2xs, 2px);
+    min-width: 0;
+    margin-bottom: var(--space-md, 12px);
+    padding: 0 var(--space-xs, 4px) var(--space-2xs, 2px);
+    border-radius: var(--radius-sm, 4px);
+  }
+
+  &__tag {
+    display: inline-flex;
+    flex: none;
+    white-space: nowrap;
+    align-items: center;
+    gap: var(--space-xs, 4px);
+    padding: 0 var(--space-sm, 8px) 0 6px;
+    border: 1px solid var(--border, rgba(55, 79, 87, 0.16));
+    border-radius: 10px;
+    color: var(--text-secondary, rgba(60, 76, 82, 0.9));
+    font-size: var(--font-size-caption, 12px);
+    font-weight: var(--font-weight-medium, 550);
+    line-height: 18px;
+  }
+
+  &__title {
+    color: inherit;
+    font-size: var(--font-size-subtitle, 14px);
+    font-weight: var(--font-weight-bold, 600);
+    line-height: var(--line-height-tight, 1.25);
+    overflow-wrap: anywhere;
+  }
+
+  a.viz-feed__title {
+    color: var(--accent, #0c74df);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__text {
+    margin: 0;
+    color: var(--text-secondary, rgba(60, 76, 82, 0.9));
+    overflow-wrap: anywhere;
+  }
+
+  &__empty {
+    margin: 0;
+    color: var(--text-muted, rgba(60, 76, 82, 0.8));
+  }
+}

@@ -2,7 +2,29 @@ import { useEffect, useRef, useState } from 'react';
 import { useNerdGraphQuery } from 'nr1';
 import { NOOP_QUERY, recommendedVersionQuery } from '../queries';
 
-// Looks up "Recommended Version" (and why it's recommended, via `reasons`) from the
+// A setState updater merging one field of the FACET results into a guid -> value
+// map. It bails out (returns the same `prev` reference) when nothing actually
+// changed, so React can skip the re-render. Without this, a `data` object that
+// isn't referentially stable across renders for an unchanged query -- which we
+// can't guarantee about useNerdGraphQuery -- would re-set state, which
+// re-renders, which re-runs the effect below... forever.
+// Single-dimension FACET results come back as { facet, recommendedVersion,
+// reasons, versionDiff }, where `facet` is the guid itself -- matches the CLI's
+// own destructuring.
+const mergeFacetField = (results, field) => prev => {
+  let changed = false;
+  const next = { ...prev };
+  results.forEach(({ facet, [field]: value }) => {
+    if (facet && next[facet] !== value) {
+      next[facet] = value;
+      changed = true;
+    }
+  });
+  return changed ? next : prev;
+};
+
+// Looks up "Recommended Version" (and why it's recommended, via `reasons`, and the
+// versions in between, via `versionDiff`) from the
 // same source nr-groundskeeper-cli uses: the `AgentUpdate` NRQL event New Relic
 // agents self-report, rather than a hardcoded semver table (see
 // groundskeeper-v2/recommendations.js). As `entities` grows page by page (via
@@ -12,6 +34,7 @@ import { NOOP_QUERY, recommendedVersionQuery } from '../queries';
 const useRecommendedVersions = (entities = []) => {
   const [recommendedVersions, setRecommendedVersions] = useState({});
   const [reasons, setReasons] = useState({});
+  const [versionDiffs, setVersionDiffs] = useState({});
   const [pendingQuery, setPendingQuery] = useState(null);
   // Ref, not state: we need to read/mutate this synchronously inside the effect below
   // without triggering a re-render or getting stale closures across renders.
@@ -48,39 +71,12 @@ const useRecommendedVersions = (entities = []) => {
       .filter(key => key.startsWith('nrql'))
       .flatMap(key => data.actor[key]?.results || []);
     if (!results.length) return;
-    setRecommendedVersions(prev => {
-      // Bail out (return the same `prev` reference) when nothing actually changed,
-      // so React can skip the re-render. Without this, a `data` object that isn't
-      // referentially stable across renders for an unchanged query -- which we
-      // can't guarantee about useNerdGraphQuery -- would re-set state, which
-      // re-renders, which re-runs this effect... forever.
-      let changed = false;
-      const next = { ...prev };
-      // Single-dimension FACET results come back as { facet, recommendedVersion,
-      // reasons }, where `facet` is the guid itself -- matches the CLI's own
-      // destructuring.
-      results.forEach(({ facet, recommendedVersion }) => {
-        if (facet && next[facet] !== recommendedVersion) {
-          next[facet] = recommendedVersion;
-          changed = true;
-        }
-      });
-      return changed ? next : prev;
-    });
-    setReasons(prev => {
-      let changed = false;
-      const next = { ...prev };
-      results.forEach(({ facet, reasons: facetReasons }) => {
-        if (facet && next[facet] !== facetReasons) {
-          next[facet] = facetReasons;
-          changed = true;
-        }
-      });
-      return changed ? next : prev;
-    });
+    setRecommendedVersions(mergeFacetField(results, 'recommendedVersion'));
+    setReasons(mergeFacetField(results, 'reasons'));
+    setVersionDiffs(mergeFacetField(results, 'versionDiff'));
   }, [data]);
 
-  return { recommendedVersions, reasons, error };
+  return { recommendedVersions, reasons, versionDiffs, error };
 };
 
 export default useRecommendedVersions;

@@ -97,6 +97,18 @@ describe('enrichEntity', () => {
 
     expect(row.reasons).toBe('SECURITY_VULNERABILITY_FIXES,BUG_FIXES');
   });
+
+  test('attaches the passed-through versionDiff string', () => {
+    const row = enrichEntity(
+      entity,
+      '8.21.1',
+      releasesForLanguage,
+      'BUG_FIXES',
+      '8.21.0,8.21.1'
+    );
+
+    expect(row.versionDiff).toBe('8.21.0,8.21.1');
+  });
 });
 
 describe('parseReasons', () => {

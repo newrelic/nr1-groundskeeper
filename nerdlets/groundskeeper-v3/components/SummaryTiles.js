@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { STATUS } from '../constants';
+import { Icon } from 'nr1';
+import { ICON_KEY, STATUS, STATUS_ICON } from '../constants';
 
 // `securityFixes` isn't a STATUS key (see utils/status.js summarize()) -- a row can
 // be BEHIND or EOL *and* have a security fix in its reasons, so it's tallied and
@@ -8,7 +9,11 @@ import { STATUS } from '../constants';
 const TILES = [
   { key: STATUS.CURRENT, label: 'Current' },
   { key: STATUS.BEHIND, label: 'Behind', variant: 'warning' },
-  { key: 'securityFixes', label: 'Security fixes', variant: 'critical' },
+  {
+    key: ICON_KEY.SECURITY_FIXES,
+    label: 'Security fixes',
+    variant: 'critical'
+  },
   { key: STATUS.EOL, label: 'Past EOL', variant: 'critical' }
 ];
 
@@ -23,7 +28,14 @@ const SummaryTiles = ({ counts }) => (
             : 'summary-tiles__tile'
         }
       >
-        <div className="summary-tiles__label">{label}</div>
+        <div className="summary-tiles__label">
+          <Icon
+            className="summary-tiles__icon"
+            type={STATUS_ICON[key].type}
+            color={STATUS_ICON[key].color}
+          />
+          {label}
+        </div>
         <div className="summary-tiles__value">
           {(counts[key] || 0).toLocaleString()}
         </div>

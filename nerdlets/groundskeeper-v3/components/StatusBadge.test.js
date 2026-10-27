@@ -2,7 +2,7 @@ import React from 'react';
 import { Badge } from 'nr1';
 
 import StatusBadge from './StatusBadge';
-import { STATUS, STATUS_LABEL } from '../constants';
+import { STATUS, STATUS_ICON, STATUS_LABEL } from '../constants';
 import { renderComponent } from './testUtils';
 
 describe('StatusBadge', () => {
@@ -17,4 +17,18 @@ describe('StatusBadge', () => {
     expect(badge.textContent).toBe(STATUS_LABEL[status]);
     expect(badge.dataset.type).toBe(type);
   });
+
+  test.each(Object.values(STATUS))(
+    'renders the %s status with its icon from STATUS_ICON',
+    status => {
+      const { container } = renderComponent(<StatusBadge status={status} />);
+      const icon = container.querySelector('.status-badge .mock-icon');
+
+      expect(icon.dataset.type).toBe(STATUS_ICON[status].type);
+      // Not inside the Badge, which only renders strings.
+      expect(container.querySelector('.mock-badge').textContent).toBe(
+        STATUS_LABEL[status]
+      );
+    }
+  );
 });

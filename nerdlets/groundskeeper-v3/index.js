@@ -7,7 +7,8 @@ import {
   EntitiesTable,
   ErrorBoundary,
   Header,
-  SummaryTiles
+  SummaryTiles,
+  UpgradePathModal
 } from './components';
 import { STATUS } from './constants';
 import {
@@ -33,6 +34,8 @@ const GroundskeeperV3Content = () => {
   const [filterOptions, setFilterOptions] = useState(DEFAULT_FILTER_OPTIONS);
   const [selectedGuid, setSelectedGuid] = useState(null);
   const [hideCurrent, setHideCurrent] = useState(false);
+  const [upgradePathEntity, setUpgradePathEntity] = useState(null);
+  const [upgradePathHidden, setUpgradePathHidden] = useState(true);
 
   const filters = useMemo(() => filtersArrayToNrql(entitiesFilters), [
     entitiesFilters
@@ -40,7 +43,9 @@ const GroundskeeperV3Content = () => {
 
   const { count, entities, fetchMore } = useApmEntities({ filters });
   const { releases } = useAgentReleases();
-  const { recommendedVersions, reasons } = useRecommendedVersions(entities);
+  const { recommendedVersions, reasons, versionDiffs } = useRecommendedVersions(
+    entities
+  );
 
   // Baseline to compare against for Header's Save view button/unsaved-changes dot.
   // There's no saved-view-loading feature yet, so this baseline is always the
@@ -67,10 +72,11 @@ const GroundskeeperV3Content = () => {
           entity,
           recommendedVersions[entity.guid],
           releases[entity.language],
-          reasons[entity.guid]
+          reasons[entity.guid],
+          versionDiffs[entity.guid]
         )
       ),
-    [entities, recommendedVersions, releases, reasons]
+    [entities, recommendedVersions, releases, reasons, versionDiffs]
   );
 
   const counts = useMemo(() => summarize(rows), [rows]);
@@ -96,6 +102,15 @@ const GroundskeeperV3Content = () => {
     [rows, selectedGuid]
   );
 
+  // `upgradePathEntity` is deliberately left set while the modal is closing (not
+  // cleared to null) -- Modal keeps rendering its children through the slide-out
+  // animation (see components/Modal.js), so nulling the entity immediately would
+  // blank the content out from under that animation.
+  const showUpgradePath = entity => {
+    setUpgradePathEntity(entity);
+    setUpgradePathHidden(false);
+  };
+
   return (
     <div className="groundskeeper-v3">
       <Header
@@ -116,6 +131,7 @@ const GroundskeeperV3Content = () => {
           fetchMore={fetchMore}
           hideCurrent={hideCurrent}
           onSelectRow={setSelectedGuid}
+          onShowUpgradePath={showUpgradePath}
           onToggleHideCurrent={() => setHideCurrent(value => !value)}
           rows={visibleRows}
           selectedGuid={selectedGuid}
@@ -127,6 +143,12 @@ const GroundskeeperV3Content = () => {
           />
         ) : null}
       </div>
+      <UpgradePathModal
+        entity={upgradePathEntity}
+        releasesForLanguage={releases[upgradePathEntity?.language]}
+        hidden={upgradePathHidden}
+        onClose={() => setUpgradePathHidden(true)}
+      />
     </div>
   );
 };

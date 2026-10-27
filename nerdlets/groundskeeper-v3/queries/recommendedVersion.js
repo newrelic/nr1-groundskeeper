@@ -7,7 +7,10 @@
 // use this instead of re-deriving it from semver tables like groundskeeper-v2 does.
 // `reasons` is a comma-separated string (see constants/reasons.js) explaining why
 // that version is recommended -- utils/status.js's hasSecurityFix() reads it to
-// drive the Security fixes KPI and the table's Target column.
+// drive the Security fixes KPI and the table's Target column. `versionDiff` is a
+// comma-separated list of the versions between the agent's own and the
+// recommended one -- the upgrade-history sidebar is built from it
+// (utils/releases.js buildUpgradeHistory()).
 //
 // NRQL's `entity.guid IN (...)` clause has a limit on how many values it accepts
 // (~25), so a batch of guids larger than that can't go in a single `nrql(...)`
@@ -28,7 +31,7 @@ const chunk = (items, size) =>
 
 const agentUpdateNrql = (accountIds, guids) => `nrql(
       accounts: [${accountIds.join(', ')}]
-      query: "FROM AgentUpdate SELECT latest(recommendedVersion) AS recommendedVersion, latest(reasons) AS reasons SINCE 7 days ago WHERE entity.guid IN ('${guids.join(
+      query: "FROM AgentUpdate SELECT latest(recommendedVersion) AS recommendedVersion, latest(reasons) AS reasons, latest(versionDiff) AS versionDiff SINCE 7 days ago WHERE entity.guid IN ('${guids.join(
         "', '"
       )}') FACET entity.guid LIMIT MAX"
     ) {

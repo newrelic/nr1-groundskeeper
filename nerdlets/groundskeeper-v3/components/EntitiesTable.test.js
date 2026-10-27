@@ -64,49 +64,51 @@ describe('EntitiesTable', () => {
     expect(container.textContent).toContain('java');
   });
 
-  test('renders a dash in the Target column when current', () => {
+  test('renders a dash in the Recommended Version column when current', () => {
     const { container } = renderComponent(
       <EntitiesTable rows={[{ ...baseRow, status: STATUS.CURRENT }]} />
     );
 
-    expect(container.querySelector('.mock-inline-message')).toBeNull();
+    expect(container.querySelector('.recommended-version')).toBeNull();
+    expect(container.textContent).toContain('—');
   });
 
-  test('renders a WARNING InlineMessage when behind with no security fix', () => {
+  test('renders a RecommendedVersion cell for rows that are not current', () => {
     const { container } = renderComponent(<EntitiesTable rows={[baseRow]} />);
 
-    const message = container.querySelector('.mock-inline-message');
-    expect(message.dataset.type).toBe('warning');
     expect(
-      container.querySelector('.mock-inline-message__label').textContent
+      container.querySelector('.recommended-version__label').textContent
     ).toBe('8.21.1');
+  });
+
+  test('renders "Upgrade required" for an EOL row with no recommendation', () => {
+    const { container } = renderComponent(
+      <EntitiesTable
+        rows={[
+          {
+            ...baseRow,
+            status: STATUS.EOL,
+            recommendedVersion: undefined,
+            reasons: undefined
+          }
+        ]}
+      />
+    );
+
     expect(
-      container.querySelector('.mock-inline-message__description').textContent
-    ).toBe('Includes bug fixes.');
+      container.querySelector('.recommended-version__label').textContent
+    ).toBe('Upgrade required');
   });
 
-  test('renders a CRITICAL InlineMessage when behind with a security fix', () => {
+  test('calls onShowUpgradePath with the row in one click on the Recommended Version cell', () => {
+    const onShowUpgradePath = jest.fn();
     const { container } = renderComponent(
-      <EntitiesTable
-        rows={[{ ...baseRow, reasons: 'SECURITY_VULNERABILITY_FIXES' }]}
-      />
+      <EntitiesTable rows={[baseRow]} onShowUpgradePath={onShowUpgradePath} />
     );
 
-    expect(container.querySelector('.mock-inline-message').dataset.type).toBe(
-      'critical'
-    );
-  });
+    container.querySelector('.recommended-version').click();
 
-  test('renders a CRITICAL InlineMessage when past EOL, even with no security fix', () => {
-    const { container } = renderComponent(
-      <EntitiesTable
-        rows={[{ ...baseRow, status: STATUS.EOL, reasons: 'BUG_FIXES' }]}
-      />
-    );
-
-    expect(container.querySelector('.mock-inline-message').dataset.type).toBe(
-      'critical'
-    );
+    expect(onShowUpgradePath).toHaveBeenCalledWith(baseRow);
   });
 
   test('renders the Status column as a Badge matching the row status', () => {

@@ -97,17 +97,30 @@ export const DataTableAdditionalValueCell = ({ children }) => (
 );
 
 // Strip nr1-only props before spreading the rest onto a real DOM button, or React
-// warns about unrecognized DOM attributes (e.g. `sizeType`).
-export const Button = ({ children, sizeType, ...props }) => (
-  <button type="button" {...props}>
+// warns about unrecognized DOM attributes (e.g. `sizeType`). `ariaLabel` is mapped
+// to the real `aria-label` DOM attribute, same as the real Button does internally.
+export const Button = ({
+  children,
+  ariaLabel,
+  sizeType,
+  variant,
+  iconType,
+  ...props
+}) => (
+  <button type="button" aria-label={ariaLabel} {...props}>
     {children}
   </button>
 );
 Button.SIZE_TYPE = { SMALL: 'small', MEDIUM: 'medium', LARGE: 'large' };
+Button.VARIANT = { PRIMARY: 'primary', SECONDARY: 'secondary', TERTIARY: 'tertiary' };
+Button.ICON_TYPE = { INTERFACE__SIGN__CLOSE: 'INTERFACE__SIGN__CLOSE' };
 
+// The real Badge stringifies its children (an element inside it shows up as
+// "[object Object]"), so this does too -- a test then catches anything but a
+// plain string being passed.
 export const Badge = ({ children, type }) => (
   <span className="mock-badge" data-type={type}>
-    {children}
+    {String(children)}
   </span>
 );
 Badge.TYPE = {
@@ -116,24 +129,6 @@ Badge.TYPE = {
   WARNING: 'warning',
   CRITICAL: 'critical',
   SEVERE: 'severe'
-};
-
-export const InlineMessage = ({ type, label, description, action }) => (
-  <div className="mock-inline-message" data-type={type}>
-    <span className="mock-inline-message__label">{label}</span>
-    <span className="mock-inline-message__description">{description}</span>
-    {action ? (
-      <button type="button" onClick={action.onClick}>
-        {action.label}
-      </button>
-    ) : null}
-  </div>
-);
-InlineMessage.TYPE = {
-  INFO: 'info',
-  SUCCESS: 'success',
-  WARNING: 'warning',
-  CRITICAL: 'critical'
 };
 
 export const Switch = ({ checked, label, loading, onChange, className }) => (
@@ -148,9 +143,9 @@ export const Switch = ({ checked, label, loading, onChange, className }) => (
   </label>
 );
 
-export const Icon = ({ type, color, ...props }) => (
+export const Icon = ({ type, color, className, ...props }) => (
   <i
-    className="mock-icon"
+    className={['mock-icon', className].filter(Boolean).join(' ')}
     data-type={type}
     style={color ? { color } : undefined}
     {...props}
@@ -159,7 +154,31 @@ export const Icon = ({ type, color, ...props }) => (
 Icon.TYPE = {
   PROFILES__EVENTS__FAVORITE: 'PROFILES__EVENTS__FAVORITE',
   PROFILES__EVENTS__FAVORITE__WEIGHT_BOLD:
-    'PROFILES__EVENTS__FAVORITE__WEIGHT_BOLD'
+    'PROFILES__EVENTS__FAVORITE__WEIGHT_BOLD',
+  INTERFACE__OPERATIONS__EXTERNAL_LINK: 'INTERFACE__OPERATIONS__EXTERNAL_LINK',
+  INTERFACE__SIGN__CHECKMARK: 'INTERFACE__SIGN__CHECKMARK',
+  INTERFACE__STATE__WARNING: 'INTERFACE__STATE__WARNING',
+  INTERFACE__OPERATIONS__SHIELD: 'INTERFACE__OPERATIONS__SHIELD',
+  INTERFACE__STATE__CRITICAL: 'INTERFACE__STATE__CRITICAL',
+  INTERFACE__INFO__HELP: 'INTERFACE__INFO__HELP',
+  INTERFACE__STATE__LOADING: 'INTERFACE__STATE__LOADING',
+  DATE_AND_TIME__DATE_AND_TIME__TIME: 'DATE_AND_TIME__DATE_AND_TIME__TIME',
+  INTERFACE__OPERATIONS__DOWNLOAD: 'INTERFACE__OPERATIONS__DOWNLOAD'
+};
+
+// The real Tooltip shows `text` on hover/focus of its children -- render it
+// alongside them so tests can assert on it without simulating hover.
+export const Tooltip = ({ children, text }) => (
+  <span className="mock-tooltip">
+    {children}
+    <span className="mock-tooltip__text">{text}</span>
+  </span>
+);
+Tooltip.PLACEMENT_TYPE = {
+  TOP: 'top',
+  BOTTOM: 'bottom',
+  LEFT: 'left',
+  RIGHT: 'right'
 };
 
 export default {};

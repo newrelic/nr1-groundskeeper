@@ -84,7 +84,8 @@ describe('useRecommendedVersions', () => {
                   {
                     facet: 'guid-1',
                     recommendedVersion: '8.21.1',
-                    reasons: 'SECURITY_VULNERABILITY_FIXES'
+                    reasons: 'SECURITY_VULNERABILITY_FIXES',
+                    versionDiff: '8.21.0,8.21.1'
                   }
                 ]
               }
@@ -119,6 +120,9 @@ describe('useRecommendedVersions', () => {
     expect(result.current.reasons).toEqual({
       'guid-1': 'SECURITY_VULNERABILITY_FIXES'
     });
+    expect(result.current.versionDiffs).toEqual({
+      'guid-1': '8.21.0,8.21.1'
+    });
 
     rerender([
       { guid: 'guid-1', accountId: 111 },
@@ -132,6 +136,10 @@ describe('useRecommendedVersions', () => {
     expect(result.current.reasons).toEqual({
       'guid-1': 'SECURITY_VULNERABILITY_FIXES',
       'guid-3': 'BUG_FIXES'
+    });
+    expect(result.current.versionDiffs).toEqual({
+      'guid-1': '8.21.0,8.21.1',
+      'guid-3': undefined
     });
   });
 
