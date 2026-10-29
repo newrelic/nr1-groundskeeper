@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { isBehind } from '../utils';
 
 // `entity` is expected to already be an enriched row from utils/status.js
 // enrichEntity() (recommendedVersion/age already computed) -- this component only
@@ -14,8 +15,7 @@ const DetailPanel = ({ entity, onClose }) => {
     recommendedVersion,
     age
   } = entity;
-  const isBehind =
-    Boolean(recommendedVersion) && recommendedVersion !== version;
+  const behind = isBehind(version, recommendedVersion);
 
   return (
     <div className="detail-panel">
@@ -35,13 +35,11 @@ const DetailPanel = ({ entity, onClose }) => {
       </div>
       <div className="detail-panel__version-box">
         <div className="detail-panel__version-transition">
-          {isBehind
+          {behind
             ? `${version} → ${recommendedVersion}`
             : `Running ${version || 'unknown'}`}
         </div>
-        {isBehind && age ? (
-          <div className="detail-panel__age">{age}</div>
-        ) : null}
+        {behind && age ? <div className="detail-panel__age">{age}</div> : null}
       </div>
     </div>
   );

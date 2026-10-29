@@ -1,14 +1,13 @@
 import { REASON, REASON_LABEL, STATUS } from '../constants';
 import { versionAge } from './format';
+import { isBehind, versionComparator } from './versions';
 
 // EOL is checked before BEHIND: a version can be both "the recommended one" and
 // past its own EOL date (New Relic keeps recommending it until a newer release
 // ships), so EOL needs to win regardless of whether it also equals recommendedVersion.
 const rowStatus = ({ version, recommendedVersion, eolDate } = {}) => {
   if (eolDate && Date.now() >= eolDate.getTime()) return STATUS.EOL;
-  if (recommendedVersion && version && recommendedVersion !== version) {
-    return STATUS.BEHIND;
-  }
+  if (isBehind(version, recommendedVersion)) return STATUS.BEHIND;
   return STATUS.CURRENT;
 };
 
@@ -34,8 +33,7 @@ const enrichEntity = (
     }),
     {}
   );
-  const isBehind =
-    Boolean(recommendedVersion) && recommendedVersion !== entity.version;
+  const behind = isBehind(entity.version, recommendedVersion);
   return {
     ...entity,
     recommendedVersion,
@@ -46,7 +44,7 @@ const enrichEntity = (
       recommendedVersion,
       eolDate
     }),
-    age: isBehind
+    age: behind
       ? versionAge(entity.version, recommendedVersion, releaseDates)
       : null
   };
@@ -112,9 +110,9 @@ const COLUMN_COMPARATORS = {
   status: (a, b) => STATUS_SEVERITY[a.status] - STATUS_SEVERITY[b.status],
   name: (a, b) => (a.name || '').localeCompare(b.name || ''),
   language: (a, b) => (a.language || '').localeCompare(b.language || ''),
-  version: (a, b) => (a.version || '').localeCompare(b.version || ''),
+  version: (a, b) => versionComparator(a.version, b.version),
   target: (a, b) =>
-    (a.recommendedVersion || '').localeCompare(b.recommendedVersion || '')
+    versionComparator(a.recommendedVersion, b.recommendedVersion)
 };
 
 // The Account column shows either accountId (numeric) or the account name

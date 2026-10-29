@@ -1,6 +1,6 @@
-import semver from 'semver';
 import { ICON_COLOR } from '../constants';
 import { durationBetween } from './format';
+import { compareVersions } from './versions';
 
 const RELEASE_NOTES_BASE = 'https://docs.newrelic.com/';
 
@@ -31,14 +31,10 @@ const NOTE_CATEGORIES = [
   }
 ];
 
-// Newest first, by semver.coerce() since agent versions aren't always strict
-// semver (e.g. dotnet's 4-part versions). A version that doesn't coerce keeps its
-// place relative to the others rather than being dropped.
-const compareDescending = (a, b) => {
-  const coercedA = semver.coerce(a);
-  const coercedB = semver.coerce(b);
-  return coercedA && coercedB ? semver.compare(coercedB, coercedA) : 0;
-};
+// Newest first (see utils/versions.js for how agent versions compare). A version
+// that can't be parsed keeps its place relative to the others rather than being
+// dropped.
+const compareDescending = (a, b) => compareVersions(b, a) ?? 0;
 
 // `versionDiff` is the comma-separated AgentUpdate.versionDiff string: the
 // versions between the agent's own and the recommended one. Split, trim, drop

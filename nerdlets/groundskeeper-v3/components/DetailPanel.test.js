@@ -58,6 +58,25 @@ describe('DetailPanel', () => {
     expect(container.querySelector('.detail-panel__age')).toBeNull();
   });
 
+  test('shows "Running <version>" when ahead of the recommended version', () => {
+    const { container } = renderComponent(
+      <DetailPanel
+        entity={{
+          name: 'auth-edge',
+          language: 'java',
+          accountId: 1234567,
+          version: '8.22.0',
+          recommendedVersion: '8.21.1',
+          age: null
+        }}
+      />
+    );
+
+    expect(
+      container.querySelector('.detail-panel__version-transition').textContent
+    ).toBe('Running 8.22.0');
+  });
+
   test('calls onClose when the close button is clicked', () => {
     const onClose = jest.fn();
     const { container } = renderComponent(

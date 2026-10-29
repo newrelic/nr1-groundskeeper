@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import Feed from './Feed';
 import Modal from './Modal';
 import { STATUS } from '../constants';
-import { buildUpgradeHistory, formatISODate } from '../utils';
+import { buildUpgradeHistory, formatISODate, isBehind } from '../utils';
 
 // Release dates are UTC midnight (see useAgentReleases.js's parseDate), so show
 // just the calendar date -- Feed's default would add a meaningless time of day,
@@ -40,8 +40,7 @@ const UpgradePathModal = ({ entity, releasesForLanguage, hidden, onClose }) => {
     entity,
     releasesForLanguage || {}
   );
-  const hasTarget =
-    Boolean(recommendedVersion) && recommendedVersion !== version;
+  const hasTarget = isBehind(version, recommendedVersion);
   const notice = eolNotice(entity);
 
   const metaParts = [

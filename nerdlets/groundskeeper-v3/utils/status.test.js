@@ -27,6 +27,18 @@ describe('rowStatus', () => {
     );
   });
 
+  test('is CURRENT when ahead of the recommended version', () => {
+    expect(rowStatus({ version: '8.22.0', recommendedVersion: '8.21.1' })).toBe(
+      STATUS.CURRENT
+    );
+  });
+
+  test('is CURRENT for the recommended version written differently', () => {
+    expect(
+      rowStatus({ version: '8.21.1.0', recommendedVersion: '8.21.1' })
+    ).toBe(STATUS.CURRENT);
+  });
+
   test('is EOL once the running version is past its EOL date, even if current', () => {
     const eolDate = new Date('2020-01-01T00:00:00Z');
     expect(
@@ -75,6 +87,17 @@ describe('enrichEntity', () => {
 
   test('age is null when already on the recommended version', () => {
     const row = enrichEntity(entity, '7.4.0', releasesForLanguage);
+
+    expect(row.status).toBe(STATUS.CURRENT);
+    expect(row.age).toBeNull();
+  });
+
+  test('age is null when ahead of the recommended version', () => {
+    const row = enrichEntity(
+      { ...entity, version: '8.21.1' },
+      '7.4.0',
+      releasesForLanguage
+    );
 
     expect(row.status).toBe(STATUS.CURRENT);
     expect(row.age).toBeNull();
@@ -238,10 +261,10 @@ describe('sortRows', () => {
     expect(
       sortRows([rowA, rowB], { name: 'version', direction: 'desc' })
     ).toEqual([rowB, rowA]);
-    // Lexical, not semver-aware: '1' < '8', so "10.2.0" sorts before "8.21.1".
+    // Numeric, not lexical: "8.21.1" sorts before "10.2.0".
     expect(
-      sortRows([rowA, rowB], { name: 'target', direction: 'asc' })
-    ).toEqual([rowB, rowA]);
+      sortRows([rowB, rowA], { name: 'target', direction: 'asc' })
+    ).toEqual([rowA, rowB]);
   });
 
   test('sorts the account column by accountId when showAccountName is false', () => {
