@@ -1,14 +1,30 @@
 import { REASON, REASON_LABEL, STATUS } from '../constants';
 import { versionAge } from './format';
+import { latestRelease } from './releases';
 import { isBehind, versionComparator } from './versions';
 
 // EOL is checked before BEHIND: a version can be both "the recommended one" and
 // past its own EOL date (New Relic keeps recommending it until a newer release
 // ships), so EOL needs to win regardless of whether it also equals recommendedVersion.
+// No recommendation (AgentUpdate sent nothing) counts as Current; rowNotes()
+// below adds a note when there's a newer agent release.
 const rowStatus = ({ version, recommendedVersion, eolDate } = {}) => {
   if (eolDate && Date.now() >= eolDate.getTime()) return STATUS.EOL;
   if (isBehind(version, recommendedVersion)) return STATUS.BEHIND;
   return STATUS.CURRENT;
+};
+
+// Notes for a row, as plain sentences. Today there's one: when AgentUpdate
+// reported no recommendation, the app stays Current, but if it isn't on the
+// newest agent release we say which one that is. It isn't treated as a
+// recommendation, since the newest agent may not support the app's runtime.
+const rowNotes = (version, recommendedVersion, releasesForLanguage) => {
+  if (recommendedVersion) return [];
+  const latest = latestRelease(releasesForLanguage);
+  if (!isBehind(version, latest)) return [];
+  return [
+    `The newest agent release is ${latest}. Check that it supports this app's runtime before upgrading.`
+  ];
 };
 
 // Single place where a normalized entity (utils/entities.js), its looked-up
@@ -46,7 +62,8 @@ const enrichEntity = (
     }),
     age: behind
       ? versionAge(entity.version, recommendedVersion, releaseDates)
-      : null
+      : null,
+    notes: rowNotes(entity.version, recommendedVersion, releasesForLanguage)
   };
 };
 

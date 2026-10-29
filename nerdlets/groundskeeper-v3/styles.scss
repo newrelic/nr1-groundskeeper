@@ -235,6 +235,14 @@
     color: var(--gk-color-text-muted);
   }
 
+  &__notes {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--gk-color-text-muted);
+  }
+
   &__row--selected {
     background: #f3f4f4;
   }
@@ -402,6 +410,12 @@ dialog.modal-dialog {
   &__age {
     font-size: 11px;
     color: var(--gk-color-text-muted);
+  }
+
+  &__note {
+    font-size: 11px;
+    color: #454545;
+    margin: 0 0 6px;
   }
 }
 

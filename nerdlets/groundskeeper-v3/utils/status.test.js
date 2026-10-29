@@ -103,6 +103,35 @@ describe('enrichEntity', () => {
     expect(row.age).toBeNull();
   });
 
+  test('with no recommendation, stays CURRENT and notes a newer release', () => {
+    const row = enrichEntity(entity, undefined, releasesForLanguage);
+
+    expect(row.status).toBe(STATUS.CURRENT);
+    expect(row.notes).toEqual([
+      "The newest agent release is 8.21.1. Check that it supports this app's runtime before upgrading."
+    ]);
+  });
+
+  test('has no notes when already on the newest release', () => {
+    const row = enrichEntity(
+      { ...entity, version: '8.21.1' },
+      undefined,
+      releasesForLanguage
+    );
+
+    expect(row.notes).toEqual([]);
+  });
+
+  test('has no notes when AgentUpdate recommended a version', () => {
+    expect(enrichEntity(entity, '8.21.1', releasesForLanguage).notes).toEqual(
+      []
+    );
+  });
+
+  test('has no notes with no release history', () => {
+    expect(enrichEntity(entity, undefined, undefined).notes).toEqual([]);
+  });
+
   test('handles an unknown language with no release history', () => {
     const row = enrichEntity(entity, '8.21.1', undefined);
 

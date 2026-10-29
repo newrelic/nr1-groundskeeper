@@ -77,6 +77,24 @@ describe('DetailPanel', () => {
     ).toBe('Running 8.22.0');
   });
 
+  test("lists the row's notes", () => {
+    const { container } = renderComponent(
+      <DetailPanel
+        entity={{
+          name: 'auth-edge',
+          version: '13.4.0',
+          notes: ['The newest agent release is 14.1.0.']
+        }}
+      />
+    );
+
+    expect(
+      [...container.querySelectorAll('.detail-panel__note')].map(
+        note => note.textContent
+      )
+    ).toEqual(['The newest agent release is 14.1.0.']);
+  });
+
   test('calls onClose when the close button is clicked', () => {
     const onClose = jest.fn();
     const { container } = renderComponent(

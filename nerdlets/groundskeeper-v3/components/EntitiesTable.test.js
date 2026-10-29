@@ -140,6 +140,22 @@ describe('EntitiesTable', () => {
     expect(onShowUpgradePath).toHaveBeenCalledWith(baseRow);
   });
 
+  test("renders a row's notes in the Notes column, with the full text in a tooltip", () => {
+    const note = 'The newest agent release is 9.5.0.';
+    const { container } = renderComponent(
+      <EntitiesTable
+        rows={[{ ...baseRow, status: STATUS.CURRENT, notes: [note] }]}
+      />
+    );
+
+    expect(container.querySelector('.entities-table__notes').textContent).toBe(
+      note
+    );
+    expect(container.querySelector('.mock-tooltip__text').textContent).toBe(
+      note
+    );
+  });
+
   test('renders the Status column as a Badge matching the row status', () => {
     const { container } = renderComponent(<EntitiesTable rows={[baseRow]} />);
 

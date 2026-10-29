@@ -13,7 +13,8 @@ const DetailPanel = ({ entity, onClose }) => {
     accountId,
     version,
     recommendedVersion,
-    age
+    age,
+    notes = []
   } = entity;
   const behind = isBehind(version, recommendedVersion);
 
@@ -41,6 +42,11 @@ const DetailPanel = ({ entity, onClose }) => {
         </div>
         {behind && age ? <div className="detail-panel__age">{age}</div> : null}
       </div>
+      {notes.map(note => (
+        <p key={note} className="detail-panel__note">
+          {note}
+        </p>
+      ))}
     </div>
   );
 };

@@ -10,7 +10,8 @@ import {
   DataTableRowCell,
   DataTableToolbar,
   DataTableToolbarContent,
-  Switch
+  Switch,
+  Tooltip
 } from 'nr1';
 
 import RecommendedVersion from './RecommendedVersion';
@@ -113,6 +114,7 @@ const EntitiesTable = ({
               <DataTableHeaderCell name="status" value="status" sortable>
                 Status
               </DataTableHeaderCell>
+              <DataTableHeaderCell name="notes">Notes</DataTableHeaderCell>
             </DataTableHeader>
             <DataTableBody>
               {({ item }) => (
@@ -151,6 +153,19 @@ const EntitiesTable = ({
                   </DataTableRowCell>
                   <DataTableRowCell>
                     {() => <StatusBadge status={item.status} />}
+                  </DataTableRowCell>
+                  <DataTableRowCell>
+                    {() => {
+                      // The cell truncates long notes; the tooltip has them in full.
+                      const notes = (item.notes || []).join(' ');
+                      return notes ? (
+                        <Tooltip text={notes}>
+                          <span className="entities-table__notes">{notes}</span>
+                        </Tooltip>
+                      ) : (
+                        '—'
+                      );
+                    }}
                   </DataTableRowCell>
                 </DataTableRow>
               )}

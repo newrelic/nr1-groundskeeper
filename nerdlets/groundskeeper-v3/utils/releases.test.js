@@ -1,4 +1,8 @@
-import { buildUpgradeHistory, parseVersionDiff } from './releases';
+import {
+  buildUpgradeHistory,
+  latestRelease,
+  parseVersionDiff
+} from './releases';
 
 const releasesForLanguage = {
   '7.4.0': {
@@ -34,6 +38,23 @@ const releasesForLanguage = {
     slug: 'java-agent-8211'
   }
 };
+
+describe('latestRelease', () => {
+  test('is the highest version, not the last one listed', () => {
+    expect(latestRelease(releasesForLanguage)).toBe('8.21.1');
+  });
+
+  test('compares numerically and skips versions it cannot parse', () => {
+    expect(
+      latestRelease({ '10.2.0': {}, '9.10.0': {}, unknown: {}, ' 6.1.0': {} })
+    ).toBe('10.2.0');
+  });
+
+  test('is null with no releases', () => {
+    expect(latestRelease({})).toBeNull();
+    expect(latestRelease()).toBeNull();
+  });
+});
 
 describe('parseVersionDiff', () => {
   test('splits, trims and sorts newest first', () => {

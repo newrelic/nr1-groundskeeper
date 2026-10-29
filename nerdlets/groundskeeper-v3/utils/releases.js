@@ -36,6 +36,16 @@ const NOTE_CATEGORIES = [
 // dropped.
 const compareDescending = (a, b) => compareVersions(b, a) ?? 0;
 
+// The newest release in `releasesForLanguage` (useAgentReleases()'s releases for
+// one language), by version rather than date, or null when there are none.
+// Versions that can't be parsed are skipped.
+const latestRelease = (releasesForLanguage = {}) =>
+  Object.keys(releasesForLanguage).reduce((latest, version) => {
+    const compared = compareVersions(version, latest ?? version);
+    if (compared === null) return latest;
+    return latest === null || compared > 0 ? version.trim() : latest;
+  }, null);
+
 // `versionDiff` is the comma-separated AgentUpdate.versionDiff string: the
 // versions between the agent's own and the recommended one. Split, trim, drop
 // empties and duplicates, newest first.
@@ -114,4 +124,4 @@ const buildUpgradeHistory = (entity = {}, releasesForLanguage = {}) => {
   };
 };
 
-export { parseVersionDiff, buildUpgradeHistory };
+export { latestRelease, parseVersionDiff, buildUpgradeHistory };
