@@ -19,21 +19,33 @@ const rowStatus = ({ version, recommendedVersion, eolDate, checking } = {}) => {
 
 const LOOKUP_FAILED_NOTE =
   "Couldn't check for a recommended version. Reload the app to try again.";
+const NOT_REPORTING_NOTE =
+  "This app hasn't reported recently, so its agent couldn't be checked.";
+const NO_RECOMMENDATION_NOTE =
+  "A recommended version wasn't found, which usually means newer agents don't support this app's runtime.";
 
-// Notes for a row, as plain sentences. When AgentUpdate reported no
-// recommendation, the app stays Current, but if it isn't on the newest agent
-// release we say which one that is. It isn't treated as a recommendation, since
-// the newest agent may not support the app's runtime. A failed lookup says so.
-// Nothing is noted while the lookup is still in flight.
-const rowNotes = (version, recommendedVersion, releasesForLanguage, lookup) => {
+// Notes for a row, as plain sentences, when AgentUpdate reported no
+// recommendation. The app stays Current either way. Only an app that has
+// connected recently gets AgentUpdate events, and then only on a runtime newer
+// agents support, so: a failed lookup or an app that isn't reporting says so;
+// otherwise, if the app isn't on the newest agent release, the likely reason is
+// its runtime. Either way the newest release is named, but not as a
+// recommendation. Nothing is noted while the lookup is still in flight.
+const rowNotes = (
+  { version, reporting },
+  recommendedVersion,
+  releasesForLanguage,
+  lookup
+) => {
   if (recommendedVersion || lookup === LOOKUP.CHECKING) return [];
-  const notes = lookup === LOOKUP.FAILED ? [LOOKUP_FAILED_NOTE] : [];
+  let reason = NO_RECOMMENDATION_NOTE;
+  if (lookup === LOOKUP.FAILED) reason = LOOKUP_FAILED_NOTE;
+  else if (reporting === false) reason = NOT_REPORTING_NOTE;
   const latest = latestRelease(releasesForLanguage);
-  if (!isBehind(version, latest)) return notes;
-  return [
-    ...notes,
-    `The newest agent release is ${latest}. Check that it supports this app's runtime before upgrading.`
-  ];
+  if (!isBehind(version, latest)) {
+    return reason === NO_RECOMMENDATION_NOTE ? [] : [reason];
+  }
+  return [reason, `The newest agent release is ${latest}.`];
 };
 
 // Single place where a normalized entity (utils/entities.js), its looked-up
@@ -74,12 +86,7 @@ const enrichEntity = (
     age: behind
       ? versionAge(entity.version, recommendedVersion, releaseDates)
       : null,
-    notes: rowNotes(
-      entity.version,
-      recommendedVersion,
-      releasesForLanguage,
-      lookup
-    )
+    notes: rowNotes(entity, recommendedVersion, releasesForLanguage, lookup)
   };
 };
 

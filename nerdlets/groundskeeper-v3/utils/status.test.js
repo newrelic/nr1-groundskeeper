@@ -116,12 +116,42 @@ describe('enrichEntity', () => {
     expect(row.age).toBeNull();
   });
 
-  test('with no recommendation, stays CURRENT and notes a newer release', () => {
+  test('with no recommendation, stays CURRENT and notes the likely reason and the newest release', () => {
     const row = enrichEntity(entity, undefined, releasesForLanguage);
 
     expect(row.status).toBe(STATUS.CURRENT);
     expect(row.notes).toEqual([
-      "The newest agent release is 8.21.1. Check that it supports this app's runtime before upgrading."
+      "A recommended version wasn't found, which usually means newer agents don't support this app's runtime.",
+      'The newest agent release is 8.21.1.'
+    ]);
+  });
+
+  test('notes an app that is not reporting instead of blaming its runtime', () => {
+    const row = enrichEntity(
+      { ...entity, reporting: false },
+      undefined,
+      releasesForLanguage,
+      undefined,
+      undefined,
+      LOOKUP.DONE
+    );
+
+    expect(row.status).toBe(STATUS.CURRENT);
+    expect(row.notes).toEqual([
+      "This app hasn't reported recently, so its agent couldn't be checked.",
+      'The newest agent release is 8.21.1.'
+    ]);
+  });
+
+  test('still notes an app that is not reporting when it is on the newest release', () => {
+    const row = enrichEntity(
+      { ...entity, version: '8.21.1', reporting: false },
+      undefined,
+      releasesForLanguage
+    );
+
+    expect(row.notes).toEqual([
+      "This app hasn't reported recently, so its agent couldn't be checked."
     ]);
   });
 
@@ -172,7 +202,7 @@ describe('enrichEntity', () => {
     expect(row.status).toBe(STATUS.CURRENT);
     expect(row.notes).toEqual([
       "Couldn't check for a recommended version. Reload the app to try again.",
-      "The newest agent release is 8.21.1. Check that it supports this app's runtime before upgrading."
+      'The newest agent release is 8.21.1.'
     ]);
   });
 
