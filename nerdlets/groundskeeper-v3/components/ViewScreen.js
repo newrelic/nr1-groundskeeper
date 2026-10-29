@@ -80,9 +80,12 @@ const ViewScreen = ({
 
   const { count, entities, fetchMore } = useApmEntities({ filters });
   const { releases } = useAgentReleases();
-  const { recommendedVersions, reasons, versionDiffs } = useRecommendedVersions(
-    entities
-  );
+  const {
+    recommendedVersions,
+    reasons,
+    versionDiffs,
+    lookups
+  } = useRecommendedVersions(entities);
 
   // Rebuild the FilterBar's option list (language + tags) as new entities page in,
   // merging into whatever the user has already picked rather than replacing it.
@@ -100,10 +103,11 @@ const ViewScreen = ({
           recommendedVersions[entity.guid],
           releases[entity.language],
           reasons[entity.guid],
-          versionDiffs[entity.guid]
+          versionDiffs[entity.guid],
+          lookups[entity.guid]
         )
       ),
-    [entities, recommendedVersions, releases, reasons, versionDiffs]
+    [entities, recommendedVersions, releases, reasons, versionDiffs, lookups]
   );
 
   const counts = useMemo(() => summarize(rows), [rows]);

@@ -1,4 +1,4 @@
-import { STATUS } from '../constants';
+import { LOOKUP, STATUS } from '../constants';
 import {
   DEFAULT_SORTING,
   describeReasons,
@@ -37,6 +37,19 @@ describe('rowStatus', () => {
     expect(
       rowStatus({ version: '8.21.1.0', recommendedVersion: '8.21.1' })
     ).toBe(STATUS.CURRENT);
+  });
+
+  test('is CHECKING while the lookup is in flight', () => {
+    expect(rowStatus({ version: '7.4.0', checking: true })).toBe(
+      STATUS.CHECKING
+    );
+  });
+
+  test('is EOL while checking, if already known to be past EOL', () => {
+    const eolDate = new Date('2020-01-01T00:00:00Z');
+    expect(rowStatus({ version: '7.4.0', eolDate, checking: true })).toBe(
+      STATUS.EOL
+    );
   });
 
   test('is EOL once the running version is past its EOL date, even if current', () => {
@@ -130,6 +143,37 @@ describe('enrichEntity', () => {
 
   test('has no notes with no release history', () => {
     expect(enrichEntity(entity, undefined, undefined).notes).toEqual([]);
+  });
+
+  test('is CHECKING with no notes while the lookup is in flight', () => {
+    const row = enrichEntity(
+      entity,
+      undefined,
+      releasesForLanguage,
+      undefined,
+      undefined,
+      LOOKUP.CHECKING
+    );
+
+    expect(row.status).toBe(STATUS.CHECKING);
+    expect(row.notes).toEqual([]);
+  });
+
+  test('notes a failed lookup, alongside a newer release', () => {
+    const row = enrichEntity(
+      entity,
+      undefined,
+      releasesForLanguage,
+      undefined,
+      undefined,
+      LOOKUP.FAILED
+    );
+
+    expect(row.status).toBe(STATUS.CURRENT);
+    expect(row.notes).toEqual([
+      "Couldn't check for a recommended version. Reload the app to try again.",
+      "The newest agent release is 8.21.1. Check that it supports this app's runtime before upgrading."
+    ]);
   });
 
   test('handles an unknown language with no release history', () => {

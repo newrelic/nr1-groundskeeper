@@ -23,6 +23,12 @@ export const useEntitySearchQuery = jest.fn(() => ({
   fetchMore: jest.fn()
 }));
 
+// The imperative query: resolves with { data, error } like the real one, rather
+// than rejecting on a GraphQL error.
+export const NerdGraphQuery = {
+  query: jest.fn(() => Promise.resolve({ data: undefined }))
+};
+
 export const useNerdGraphQuery = jest.fn(() => ({
   data: undefined,
   loading: false,

@@ -51,10 +51,4 @@ const recommendedVersionQuery = (accountIds = [], guids = []) => `
 }
 `;
 
-// useNerdGraphQuery expects a real query string on every render. Before the first
-// batch of entities has loaded there's nothing to look up yet, but we still have to
-// pass *something* -- an empty/missing `query` crashes the hook internally trying to
-// read `.definitions` off of it. This is a harmless, always-valid stand-in for that gap.
-const NOOP_QUERY = '{ actor { user { name } } }';
-
-export { GUIDS_PER_QUERY, recommendedVersionQuery, NOOP_QUERY };
+export { GUIDS_PER_QUERY, recommendedVersionQuery };

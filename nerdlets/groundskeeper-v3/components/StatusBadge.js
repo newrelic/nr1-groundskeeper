@@ -9,7 +9,8 @@ import { STATUS, STATUS_ICON, STATUS_LABEL } from '../constants';
 const BADGE_TYPE = {
   [STATUS.CURRENT]: Badge.TYPE.SUCCESS,
   [STATUS.BEHIND]: Badge.TYPE.WARNING,
-  [STATUS.EOL]: Badge.TYPE.CRITICAL
+  [STATUS.EOL]: Badge.TYPE.CRITICAL,
+  [STATUS.CHECKING]: Badge.TYPE.INFO
 };
 
 // nr1's Badge only takes a string -- it stringifies whatever children it gets,

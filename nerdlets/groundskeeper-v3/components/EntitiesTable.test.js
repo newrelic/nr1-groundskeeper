@@ -102,6 +102,15 @@ describe('EntitiesTable', () => {
     expect(container.textContent).toContain('—');
   });
 
+  test('renders "Checking…" in the Recommended Version column while checking', () => {
+    const { container } = renderComponent(
+      <EntitiesTable rows={[{ ...baseRow, status: STATUS.CHECKING }]} />
+    );
+
+    expect(container.querySelector('.recommended-version')).toBeNull();
+    expect(container.textContent).toContain('Checking…');
+  });
+
   test('renders a RecommendedVersion cell for rows that are not current', () => {
     const { container } = renderComponent(<EntitiesTable rows={[baseRow]} />);
 

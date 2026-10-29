@@ -1,8 +1,4 @@
-import {
-  GUIDS_PER_QUERY,
-  NOOP_QUERY,
-  recommendedVersionQuery
-} from './recommendedVersion';
+import { GUIDS_PER_QUERY, recommendedVersionQuery } from './recommendedVersion';
 
 describe('recommendedVersionQuery', () => {
   test('includes every account id in the accounts array', () => {
@@ -79,17 +75,5 @@ describe('recommendedVersionQuery', () => {
     const query = recommendedVersionQuery([1, 2], guids);
 
     expect(query.match(/accounts: \[1, 2\]/g)).toHaveLength(2);
-  });
-});
-
-describe('NOOP_QUERY', () => {
-  // Regression test: hooks/useRecommendedVersions.js must always hand
-  // useNerdGraphQuery a real, valid query string -- never undefined/empty -- or the
-  // hook throws "Cannot read properties of undefined (reading 'definitions')"
-  // internally before any entities have loaded. See that hook for the full story.
-  test('is a non-empty, well-formed query with no interpolated placeholders', () => {
-    expect(typeof NOOP_QUERY).toBe('string');
-    expect(NOOP_QUERY.trim().length).toBeGreaterThan(0);
-    expect(NOOP_QUERY).toContain('actor');
   });
 });

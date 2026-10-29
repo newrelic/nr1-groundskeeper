@@ -1,82 +1,82 @@
-import { useEffect, useRef, useState } from 'react';
-import { useNerdGraphQuery } from 'nr1';
-import { NOOP_QUERY, recommendedVersionQuery } from '../queries';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { NerdGraphQuery } from 'nr1';
+import { LOOKUP } from '../constants';
+import { fetchAgentUpdates } from '../utils/agentUpdates';
 
-// A setState updater merging one field of the FACET results into a guid -> value
-// map. It bails out (returns the same `prev` reference) when nothing actually
-// changed, so React can skip the re-render. Without this, a `data` object that
-// isn't referentially stable across renders for an unchanged query -- which we
-// can't guarantee about useNerdGraphQuery -- would re-set state, which
-// re-renders, which re-runs the effect below... forever.
-// Single-dimension FACET results come back as { facet, recommendedVersion,
-// reasons, versionDiff }, where `facet` is the guid itself -- matches the CLI's
-// own destructuring.
-const mergeFacetField = (results, field) => prev => {
-  let changed = false;
-  const next = { ...prev };
-  results.forEach(({ facet, [field]: value }) => {
-    if (facet && next[facet] !== value) {
-      next[facet] = value;
-      changed = true;
-    }
-  });
-  return changed ? next : prev;
-};
+const runQuery = query => NerdGraphQuery.query({ query });
+
+// Sets every guid in `guids` to `value` in a guid -> value map.
+const setAll = (guids, value) => prev =>
+  guids.reduce((next, guid) => ({ ...next, [guid]: value }), prev);
 
 // Looks up "Recommended Version" (and why it's recommended, via `reasons`, and the
-// versions in between, via `versionDiff`) from the
-// same source nr-groundskeeper-cli uses: the `AgentUpdate` NRQL event New Relic
-// agents self-report, rather than a hardcoded semver table (see
-// groundskeeper-v2/recommendations.js). As `entities` grows page by page (via
-// useApmEntities' fetchMore), this only queries guids we haven't resolved yet --
-// re-querying the whole list on every page would make the FACET grow without bound and
-// re-fetch data we already have.
-const useRecommendedVersions = (entities = []) => {
-  const [recommendedVersions, setRecommendedVersions] = useState({});
-  const [reasons, setReasons] = useState({});
-  const [versionDiffs, setVersionDiffs] = useState({});
-  const [pendingQuery, setPendingQuery] = useState(null);
-  // Ref, not state: we need to read/mutate this synchronously inside the effect below
-  // without triggering a re-render or getting stale closures across renders.
-  const queriedGuids = useRef(new Set());
+// versions in between, via `versionDiff`) from the `AgentUpdate` NRQL event New
+// Relic agents self-report (see utils/agentUpdates.js). As `entities` grows page
+// by page (via useApmEntities' fetchMore), each page's new guids go out as their
+// own request, so a fast scroll can have several in flight at once; each one's
+// results are merged in as it arrives. `lookups` says where each guid stands
+// (constants/lookup.js): CHECKING while its request is out, DONE once it's
+// answered (whether or not there was an event), FAILED after every retry
+// failed. A failed guid is requested again with the next page that loads.
+// `options.wait` is passed to fetchAgentUpdates, for tests.
+const useRecommendedVersions = (entities = [], options = {}) => {
+  const [agentUpdates, setAgentUpdates] = useState({});
+  const [lookups, setLookups] = useState({});
+  // Ref, not state: read and changed synchronously in the effect below, without
+  // re-rendering. Holds guids that are in flight or done, not failed ones.
+  const requestedGuids = useRef(new Set());
+  const mounted = useRef(true);
+  const { wait } = options;
+
+  useEffect(
+    () => () => {
+      mounted.current = false;
+    },
+    []
+  );
 
   useEffect(() => {
-    const unqueried = entities.filter(
-      ({ guid }) => guid && !queriedGuids.current.has(guid)
+    const batch = entities.filter(
+      ({ guid, accountId }) =>
+        guid && accountId && !requestedGuids.current.has(guid)
     );
-    if (!unqueried.length) return;
-    unqueried.forEach(({ guid }) => queriedGuids.current.add(guid));
-    // NRQL's `accounts` param needs every account guid in this batch spans, since
+    if (!batch.length) return;
+    const guids = batch.map(({ guid }) => guid);
+    guids.forEach(guid => requestedGuids.current.add(guid));
+    // NRQL's `accounts` param needs every account this batch spans, since
     // AgentUpdate events live in each entity's own account.
-    const accountIds = [
-      ...new Set(unqueried.map(({ accountId }) => accountId).filter(Boolean))
-    ];
-    const guids = unqueried.map(({ guid }) => guid);
-    if (!accountIds.length || !guids.length) return;
-    setPendingQuery(recommendedVersionQuery(accountIds, guids));
-  }, [entities]);
+    const accountIds = [...new Set(batch.map(({ accountId }) => accountId))];
+    setLookups(setAll(guids, LOOKUP.CHECKING));
 
-  // Hooks can't be called conditionally, so on the very first render (before any
-  // entities have arrived) we still have to pass useNerdGraphQuery *some* query --
-  // see NOOP_QUERY's comment for why that can't just be omitted.
-  const { data, error } = useNerdGraphQuery({
-    query: pendingQuery || NOOP_QUERY
-  });
+    fetchAgentUpdates(runQuery, { accountIds, guids }, { wait })
+      .then(results => {
+        if (!mounted.current) return;
+        setAgentUpdates(prev => ({ ...prev, ...results }));
+        setLookups(setAll(guids, LOOKUP.DONE));
+      })
+      .catch(() => {
+        if (!mounted.current) return;
+        guids.forEach(guid => requestedGuids.current.delete(guid));
+        setLookups(setAll(guids, LOOKUP.FAILED));
+      });
+  }, [entities, wait]);
 
-  useEffect(() => {
-    // A guid batch larger than queries/recommendedVersion.js's GUIDS_PER_QUERY
-    // comes back as multiple aliased fields (nrql0, nrql1, ...) rather than a
-    // single `nrql` field -- gather results across all of them.
-    const results = Object.keys(data?.actor || {})
-      .filter(key => key.startsWith('nrql'))
-      .flatMap(key => data.actor[key]?.results || []);
-    if (!results.length) return;
-    setRecommendedVersions(mergeFacetField(results, 'recommendedVersion'));
-    setReasons(mergeFacetField(results, 'reasons'));
-    setVersionDiffs(mergeFacetField(results, 'versionDiff'));
-  }, [data]);
+  // Kept as three guid -> value maps, the shape enrichEntity's callers use.
+  const { recommendedVersions, reasons, versionDiffs } = useMemo(
+    () =>
+      Object.keys(agentUpdates).reduce(
+        (acc, guid) => {
+          acc.recommendedVersions[guid] = agentUpdates[guid].recommendedVersion;
+          acc.reasons[guid] = agentUpdates[guid].reasons;
+          acc.versionDiffs[guid] = agentUpdates[guid].versionDiff;
+          return acc;
+        },
+        { recommendedVersions: {}, reasons: {}, versionDiffs: {} }
+      ),
+    [agentUpdates]
+  );
 
-  return { recommendedVersions, reasons, versionDiffs, error };
+  return { recommendedVersions, reasons, versionDiffs, lookups };
 };
 
 export default useRecommendedVersions;

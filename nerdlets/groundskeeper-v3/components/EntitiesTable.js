@@ -140,16 +140,22 @@ const EntitiesTable = ({
                     {() => item.version || '—'}
                   </DataTableRowCell>
                   <DataTableRowCell>
-                    {() =>
-                      item.status === STATUS.CURRENT ? (
-                        '—'
-                      ) : (
+                    {() => {
+                      if (item.status === STATUS.CURRENT) return '—';
+                      if (item.status === STATUS.CHECKING) {
+                        return (
+                          <span className="entities-table__muted">
+                            Checking…
+                          </span>
+                        );
+                      }
+                      return (
                         <RecommendedVersion
                           item={item}
                           onClick={onShowUpgradePath}
                         />
-                      )
-                    }
+                      );
+                    }}
                   </DataTableRowCell>
                   <DataTableRowCell>
                     {() => <StatusBadge status={item.status} />}

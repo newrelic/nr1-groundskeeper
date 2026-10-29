@@ -2,13 +2,16 @@
 const STATUS = {
   CURRENT: 'current',
   BEHIND: 'behind',
-  EOL: 'eol'
+  EOL: 'eol',
+  // The AgentUpdate lookup for the row is still in flight.
+  CHECKING: 'checking'
 };
 
 const STATUS_LABEL = {
   [STATUS.CURRENT]: 'Current',
   [STATUS.BEHIND]: 'Behind',
-  [STATUS.EOL]: 'EOL'
+  [STATUS.EOL]: 'EOL',
+  [STATUS.CHECKING]: 'Checking…'
 };
 
 export { STATUS, STATUS_LABEL };

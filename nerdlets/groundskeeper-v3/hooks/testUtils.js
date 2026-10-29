@@ -22,7 +22,12 @@ const renderHook = (callback, initialProps) => {
       act(() => {
         ReactDOM.render(<Harness hookProps={hookProps} />, container);
       }),
-    unmount: () => act(() => ReactDOM.unmountComponentAtNode(container))
+    // A block body: act() warns if its callback returns anything but undefined
+    // or a promise, and unmountComponentAtNode returns a boolean.
+    unmount: () =>
+      act(() => {
+        ReactDOM.unmountComponentAtNode(container);
+      })
   };
 };
 

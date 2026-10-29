@@ -13,12 +13,11 @@ const ICON_COLOR = {
 };
 
 // Not STATUS values, but states that still need an icon: a row/tile can have
-// security fixes regardless of its status (see utils/status.js summarize()), and
-// UNKNOWN/CHECKING/EOL_SOON are the states BUG-4 and FEAT-3 add.
+// security fixes regardless of its status (see utils/status.js summarize()),
+// UNKNOWN isn't used yet, and EOL_SOON is the state FEAT-3 adds.
 const ICON_KEY = {
   SECURITY_FIXES: 'securityFixes',
   UNKNOWN: 'unknown',
-  CHECKING: 'checking',
   EOL_SOON: 'eolSoon'
 };
 
@@ -46,7 +45,7 @@ const STATUS_ICON = {
     type: Icon.TYPE.INTERFACE__INFO__HELP,
     color: ICON_COLOR.MUTED
   },
-  [ICON_KEY.CHECKING]: {
+  [STATUS.CHECKING]: {
     type: Icon.TYPE.INTERFACE__STATE__LOADING,
     color: ICON_COLOR.MUTED
   },

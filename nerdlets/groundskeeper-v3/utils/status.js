@@ -1,4 +1,4 @@
-import { REASON, REASON_LABEL, STATUS } from '../constants';
+import { LOOKUP, REASON, REASON_LABEL, STATUS } from '../constants';
 import { versionAge } from './format';
 import { latestRelease } from './releases';
 import { isBehind, versionComparator } from './versions';
@@ -6,23 +6,32 @@ import { isBehind, versionComparator } from './versions';
 // EOL is checked before BEHIND: a version can be both "the recommended one" and
 // past its own EOL date (New Relic keeps recommending it until a newer release
 // ships), so EOL needs to win regardless of whether it also equals recommendedVersion.
-// No recommendation (AgentUpdate sent nothing) counts as Current; rowNotes()
-// below adds a note when there's a newer agent release.
-const rowStatus = ({ version, recommendedVersion, eolDate } = {}) => {
+// While the AgentUpdate lookup is still in flight (`checking`) the row is
+// CHECKING, unless it's already known to be EOL. No recommendation (AgentUpdate
+// sent nothing) counts as Current; rowNotes() below adds a note when there's a
+// newer agent release.
+const rowStatus = ({ version, recommendedVersion, eolDate, checking } = {}) => {
   if (eolDate && Date.now() >= eolDate.getTime()) return STATUS.EOL;
+  if (checking) return STATUS.CHECKING;
   if (isBehind(version, recommendedVersion)) return STATUS.BEHIND;
   return STATUS.CURRENT;
 };
 
-// Notes for a row, as plain sentences. Today there's one: when AgentUpdate
-// reported no recommendation, the app stays Current, but if it isn't on the
-// newest agent release we say which one that is. It isn't treated as a
-// recommendation, since the newest agent may not support the app's runtime.
-const rowNotes = (version, recommendedVersion, releasesForLanguage) => {
-  if (recommendedVersion) return [];
+const LOOKUP_FAILED_NOTE =
+  "Couldn't check for a recommended version. Reload the app to try again.";
+
+// Notes for a row, as plain sentences. When AgentUpdate reported no
+// recommendation, the app stays Current, but if it isn't on the newest agent
+// release we say which one that is. It isn't treated as a recommendation, since
+// the newest agent may not support the app's runtime. A failed lookup says so.
+// Nothing is noted while the lookup is still in flight.
+const rowNotes = (version, recommendedVersion, releasesForLanguage, lookup) => {
+  if (recommendedVersion || lookup === LOOKUP.CHECKING) return [];
+  const notes = lookup === LOOKUP.FAILED ? [LOOKUP_FAILED_NOTE] : [];
   const latest = latestRelease(releasesForLanguage);
-  if (!isBehind(version, latest)) return [];
+  if (!isBehind(version, latest)) return notes;
   return [
+    ...notes,
     `The newest agent release is ${latest}. Check that it supports this app's runtime before upgrading.`
   ];
 };
@@ -30,8 +39,8 @@ const rowNotes = (version, recommendedVersion, releasesForLanguage) => {
 // Single place where a normalized entity (utils/entities.js), its looked-up
 // recommendedVersion (hooks/useRecommendedVersions.js), its language's release
 // history (hooks/useAgentReleases.js), and its AgentUpdate.reasons and
-// .versionDiff (also from hooks/useRecommendedVersions.js) come together into one
-// row. Table, summary
+// .versionDiff and lookup state (also from hooks/useRecommendedVersions.js)
+// come together into one row. Table, summary
 // tiles, and detail panel all consume this so they can't disagree on a given app's
 // status/age.
 const enrichEntity = (
@@ -39,7 +48,8 @@ const enrichEntity = (
   recommendedVersion,
   releasesForLanguage = {},
   reasons,
-  versionDiff
+  versionDiff,
+  lookup
 ) => {
   const eolDate = releasesForLanguage[entity.version]?.eolDate;
   const releaseDates = Object.keys(releasesForLanguage).reduce(
@@ -58,12 +68,18 @@ const enrichEntity = (
     status: rowStatus({
       version: entity.version,
       recommendedVersion,
-      eolDate
+      eolDate,
+      checking: lookup === LOOKUP.CHECKING
     }),
     age: behind
       ? versionAge(entity.version, recommendedVersion, releaseDates)
       : null,
-    notes: rowNotes(entity.version, recommendedVersion, releasesForLanguage)
+    notes: rowNotes(
+      entity.version,
+      recommendedVersion,
+      releasesForLanguage,
+      lookup
+    )
   };
 };
 
@@ -111,12 +127,14 @@ const summarize = (rows = []) =>
   );
 
 // Severity order for the Status column's default sort -- EOL (red) first, then
-// BEHIND (yellow), then CURRENT (green). Plain alphabetical order on the status
-// string ("behind" < "current" < "eol") wouldn't match that, hence a dedicated rank.
+// BEHIND (yellow), then CURRENT (green), then CHECKING (not known yet). Plain
+// alphabetical order on the status string ("behind" < "current" < "eol")
+// wouldn't match that, hence a dedicated rank.
 const STATUS_SEVERITY = {
   [STATUS.EOL]: 0,
   [STATUS.BEHIND]: 1,
-  [STATUS.CURRENT]: 2
+  [STATUS.CURRENT]: 2,
+  [STATUS.CHECKING]: 3
 };
 
 // One comparator per sortable column, keyed by the DataTableHeaderCell `name` it
