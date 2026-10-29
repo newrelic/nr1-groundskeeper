@@ -1,0 +1,745 @@
+@import '~@newrelic/nr-labs-components/dist/styles.css';
+@import './components/Feed/feed.scss';
+
+.error-boundary {
+  padding: 24px;
+  font-size: 13px;
+
+  &__title {
+    font-weight: 500;
+    font-size: 15px;
+    color: #c0272d;
+    margin-bottom: 6px;
+  }
+
+  &__message {
+    font-family: 'Menlo', 'Consolas', monospace;
+    color: #454545;
+    margin-bottom: 6px;
+  }
+
+  &__stack-label {
+    color: #6b7280;
+    font-size: 11px;
+    margin-top: 10px;
+    margin-bottom: 4px;
+  }
+
+  &__stack {
+    font-family: 'Menlo', 'Consolas', monospace;
+    font-size: 11px;
+    color: #454545;
+    background: #f3f4f4;
+    border-radius: 4px;
+    padding: 8px;
+    margin: 0 0 6px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 240px;
+    overflow-y: auto;
+  }
+
+  &__hint {
+    color: #6b7280;
+    margin-top: 6px;
+  }
+}
+
+// A <button> that looks like its content: for clickable text and icons that
+// still need to be real buttons for keyboard and screen-reader users. Used with
+// nr1's u-unstyledButton, which keeps nr1's button styles off it but leaves the
+// browser's own (border, background, padding) -- this removes those.
+.gk-unstyled-button {
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+  text-align: inherit;
+  cursor: pointer;
+}
+
+// The app's own design tokens. NR1's --nr1--* custom properties are set by the
+// platform and can change or disappear without notice, so nothing here reads
+// them -- every color comes from these instead. Declared on the app root, so
+// everything inside it (including the upgrade-history <dialog>, which is a DOM
+// descendant even though it renders in the top layer) inherits them. JS that
+// needs a color (constants/icons.js) uses these same names.
+.groundskeeper-v3 {
+  --gk-color-text-muted: #6b7280;
+  --gk-color-success: #0b7a3e;
+  --gk-color-warning: #8e6806;
+  --gk-color-warning-surface: #fdf2c4;
+  --gk-color-critical: #b00f0a;
+  --gk-color-critical-surface: #fee5e5;
+  --gk-color-info: #0c74df;
+  --gk-color-focus: #0c74df;
+  --gk-color-accent: #1ce783;
+  --gk-color-favorite: #f0b400;
+  --gk-color-filter-surface: #e1edff;
+  --gk-color-filter-text: #074382;
+  --gk-color-text-secondary: #475059;
+  --gk-color-border: #e3e4e4;
+  --gk-color-border-strong: #c9cdcf;
+  --gk-color-hover-surface: #f0f1f3;
+
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #fff;
+  font-size: 13px;
+
+  // The filters on the left, wrapping onto more lines as they grow, and the
+  // save buttons (once something's changed) top right.
+  .groundskeeper-v3__filters {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--gk-color-border);
+    flex: 0 0 auto;
+  }
+
+  .groundskeeper-v3__filter-bar {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+
+  .groundskeeper-v3__save-actions {
+    flex: 0 0 auto;
+    margin-left: auto;
+    display: flex;
+    gap: 8px;
+  }
+
+  .groundskeeper-v3__predefined-filter {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 12px;
+    background: var(--gk-color-filter-surface);
+    color: var(--gk-color-filter-text);
+  }
+
+  .groundskeeper-v3__content {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+  }
+}
+
+.summary-tiles {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  padding: 12px 14px;
+  border-bottom: 1px solid #e3e4e4;
+  flex: 0 0 auto;
+
+  &__tile {
+    background: #f3f4f4;
+    border-radius: 4px;
+    padding: 8px 10px;
+
+    &--warning {
+      background: var(--gk-color-warning-surface);
+
+      .summary-tiles__label,
+      .summary-tiles__value {
+        color: var(--gk-color-warning);
+      }
+    }
+
+    &--critical {
+      background: var(--gk-color-critical-surface);
+
+      .summary-tiles__label,
+      .summary-tiles__value {
+        color: var(--gk-color-critical);
+      }
+    }
+  }
+
+  &__label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--gk-color-text-muted);
+  }
+
+  &__icon {
+    flex: none;
+  }
+
+  &__value {
+    font-size: 20px;
+    font-weight: 500;
+  }
+}
+
+.entities-table {
+  flex: 1;
+  overflow: hidden;
+
+  // Defensive reset for nr1's real (unhashed) sortable-header-cell class -- in some
+  // environments its own CSS reset for this button doesn't take effect, leaving the
+  // browser's native <button> chrome (background/border/box-shadow/padding) visible
+  // instead of the plain sortable-label + arrow look every other nr1 DataTable has.
+  // Property values below are lifted from the real rule (inspected off a working
+  // DataTable) rather than guessed, plus box-shadow:none/font/color/text-align,
+  // which that real rule apparently gets from elsewhere in the platform's own
+  // cascade but ours needs spelled out directly here.
+  //
+  // justify-content is the one that actually causes the hover shift: a native
+  // <button> forces its flex content to `justify-content: center` even with
+  // display:flex set by author CSS, unless overridden. With the label and the
+  // hover-only sort icon as the two flex children, the icon appearing/growing
+  // recenters that content block and drags the label left with it. Overriding
+  // to flex-start pins the label (first child) to the start regardless of what
+  // the icon does after it.
+  .wnd-DataTableHeaderCell-sortButton {
+    align-items: center;
+    background-color: inherit;
+    border: none;
+    box-shadow: none;
+    cursor: inherit;
+    display: flex;
+    height: 100%;
+    justify-content: flex-start;
+    margin: 0;
+    max-width: 100%;
+    outline-offset: -2px;
+    padding: 12px 16px;
+    width: 100%;
+    font: inherit;
+    color: inherit;
+    text-align: inherit;
+  }
+
+  &__mono {
+    font-family: 'Menlo', 'Consolas', monospace;
+  }
+
+  &__muted {
+    color: var(--gk-color-text-muted);
+  }
+
+  &__notes {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--gk-color-text-muted);
+  }
+
+  &__row--selected {
+    background: #f3f4f4;
+  }
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  &__icon {
+    flex: none;
+  }
+}
+
+// The Recommended Version cell (components/RecommendedVersion.js): one button
+// filling the cell, so a single click anywhere on it opens the upgrade history.
+.recommended-version {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  margin: 0;
+  padding: 2px 4px;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(55, 79, 87, 0.08);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--gk-color-focus);
+    outline-offset: 1px;
+  }
+
+  &__icon {
+    flex: none;
+  }
+
+  &__label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &--version {
+      font-family: 'Menlo', 'Consolas', monospace;
+    }
+  }
+}
+
+dialog.modal-dialog {
+  padding: 0;
+  border: none;
+
+  &::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .modal-frame {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: var(--modal-width, 480px);
+    background: #fff;
+    padding: var(--modal-padding, 0);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    &.slide-in {
+      animation: modal-frame-slide-in 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    &.slide-out {
+      animation: modal-frame-slide-out 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .modal-dialog-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      justify-content: flex-start;
+    }
+
+    .close-button {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      z-index: 1;
+    }
+  }
+}
+
+@keyframes modal-frame-slide-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes modal-frame-slide-out {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.detail-panel {
+  width: 250px;
+  flex: 0 0 auto;
+  border-left: 1px solid #e3e4e4;
+  padding: 10px 12px;
+  overflow-y: auto;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  &__title {
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  &__close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--gk-color-text-muted);
+    line-height: 1;
+    padding: 0;
+  }
+
+  &__meta {
+    color: var(--gk-color-text-muted);
+    font-size: 11px;
+    margin-bottom: 10px;
+  }
+
+  &__version-box {
+    background: #f3f4f4;
+    border-radius: 4px;
+    padding: 8px;
+    margin-bottom: 10px;
+  }
+
+  &__version-transition {
+    font-size: 11px;
+    color: #454545;
+  }
+
+  &__age {
+    font-size: 11px;
+    color: var(--gk-color-text-muted);
+  }
+
+  &__note {
+    font-size: 11px;
+    color: #454545;
+    margin: 0 0 6px;
+  }
+}
+
+.upgrade-path-modal {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+  font-size: 13px;
+
+  &__header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #e3e4e4;
+    flex: 0 0 auto;
+  }
+
+  &__title {
+    font-weight: 500;
+    font-size: 15px;
+  }
+
+  &__meta {
+    color: var(--gk-color-text-muted);
+    font-size: 11px;
+    margin-top: 2px;
+  }
+
+  &__notice {
+    margin-top: 8px;
+    color: var(--gk-color-critical);
+    font-size: 12px;
+  }
+
+  &__body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 12px 20px;
+  }
+
+  &__feed .viz-feed__title {
+    font-size: 13px;
+  }
+
+  // Each entry's text is that category's notes, one per line (see
+  // utils/releases.js versionEntries()).
+  &__feed .viz-feed__text {
+    white-space: pre-line;
+  }
+
+  // Feed's chips stick to the top of their scroll container; give them this
+  // panel's background so entries don't show through.
+  &__feed .viz-feed__chips {
+    background: #fff;
+  }
+}
+
+// The listing (components/ViewsList.js): sections of view cards, modelled on
+// Nexus's boards listing.
+.views-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100%;
+  min-height: 0;
+  padding: 16px 14px 32px;
+  box-sizing: border-box;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    flex: 0 0 auto;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  &__section-title {
+    margin: 0 0 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--gk-color-text-muted);
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__empty,
+  &__loading {
+    margin: 0;
+    color: var(--gk-color-text-muted);
+    font-style: italic;
+  }
+
+  &__loading {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-style: normal;
+  }
+}
+
+.view-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px;
+  background: #fff;
+  border: 1px solid var(--gk-color-border);
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  cursor: pointer;
+  transition: border-color 120ms ease-out, box-shadow 120ms ease-out;
+
+  &:hover {
+    border-color: var(--gk-color-border-strong);
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+  }
+
+  &:focus-within {
+    border-color: var(--gk-color-focus);
+  }
+
+  &__header,
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  &__title {
+    flex: 1;
+    min-width: 0;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: left;
+    color: inherit;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: none;
+      text-decoration: underline;
+    }
+  }
+
+  &__favorite {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    color: var(--gk-color-text-muted);
+    cursor: pointer;
+
+    &:hover {
+      background: var(--gk-color-hover-surface);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--gk-color-focus);
+    }
+  }
+
+  &__description {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--gk-color-text-secondary);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  &__footer {
+    margin-top: auto;
+    font-size: 11px;
+  }
+
+  // One line each: the meta text gives way (with an ellipsis, and the full
+  // text as its title) so "Set as default" -- there even while it's hidden,
+  // so the card doesn't jump on hover -- never wraps.
+  &__meta {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--gk-color-text-muted);
+  }
+
+  &__default,
+  &__set-default {
+    flex: none;
+    white-space: nowrap;
+  }
+
+  &__default {
+    color: var(--gk-color-success);
+    font-weight: 600;
+  }
+
+  &__set-default {
+    color: var(--gk-color-info);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 120ms ease-out;
+
+    &:focus-visible {
+      opacity: 1;
+      outline: 2px solid var(--gk-color-focus);
+    }
+  }
+
+  &:hover &__set-default {
+    opacity: 1;
+  }
+}
+
+.view-modal {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+
+  &__header,
+  &__footer {
+    flex: 0 0 auto;
+    padding: 16px 24px;
+  }
+
+  // Room for the modal's close button, top right.
+  &__header {
+    padding-right: 56px;
+    border-bottom: 1px solid var(--gk-color-border);
+  }
+
+  // Scrolls when the fields don't fit. The content's auto margins centre it
+  // vertically when they do, and (unlike justify-content: center) never push
+  // its top out of reach when they don't.
+  &__body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+  }
+
+  &__content {
+    margin: auto 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  // Cancel (and, in a saved view's Settings, Delete) on the left; the
+  // primary action on the right.
+  &__footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    border-top: 1px solid var(--gk-color-border);
+  }
+
+  &__footer-start {
+    display: flex;
+    gap: 8px;
+  }
+
+  &__built-in {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    p {
+      margin: 0;
+    }
+  }
+
+  &__built-in-title {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+
+  &__note {
+    margin: 0;
+    font-size: 12px;
+    color: var(--gk-color-text-muted);
+  }
+
+  &__error {
+    color: var(--gk-color-critical);
+  }
+}

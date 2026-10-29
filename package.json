@@ -13,6 +13,7 @@
     "eslint-fix": "eslint nerdlets/ --fix"
   },
   "dependencies": {
+    "@newrelic/nr-labs-components": "2.0.7",
     "date-fns": "^2.19.0",
     "prop-types": "^15.6.2",
     "react-bootstrap-table-next": "^3.3.5",
@@ -35,7 +36,7 @@
     "eslint": "^6.8.0",
     "jest": "^25.5.4",
     "prettier": "^1.19.1",
-    "react": "16.6.3",
-    "react-dom": "16.6.3"
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0"
   }
 }
